@@ -24,5 +24,8 @@
 *.symvers
 linux-kernel/.*
 
+# Eclipse stuff
 */.deps
 autom4te.cache
+.cproject
+.settings
