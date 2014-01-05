@@ -5,6 +5,7 @@
 # Libraries
 *.lib
 *.a
+*.Po
 
 # Shared objects (inc. Windows DLLs)
 *.dll
@@ -22,3 +23,5 @@
 *.order
 *.symvers
 linux-kernel/.*
+
+*/.deps
