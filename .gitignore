@@ -16,3 +16,9 @@
 *.exe
 *.out
 *.app
+
+# Kernel stuff
+*.mod.c
+*.order
+*.symvers
+linux-kernel/.*
