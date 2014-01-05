@@ -25,3 +25,4 @@
 linux-kernel/.*
 
 */.deps
+autom4te.cache
