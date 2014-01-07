@@ -30,3 +30,8 @@ autom4te.cache
 .cproject
 .settings
 .project
+
+# Autotool stuff
+Makefile
+config.log
+config.status
