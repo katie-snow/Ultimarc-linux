@@ -11,7 +11,11 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#include <libultimarc.h>
+
 int main(void) {
 	puts("Nothing to do yet.");
+	foo();
 	return EXIT_SUCCESS;
+
 }
