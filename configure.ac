@@ -3,20 +3,18 @@ dnl Process this file with autoconf to produce a configure script.
 AC_PREREQ(2.59)
 AC_INIT(Ultimarc-linux, 0.1)
 
-
-AC_CANONICAL_SYSTEM
+AC_CANONICAL_HOST
 AM_INIT_AUTOMAKE()
-
-PKG_CHECK_MODULES([JSON], [json-c >= 0.11])
 
 #AC_CONFIG_HEADERS([src/libs/libultimarc.h])
 
 AC_PROG_CC
 AM_PROG_CC_C_O
 
+AC_CONFIG_MACRO_DIR([m4])
 LT_INIT
 
-
+PKG_CHECK_MODULES([JSON], [json-c >= 0.11])
 
 AC_SUBST([ULTIMARC_LIB_VERSION], [0.1])
 
