@@ -15,13 +15,14 @@
 
 #define DEFAULT_DEVICE "/dev/ultimarc0"
 
+#include <libs/ultimarc.h>
+
 int main(void) {
 	char *dev;
 	int   fd;
 	int   retVal;
 
 	puts("Nothing to do yet.");
-
 
 	dev = DEFAULT_DEVICE;
 	fd = open(dev, O_RDWR);
@@ -40,5 +41,14 @@ int main(void) {
 	}
 
 	close (fd);
+
+	foo();
+
+	char *test = "{ \"admin\" : true, \"reviewer\" : false, \"author\" : true }";
+
+
+	validate_json(test);
+
 	return EXIT_SUCCESS;
+
 }
