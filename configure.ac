@@ -7,7 +7,9 @@ AC_INIT(Ultimarc-linux, 0.1)
 AC_CANONICAL_SYSTEM
 AM_INIT_AUTOMAKE()
 
-AC_CONFIG_HEADERS([src/libs/libultimarc.h])
+PKG_CHECK_MODULES([JSON], [json-c >= 0.11])
+
+#AC_CONFIG_HEADERS([src/libs/libultimarc.h])
 
 AC_PROG_CC
 AM_PROG_CC_C_O

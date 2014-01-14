@@ -11,11 +11,18 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include <libultimarc.h>
+#include <libs/ultimarc.h>
 
 int main(void) {
 	puts("Nothing to do yet.");
 	foo();
+
+	char *test = "{ \"admin\" : true, \"reviewer\" : false, \"author\" : true }";
+
+
+	validate_json(test);
+
+
 	return EXIT_SUCCESS;
 
 }
