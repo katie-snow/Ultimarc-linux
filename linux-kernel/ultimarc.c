@@ -19,13 +19,13 @@ MODULE_LICENSE("GPL");
 MODULE_AUTHOR("Robert Abram, Katie Snow");
 MODULE_DESCRIPTION("Ultimarc USB tools");
 
-#define UM_USB_TIMEOUT 100
+#define UM_USB_TIMEOUT 500
 
 #define UM_REQUEST_PROGRAM_MODE 0xE9
 
 #define UM_CTRL_BUFFER_SIZE  5
 #define UM_CTRL_REQUEST_TYPE 0x21
-#define UM_CTRL_REQUEST      0x09
+#define UM_CTRL_REQUEST      9
 #define UM_CTRL_VALUE        0x0203
 #define UM_CTRL_INDEX        0x2
 
@@ -35,13 +35,24 @@ struct um_usb {
 	struct usb_device *device;
 	struct usb_class_driver class;
 	struct usb_interface *interface;
+
+	/*  Control Message */
+	char                   *ctrl_buffer;    /* buffer for control message */
+	struct urb             *ctrl_urb;
+	struct usb_ctrlrequest *ctrl_request;   /* setup packet information */
 };
 
 static struct usb_driver ultimarc_driver;
 
 static void um_delete(struct um_usb *dev)
 {
-	kfree(dev);
+  /* Free data structures. */
+  if (dev->ctrl_urb)
+    usb_free_urb(dev->ctrl_urb);
+
+  kfree(dev->ctrl_buffer);
+  kfree(dev->ctrl_request);
+  kfree(dev);
 }
 
 static void um_ctrl_callback (struct urb *urb)
@@ -88,25 +99,40 @@ static int um_close(struct inode *i, struct file *f)
 
 static ssize_t um_write(struct file *f, const char __user *buf, size_t cnt, loff_t *off)
 {
+  char buf2[200];
+  
   struct um_usb *dev;
   int retVal = 0;
-
   dev = f->private_data;
+  
+  memset(&buf2, 0, 200);
 
-  /* Enter program mode */
+  if (copy_from_user(&buf2, buf, cnt))
+  {
+    retVal = -EFAULT;
+    goto exit;
+  }
+
+  //retVal = usb_submit_urb(dev->ctrl_urb, GFP_ATOMIC);
+  //if (retVal)
+  //{
+  //  printk(KERN_INFO "Error submitting setup URB %d\n", retVal);
+  //}
+
   retVal = usb_control_msg(dev->device,                         /* device */
                            usb_sndctrlpipe(dev->device, 0),     /* pipe */
                            UM_CTRL_REQUEST,                /* request */
                            UM_CTRL_REQUEST_TYPE,                     /* request type */
                            UM_CTRL_VALUE,                                   /* value */
                            UM_CTRL_INDEX,                                   /* index */
-                           buf,                                /* buffer */
-                           cnt,                                   /* buffer size */
-                           UM_USB_TIMEOUT);                     /* timeout */
+                           &buf2,                                /* buffer */
+                           100,                                   /* buffer size */
+                           HZ*5);                     /* timeout */
 
-  if (retVal < 0)
-    printk(KERN_INFO "Entering program mode result %d\n", retVal);
+  //if (retVal < 0)
+  //  printk(KERN_INFO "Error submitting data URB %d\n", retVal);
 
+exit:
   return retVal;
 }
 
@@ -190,6 +216,45 @@ static int um_probe(struct usb_interface *interface, const struct usb_device_id 
   dev->class.name = "usb/ultimarc%d";
   dev->class.fops = &fops;
 
+  /* Set up the control URB */
+  dev->ctrl_urb = usb_alloc_urb(0, GFP_KERNEL);
+  if (!dev->ctrl_urb)
+  {
+    printk(KERN_DEBUG "Unable to allocate ctrl_urb");
+    retval = -ENOMEM;
+    goto error;
+  }
+
+  dev->ctrl_buffer = kzalloc(UM_CTRL_BUFFER_SIZE, GFP_KERNEL);
+  if (!dev->ctrl_buffer)
+  {
+    printk(KERN_DEBUG "Unable to allocate ctrl_buffer");
+    retval = -ENOMEM;
+    goto error;
+  }
+
+  dev->ctrl_request = kzalloc(sizeof(struct usb_ctrlrequest), GFP_KERNEL);
+  if (!dev->ctrl_request)
+  {
+    printk(KERN_DEBUG "Unable to allocate ctrl_request");
+    retval = -ENOMEM;
+    goto error;
+  }
+
+  dev->ctrl_request->bRequestType = UM_CTRL_REQUEST_TYPE;
+  dev->ctrl_request->bRequest = UM_CTRL_REQUEST;
+  dev->ctrl_request->wValue = cpu_to_le16(UM_CTRL_VALUE);
+  dev->ctrl_request->wIndex = cpu_to_le16(UM_CTRL_INDEX);
+  dev->ctrl_request->wLength = cpu_to_le16(UM_CTRL_BUFFER_SIZE);
+
+  usb_fill_control_urb(dev->ctrl_urb, dev->device,
+                       usb_sndctrlpipe(dev->device, 0),
+                       (unsigned char *)dev->ctrl_request,
+                       dev->ctrl_buffer,
+                       UM_CTRL_BUFFER_SIZE,
+                       um_ctrl_callback,
+                       dev);
+
   usb_set_intfdata(interface, dev);
 
   if ((retval = usb_register_dev(interface, &dev->class)) < 0)
@@ -228,7 +293,9 @@ static void um_disconnect(struct usb_interface *interface)
 
 static struct usb_device_id ultimarc_table[] =
 {
-		{ USB_DEVICE(0xd208, 0x0310) },
+		{ USB_DEVICE(0xd208, 0x0310) },    /* IPAC-2, IPAC-4, IPAC-MINI */
+		{ USB_DEVICE(0xd209, 0x0501) },    /* Ultra-Stick 360 */
+		{ USB_DEVICE(0xd209, 0x1401) },    /* PAC-LED 64 */
 		{} /* Terminating entry */
 };
 MODULE_DEVICE_TABLE (usb, ultimarc_table);
