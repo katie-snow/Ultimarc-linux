@@ -1,0 +1,1 @@
+SUBSYSTEMS=="usb", ATTRS{idVendor}=="d208", ATTRS{idProduct}=="0310", PROGRAM="/bin/bash -c '/bin/echo %p | /bin/grep -c :1.2", RESULT=="1", MODE:="666", SYMLINK+="ultimarc%n"
