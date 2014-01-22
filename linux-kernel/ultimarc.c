@@ -99,25 +99,20 @@ static int um_close(struct inode *i, struct file *f)
 
 static ssize_t um_write(struct file *f, const char __user *buf, size_t cnt, loff_t *off)
 {
-  char buf2[200];
-  
+  char buf2[300];
+
   struct um_usb *dev;
   int retVal = 0;
   dev = f->private_data;
   
   memset(&buf2, 0, 200);
 
+
   if (copy_from_user(&buf2, buf, cnt))
   {
     retVal = -EFAULT;
     goto exit;
   }
-
-  //retVal = usb_submit_urb(dev->ctrl_urb, GFP_ATOMIC);
-  //if (retVal)
-  //{
-  //  printk(KERN_INFO "Error submitting setup URB %d\n", retVal);
-  //}
 
   retVal = usb_control_msg(dev->device,                         /* device */
                            usb_sndctrlpipe(dev->device, 0),     /* pipe */
@@ -126,8 +121,12 @@ static ssize_t um_write(struct file *f, const char __user *buf, size_t cnt, loff
                            UM_CTRL_VALUE,                                   /* value */
                            UM_CTRL_INDEX,                                   /* index */
                            &buf2,                                /* buffer */
-                           100,                                   /* buffer size */
+                           5,                                   /* buffer size */
                            HZ*5);                     /* timeout */
+
+  printk(KERN_INFO "retVal = %d\n", retVal);
+
+
 
   //if (retVal < 0)
   //  printk(KERN_INFO "Error submitting data URB %d\n", retVal);
@@ -141,7 +140,7 @@ static struct file_operations fops =
 	.owner = THIS_MODULE,
     .open = um_open,
     .release = um_close,
-    .write = um_write,
+    .write = um_write
 };
 
 static int um_probe(struct usb_interface *interface, const struct usb_device_id *id)
@@ -305,7 +304,7 @@ static struct usb_driver ultimarc_driver =
     .name = "ultimarc_driver",
     .id_table = ultimarc_table,
     .probe = um_probe,
-    .disconnect = um_disconnect,
+    .disconnect = um_disconnect
 };
 
 static int __init um_init(void)
