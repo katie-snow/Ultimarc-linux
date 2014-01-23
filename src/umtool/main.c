@@ -14,7 +14,9 @@
 #include <stdlib.h>
 #include <unistd.h>
 
-#define DEFAULT_DEVICE "/dev/ultimarc0"
+// #define DEFAULT_DEVICE "/dev/ultimarc0"
+#define DEFAULT_DEVICE "/dev/ultimarc2"
+
 
 #include <libs/ultimarc.h>
 
@@ -77,6 +79,12 @@ int main(void) {
                    0x03, 0x15, 0x15, 0x15, 0x15,
                    0x03, 0xF4, 0xF4, 0xF4, 0x15 }; /* 50 */
 
+	int result = write_to_device(DEFAULT_DEVICE, &buf, sizeof(buf));
+	printf("write_to_device returned '%d'.", result);
+
+	return 0;
+
+	/*
 	dev = DEFAULT_DEVICE;
     fd = open(dev, O_RDWR);
 
@@ -101,7 +109,7 @@ int main(void) {
       fprintf (stdout, "retVal=%d\n", retVal);
     }
 
-	/*fprintf (stdout, "sizeof(buf) = %d\n", sizeof(buf));*/
+	// fprintf (stdout, "sizeof(buf) = %d\n", sizeof(buf));
 
 	if (retVal < 0)
 	{
@@ -120,4 +128,5 @@ int main(void) {
 	//return 0;
 	return EXIT_SUCCESS;
 
+    /*
 }

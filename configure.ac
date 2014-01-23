@@ -14,6 +14,18 @@ AM_PROG_CC_C_O
 AC_CONFIG_MACRO_DIR([m4])
 LT_INIT
 
+# Kernel headers path.
+AC_ARG_WITH(kernel-headers,
+    [AC_HELP_STRING([--with-kernel-headers=DIR],
+        [specify path of Linux kernel headers [/usr/src/kernel-headers]])],
+    [case "${withval}" in
+        yes | no) AC_MSG_ERROR([bad value ${withval} for --with-kernel-headers]) ;;
+        *)   KERNEL_HEADERS_DIR="${withval}" ;;
+     esac],
+    [KERNEL_HEADERS_DIR="/usr/src/kernel-headers"])
+
+CPPFLAGS="-I$KERNEL_HEADERS_DIR/include"
+
 PKG_CHECK_MODULES([JSON], [json-c >= 0.11])
 
 AC_SUBST([ULTIMARC_LIB_VERSION], [0.1])

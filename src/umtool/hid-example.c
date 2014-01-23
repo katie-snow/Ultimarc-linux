@@ -133,6 +133,8 @@ int main(int argc, char **argv)
 		puts("\n");
 	}
 
+
+
 	/* Send a Report to the Device */
 	buf[0] = 0x03; /* Report Number */
         static char ipac_data[200] = { 0x50, 0xdd, 0x00, 0x00, 
