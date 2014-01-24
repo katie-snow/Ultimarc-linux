@@ -15,7 +15,7 @@
 #include <unistd.h>
 
 // #define DEFAULT_DEVICE "/dev/ultimarc0"
-#define DEFAULT_DEVICE "/dev/ultimarc2"
+#define DEFAULT_DEVICE "/dev/ultimarc5"
 
 
 #include <libs/ultimarc.h>
@@ -128,5 +128,5 @@ int main(void) {
 	//return 0;
 	return EXIT_SUCCESS;
 
-    /*
+    */
 }
