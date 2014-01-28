@@ -40,6 +40,8 @@ struct um_usb {
 	char                   *ctrl_buffer;    /* buffer for control message */
 	struct urb             *ctrl_urb;
 	struct usb_ctrlrequest *ctrl_request;   /* setup packet information */
+
+	bool startLoading;
 };
 
 static struct usb_driver ultimarc_driver;
@@ -114,17 +116,63 @@ static ssize_t um_write(struct file *f, const char __user *buf, size_t cnt, loff
     goto exit;
   }
 
-  retVal = usb_control_msg(dev->device,                         /* device */
-                           usb_sndctrlpipe(dev->device, 0),     /* pipe */
-                           UM_CTRL_REQUEST,                /* request */
-                           UM_CTRL_REQUEST_TYPE,                     /* request type */
-                           UM_CTRL_VALUE,                                   /* value */
-                           UM_CTRL_INDEX,                                   /* index */
-                           &buf2,                                /* buffer */
-                           5,                                   /* buffer size */
-                           HZ*5);                     /* timeout */
+  if (buf == NULL)
+    {
+    if (dev->startLoading)
+      {
+      retVal = usb_control_msg(dev->device,                         /* device */
+                                 usb_sndctrlpipe(dev->device, 0),     /* pipe */
+                                 0xE9,                /* request */
+                                 0x43,                     /* request type */
+                                 1,                                   /* value */
+                                 0,                                   /* index */
+                                 NULL,                                /* buffer */
+                                 0,                                   /* buffer size */
+                                 HZ*5);                     /* timeout */
+      printk(KERN_INFO "retVal(1) = %d\n", retVal);
 
-  printk(KERN_INFO "retVal = %d\n", retVal);
+      dev->startLoading = false;
+      }
+    else
+      {
+        retVal = usb_control_msg(dev->device,                         /* device */
+                                       usb_sndctrlpipe(dev->device, 0),     /* pipe */
+                                       0xE9,                /* request */
+                                       0x43,                     /* request type */
+                                       0,                                   /* value */
+                                       0,                                   /* index */
+                                       NULL,                                /* buffer */
+                                       0,                                   /* buffer size */
+                                       HZ*5);                     /* timeout */
+          printk(KERN_INFO "retVal(4) = %d\n", retVal);
+          dev->startLoading = true;
+      }
+    }
+  else
+    {
+    retVal = usb_control_msg(dev->device,                         /* device */
+                             usb_sndctrlpipe(dev->device, 0),     /* pipe */
+                             0xEB,                /* request */
+                             0x43,                     /* request type */
+                             0,                                   /* value */
+                             0,                                   /* index */
+                             &buf2,                                /* buffer */
+                             cnt,                                   /* buffer size */
+                             HZ*5);                     /* timeout */
+    printk(KERN_INFO "retVal(2) = %d\n", retVal);
+
+    retVal = usb_control_msg(dev->device,                         /* device */
+                             usb_sndctrlpipe(dev->device, 0),     /* pipe */
+                             0xEA,                /* request */
+                             0xC3,                     /* request type */
+                             0,                                   /* value */
+                             0,                                   /* index */
+                             NULL,                                /* buffer */
+                             0,                                   /* buffer size */
+                             HZ*5);                     /* timeout */
+    printk(KERN_INFO "retVal(3) = %d\n", retVal);
+    }
+
 
 
 
@@ -165,7 +213,7 @@ static int um_probe(struct usb_interface *interface, const struct usb_device_id 
 
 	  if (((endpoint->bEndpointAddress & USB_ENDPOINT_DIR_MASK) == USB_DIR_IN) &&
 	      ((endpoint->bmAttributes & USB_ENDPOINT_XFERTYPE_MASK) == USB_ENDPOINT_XFER_INT) &&
-	      (endpoint->wMaxPacketSize == 32))
+	      (endpoint->wMaxPacketSize == 32 || endpoint->wMaxPacketSize == 3))
 	  {
 	    printk(KERN_INFO "Ultimarc card (%04X:%04X) plugged in\n", id->idVendor, id->idProduct);
 
@@ -211,6 +259,7 @@ static int um_probe(struct usb_interface *interface, const struct usb_device_id 
 
   dev->device = udev;
   dev->interface = interface;
+  dev->startLoading = true;
 
   dev->class.name = "usb/ultimarc%d";
   dev->class.fops = &fops;
