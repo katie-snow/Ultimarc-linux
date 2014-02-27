@@ -24,10 +24,10 @@ int main(void) {
 	char *dev;
 	int   fd;
 	int   retVal;
-	int i, j, k = 0;
+/*	int i, j, k = 0;
 
 	char buf3[32];
-	/*
+
 	MapRow1=N,N,N,N,N,N,N,N,N
 	MapRow2=N,N,N,N,N,N,N,N,N
 	MapRow3=N,N,N,N,N,N,N,N,N
@@ -37,10 +37,10 @@ int main(void) {
 	MapRow7=S,S,S,S,S,S,S,S,S
 	MapRow8=S,S,S,S,S,S,S,S,S
 	MapRow9=S,S,S,S,S,S,S,S,S
-    */
+
 	// PROBLEM: Calibration data used is not quite right.  Joystick won't return to center
 	char buf[] = { 0x50, 0x09, 0x10, 0x30, 0x58,
-				   0x86, 0x114, 0x142, 0x170, 0x198, 0x226, /* Header information */
+				   0x86, 0x114, 0x142, 0x170, 0x198, 0x226,  Header information
 				   0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02,
 				   0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02,
 				   0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02,
@@ -50,16 +50,16 @@ int main(void) {
 				   0x06, 0x06, 0x06, 0x06, 0x06, 0x06, 0x06, 0x06, 0x06,
 				   0x06, 0x06, 0x06, 0x06, 0x06, 0x06, 0x06, 0x06, 0x06,
 				   0x06, 0x06, 0x06, 0x06, 0x06, 0x06, 0x06, 0x06, 0x06,
-				   0x00, 0x00, 0x00, 0x00  /* filler to get to 96 */
-				   }; /* 50 */
+				   0x00, 0x00, 0x00, 0x00   filler to get to 96
+				   };  50
 
 	fprintf (stdout, "sizeof(buf) = %d\n", sizeof(buf));
-	/*
+
 	int result = write_to_device(DEFAULT_DEVICE, &buf, sizeof(buf));
 	printf("write_to_device returned '%d'.", result);
 
 	return 0;
-    */
+
 
 	dev = DEFAULT_DEVICE;
     fd = open(dev, O_RDWR);
@@ -79,7 +79,7 @@ int main(void) {
     retVal = write (fd, NULL, 0);
 
 
-	/*for (i = 0; i < 200; i = i + 5)
+	for (i = 0; i < 200; i = i + 5)
     {
 	  k = i;
 	  fprintf (stdout, "i=%d\n", i);
@@ -91,22 +91,27 @@ int main(void) {
 
       retVal = write (fd, &buf3, sizeof(buf3));
       fprintf (stdout, "retVal=%d\n", retVal);
-    }*/
+    }
 
 	if (retVal < 0)
 	{
 		fprintf (stderr, "Error occurred\n");
 	}
 
-	close (fd);
+	close (fd);*/
 
 	//foo();
 
 	//char *test = "{ \"admin\" : true, \"reviewer\" : false, \"author\" : true }";
-
-
 	//validate_json(test);
 
-	//return 0;
+
+	json_object *obj = NULL;
+	obj = json_object_from_file ("ipac.json");
+	enum ultimarc_type type = determine_device (obj);
+
+	printf ("%d\n", type);
+	updateBoard (obj);
+  json_object_put(obj);
 	return EXIT_SUCCESS;
 }

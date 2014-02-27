@@ -1,7 +1,5 @@
 
 /* Unix */
-#include <json/json.h>
-
 #include <linux/usbdevice_fs.h>
 
 /* C */
@@ -9,7 +7,7 @@
 #include <string.h>
 #include <usb.h>
 #include <linux/hiddev.h>
-#include <libusb-1.0/libusb.h>
+//#include <libusb-1.0/usb.h>
 
 
 #include "ultimarc.h"
@@ -43,7 +41,7 @@ void foo(void)
 
 void initialize ()
 {
-	usb_init();
+	//usb_init();
 
 	lib_ready = 1;
 }
@@ -66,12 +64,12 @@ struct usb_device * find_usb_dev(u_int16_t vendor, u_int16_t product)
 		return NULL;
 	}
 
-	usb_find_busses(); usb_find_devices();
+	//usb_find_busses(); usb_find_devices();
 
 	struct usb_bus *usb_busses, *usb_bus;
 	struct usb_device *usb_dev, *return_dev;
 
-	usb_busses = usb_get_busses();
+	//usb_busses = usb_get_busses();
 
 	for (usb_bus = usb_busses; usb_bus; usb_bus = usb_bus->next)
 	{
@@ -116,7 +114,7 @@ int write_to_device (char *path, char *data, int len)
 
 	printf("Device found (0x%04x, 0x%04x) name: %s\n", usb_dev->descriptor.idVendor, usb_dev->descriptor.idProduct, usb_dev->filename);
 
-	usb_handle = usb_open(usb_dev);
+	//usb_handle = usb_open(usb_dev);
 
 	if (usb_handle == NULL)
 	{
@@ -124,7 +122,7 @@ int write_to_device (char *path, char *data, int len)
 		return 1;
 	}
 
-	usb_detach_kernel_driver_np(usb_handle, 2);
+	//usb_detach_kernel_driver_np(usb_handle, 2);
 
 	memset(buf, 0x0, sizeof(buf));
 
@@ -148,14 +146,14 @@ int write_to_device (char *path, char *data, int len)
 	   memcpy(buf, &data[pos], 5);
 	   pos+=5;
 
-	   res = usb_control_msg(usb_handle,
+	   /*res = usb_control_msg(usb_handle,
 	   					UM_CTRL_REQUEST_TYPE,
 	   					UM_CTRL_REQUEST,
 	   					UM_CTRL_VALUE,
 	   					UM_CTRL_INDEX,
 	   	                buf,
 	   	                5,
-	   	                5000);
+	   	                5000);*/
 
 	   if (res < 0) {
 		   printf("ioctl USBDEVFS_CONTROL returned: %d\n", res);
@@ -168,7 +166,7 @@ int write_to_device (char *path, char *data, int len)
 
 
 
-	usb_close(usb_handle);
+	//usb_close(usb_handle);
 
 
 	return 0;
@@ -194,6 +192,10 @@ int validate_json (char *json)
 			printf("type: json_type_boolean, ");
 			printf("value: %sn", json_object_get_boolean(val)? "true": "false");
 			break;
+
+		case json_type_array:
+		  printf("type: json_type_array, \n");
+		  break;
 		}
 	 }
 
@@ -201,3 +203,13 @@ int validate_json (char *json)
 }
 
 
+enum ultimarc_type determine_device (json_object* jobj)
+{
+  enum ultimarc_type type = ultimarc_none;
+  if (isIPAC(jobj))
+    {
+      type = ultimarc_ipac;
+    }
+
+  return type;
+}
