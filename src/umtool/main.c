@@ -110,7 +110,6 @@ int main(void) {
 	obj = json_object_from_file ("ipac.json");
 	enum ultimarc_type type = determine_device (obj);
 
-	printf ("%d\n", type);
 	updateBoard (obj);
   json_object_put(obj);
 	return EXIT_SUCCESS;

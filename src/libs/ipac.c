@@ -5,13 +5,15 @@
  *      Author: Katie Snow
  */
 
-/* Unix */
-#include <json.h>
-
 /* C */
 #include <stdio.h>
 #include <string.h>
 
+/* Unix */
+#include <json.h>
+#include <libusb-1.0/libusb.h>
+
+/* Local */
 #include "ipac.h"
 
 bool
@@ -24,7 +26,7 @@ isIPAC (json_object *jobj)
   json_object* tmp = NULL;
   if (json_object_object_get_ex(jobj, "version", &tmp))
   {
-    if (json_object_get_int(tmp) == 1)
+    if (json_object_get_int(tmp) == IPAC_VERSION)
     {
       if (json_object_object_get_ex(jobj, "keys", &tmp) &&
           json_object_object_get_ex(jobj, "device", &tmp))
@@ -514,21 +516,58 @@ convert (json_object *jobj)
 bool
 updateBoard (json_object *jobj)
 {
+  libusb_context *ctx = NULL;
+  struct libusb_device_handle *handle = NULL;
+
   json_object *keys = NULL;
   json_object *key  = NULL;
 
   int ipac_idx = 4;
   int pos = 0;
   int idx = 0;
+  int ret = 0;
+
+  bool result = false;
 
   char header[4] = {0x50, 0xdd, 0x00, 0x00};
   char data[IPAC_DATA_SIZE];
-  char mesg[5];
+  unsigned char *mesg = (unsigned char*) malloc (5);
+  mesg[0] = IPAC_REPORT;
 
+  /* Open USB communication */
+  ret = libusb_init(&ctx);
+  if (ret < 0)
+  {
+    printf ("libusb_init failed: %i\n", ret);
+    result = false;
+    goto error;
+  }
+  libusb_set_debug(ctx, 3);
+
+  handle = libusb_open_device_with_vid_pid(ctx, IPAC_VENDOR, IPAC_PRODUCT);
+  if (!handle)
+  {
+    printf ("Unable to open IPAC device\n");
+    result = false;
+    goto error;
+  }
+
+  /* detach the kernel driver */
+  if(libusb_kernel_driver_active(handle, IPAC_INTERFACE) == 1)
+  {
+    printf ("Kernel Driver Active\n");
+    if(libusb_detach_kernel_driver(handle, IPAC_INTERFACE) == 0) //detach it
+      printf ("Kernel Driver Detached!\n");
+  }
+
+  ret = libusb_claim_interface(handle, IPAC_INTERFACE);
+  if (ret < 0)
+  {
+    printf ("Unable to claim interface\n");
+  }
   /* Setup data to send to board */
   memset (&data, 0, sizeof(data));
-  memcpy (&data, &header, 4);
-  data[0] = IPAC_REPORT;
+  memcpy (&data, &header, sizeof(header));
 
   json_object_object_get_ex(jobj, "keys", &keys);
   for (idx = 0; idx < json_object_array_length(keys); ++ idx)
@@ -543,7 +582,28 @@ updateBoard (json_object *jobj)
     memcpy(&mesg[1], &data[pos], 4);
     pos+=4;
 
-    printf ("Writing out the following data (%i): %d, %d, %d, %d, %d\n", pos, mesg[0], mesg[1], mesg[2], mesg[3], mesg[4]);
+    ret = libusb_control_transfer(handle,
+                                  IPAC_REQUEST_TYPE,
+                                  IPAC_REQUEST,
+                                  IPAC_VALUE,
+                                  IPAC_INDEX,
+                                  mesg,
+                                  IPAC_MESG_LENGTH,
+                                  IPAC_TIMEOUT);
+    //printf ("Writing out the following data (%i): %x, %x, %x, %x, %x\n", pos, mesg[0], mesg[1], mesg[2], mesg[3], mesg[4]);
+    //printf ("Write result: %i\n", ret);
   }
-  return false;
+
+  libusb_release_interface(handle, IPAC_INTERFACE);
+
+exit:
+  free (mesg);
+  libusb_close(handle);
+  libusb_exit(ctx);
+  return result;
+
+error:
+  free (mesg);
+  libusb_exit(ctx);
+  return result;
 }

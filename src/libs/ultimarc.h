@@ -6,6 +6,7 @@
 #include <json.h>
 #include <stdbool.h>
 
+#define DEFAULT_TIMEOUT 2000
 #define READ_CHUNK 1024
 
 #ifdef __cplusplus

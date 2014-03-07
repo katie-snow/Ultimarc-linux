@@ -4699,7 +4699,8 @@ else
     ;;
   *)
     lt_cv_sys_max_cmd_len=`(getconf ARG_MAX) 2> /dev/null`
-    if test -n "$lt_cv_sys_max_cmd_len"; then
+    if test -n "$lt_cv_sys_max_cmd_len" && \
+	test undefined != "$lt_cv_sys_max_cmd_len"; then
       lt_cv_sys_max_cmd_len=`expr $lt_cv_sys_max_cmd_len \/ 4`
       lt_cv_sys_max_cmd_len=`expr $lt_cv_sys_max_cmd_len \* 3`
     else
@@ -5100,10 +5101,6 @@ freebsd* | dragonfly*)
   fi
   ;;
 
-gnu*)
-  lt_cv_deplibs_check_method=pass_all
-  ;;
-
 haiku*)
   lt_cv_deplibs_check_method=pass_all
   ;;
@@ -5142,11 +5139,11 @@ irix5* | irix6* | nonstopux*)
   ;;
 
 # This must be glibc/ELF.
-linux* | k*bsd*-gnu | kopensolaris*-gnu)
+linux* | k*bsd*-gnu | kopensolaris*-gnu | gnu*)
   lt_cv_deplibs_check_method=pass_all
   ;;
 
-netbsd*)
+netbsd* | netbsdelf*-gnu)
   if echo __ELF__ | $CC -E - | $GREP __ELF__ > /dev/null; then
     lt_cv_deplibs_check_method='match_pattern /lib[^/]+(\.so\.[0-9]+\.[0-9]+|_pic\.a)$'
   else
@@ -6224,7 +6221,7 @@ ia64-*-hpux*)
   rm -rf conftest*
   ;;
 
-x86_64-*kfreebsd*-gnu|x86_64-*linux*|powerpc*-*linux*| \
+x86_64-*kfreebsd*-gnu|x86_64-*linux*|ppc*-*linux*|powerpc*-*linux*| \
 s390*-*linux*|s390*-*tpf*|sparc*-*linux*)
   # Find out which ABI we are using.
   echo 'int i;' > conftest.$ac_ext
@@ -6240,12 +6237,16 @@ s390*-*linux*|s390*-*tpf*|sparc*-*linux*)
 	    LD="${LD-ld} -m elf_i386_fbsd"
 	    ;;
 	  x86_64-*linux*)
-	    LD="${LD-ld} -m elf_i386"
+	    case `/usr/bin/file conftest.o` in
+	      *x86-64*)
+		LD="${LD-ld} -m elf32_x86_64"
+		;;
+	      *)
+		LD="${LD-ld} -m elf_i386"
+		;;
+	    esac
 	    ;;
-	  powerpcle-*linux*)
-	    LD="${LD-ld} -m elf32lppclinux"
-	    ;;
-	  powerpc-*linux*)
+	  ppc64-*linux*|powerpc64-*linux*)
 	    LD="${LD-ld} -m elf32ppclinux"
 	    ;;
 	  s390x-*linux*)
@@ -6264,10 +6265,7 @@ s390*-*linux*|s390*-*tpf*|sparc*-*linux*)
 	  x86_64-*linux*)
 	    LD="${LD-ld} -m elf_x86_64"
 	    ;;
-	  powerpcle-*linux*)
-	    LD="${LD-ld} -m elf64lppc"
-	    ;;
-	  powerpc-*linux*)
+	  ppc*-*linux*|powerpc*-*linux*)
 	    LD="${LD-ld} -m elf64ppc"
 	    ;;
 	  s390*-*linux*|s390*-*tpf*)
@@ -8075,7 +8073,7 @@ lt_prog_compiler_static=
       lt_prog_compiler_static='-non_shared'
       ;;
 
-    linux* | k*bsd*-gnu | kopensolaris*-gnu)
+    linux* | k*bsd*-gnu | kopensolaris*-gnu | gnu*)
       case $cc_basename in
       # old Intel for x86_64 which still supported -KPIC.
       ecc*)
@@ -8553,6 +8551,9 @@ $as_echo_n "checking whether the $compiler linker ($LD) supports shared librarie
   openbsd*)
     with_gnu_ld=no
     ;;
+  linux* | k*bsd*-gnu | gnu*)
+    link_all_deplibs=no
+    ;;
   esac
 
   ld_shlibs=yes
@@ -8774,7 +8775,7 @@ _LT_EOF
       fi
       ;;
 
-    netbsd*)
+    netbsd* | netbsdelf*-gnu)
       if echo __ELF__ | $CC -E - | $GREP __ELF__ >/dev/null; then
 	archive_cmds='$LD -Bshareable $libobjs $deplibs $linker_flags -o $lib'
 	wlarc=
@@ -8951,6 +8952,7 @@ _LT_EOF
 	if test "$aix_use_runtimelinking" = yes; then
 	  shared_flag="$shared_flag "'${wl}-G'
 	fi
+	link_all_deplibs=no
       else
 	# not using gcc
 	if test "$host_cpu" = ia64; then
@@ -9404,7 +9406,7 @@ $as_echo "$lt_cv_irix_exported_symbol" >&6; }
       link_all_deplibs=yes
       ;;
 
-    netbsd*)
+    netbsd* | netbsdelf*-gnu)
       if echo __ELF__ | $CC -E - | $GREP __ELF__ >/dev/null; then
 	archive_cmds='$LD -Bshareable -o $lib $libobjs $deplibs $linker_flags'  # a.out
       else
@@ -10241,17 +10243,6 @@ freebsd* | dragonfly*)
   esac
   ;;
 
-gnu*)
-  version_type=linux # correct to gnu/linux during the next big refactor
-  need_lib_prefix=no
-  need_version=no
-  library_names_spec='${libname}${release}${shared_ext}$versuffix ${libname}${release}${shared_ext}${major} ${libname}${shared_ext}'
-  soname_spec='${libname}${release}${shared_ext}$major'
-  shlibpath_var=LD_LIBRARY_PATH
-  shlibpath_overrides_runpath=no
-  hardcode_into_libs=yes
-  ;;
-
 haiku*)
   version_type=linux # correct to gnu/linux during the next big refactor
   need_lib_prefix=no
@@ -10368,7 +10359,7 @@ linux*oldld* | linux*aout* | linux*coff*)
   ;;
 
 # This must be glibc/ELF.
-linux* | k*bsd*-gnu | kopensolaris*-gnu)
+linux* | k*bsd*-gnu | kopensolaris*-gnu | gnu*)
   version_type=linux # correct to gnu/linux during the next big refactor
   need_lib_prefix=no
   need_version=no
@@ -10417,14 +10408,10 @@ fi
   # before this can be enabled.
   hardcode_into_libs=yes
 
-  # Add ABI-specific directories to the system library path.
-  sys_lib_dlsearch_path_spec="/lib64 /usr/lib64 /lib /usr/lib"
-
   # Append ld.so.conf contents to the search path
   if test -f /etc/ld.so.conf; then
     lt_ld_extra=`awk '/^include / { system(sprintf("cd /etc; cat %s 2>/dev/null", \$2)); skip = 1; } { if (!skip) print \$0; skip = 0; }' < /etc/ld.so.conf | $SED -e 's/#.*//;/^[	 ]*hwcap[	 ]/d;s/[:,	]/ /g;s/=[^=]*$//;s/=[^= ]* / /g;s/"//g;/^$/d' | tr '\n' ' '`
-    sys_lib_dlsearch_path_spec="$sys_lib_dlsearch_path_spec $lt_ld_extra"
-
+    sys_lib_dlsearch_path_spec="/lib /usr/lib $lt_ld_extra"
   fi
 
   # We used to test for /lib/ld.so.1 and disable shared libraries on
@@ -10434,6 +10421,18 @@ fi
   # people can always --disable-shared, the test was removed, and we
   # assume the GNU/Linux dynamic linker is in use.
   dynamic_linker='GNU/Linux ld.so'
+  ;;
+
+netbsdelf*-gnu)
+  version_type=linux
+  need_lib_prefix=no
+  need_version=no
+  library_names_spec='${libname}${release}${shared_ext}$versuffix ${libname}${release}${shared_ext}$major ${libname}${shared_ext}'
+  soname_spec='${libname}${release}${shared_ext}$major'
+  shlibpath_var=LD_LIBRARY_PATH
+  shlibpath_overrides_runpath=no
+  hardcode_into_libs=yes
+  dynamic_linker='NetBSD ld.elf_so'
   ;;
 
 netbsd*)
@@ -11642,12 +11641,12 @@ if test -n "$LIBUSB_CFLAGS"; then
     pkg_cv_LIBUSB_CFLAGS="$LIBUSB_CFLAGS"
  elif test -n "$PKG_CONFIG"; then
     if test -n "$PKG_CONFIG" && \
-    { { $as_echo "$as_me:${as_lineno-$LINENO}: \$PKG_CONFIG --exists --print-errors \"libusb >= 0.1.5\""; } >&5
-  ($PKG_CONFIG --exists --print-errors "libusb >= 0.1.5") 2>&5
+    { { $as_echo "$as_me:${as_lineno-$LINENO}: \$PKG_CONFIG --exists --print-errors \"libusb-1.0 >= 1.0.18\""; } >&5
+  ($PKG_CONFIG --exists --print-errors "libusb-1.0 >= 1.0.18") 2>&5
   ac_status=$?
   $as_echo "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
   test $ac_status = 0; }; then
-  pkg_cv_LIBUSB_CFLAGS=`$PKG_CONFIG --cflags "libusb >= 0.1.5" 2>/dev/null`
+  pkg_cv_LIBUSB_CFLAGS=`$PKG_CONFIG --cflags "libusb-1.0 >= 1.0.18" 2>/dev/null`
 		      test "x$?" != "x0" && pkg_failed=yes
 else
   pkg_failed=yes
@@ -11659,12 +11658,12 @@ if test -n "$LIBUSB_LIBS"; then
     pkg_cv_LIBUSB_LIBS="$LIBUSB_LIBS"
  elif test -n "$PKG_CONFIG"; then
     if test -n "$PKG_CONFIG" && \
-    { { $as_echo "$as_me:${as_lineno-$LINENO}: \$PKG_CONFIG --exists --print-errors \"libusb >= 0.1.5\""; } >&5
-  ($PKG_CONFIG --exists --print-errors "libusb >= 0.1.5") 2>&5
+    { { $as_echo "$as_me:${as_lineno-$LINENO}: \$PKG_CONFIG --exists --print-errors \"libusb-1.0 >= 1.0.18\""; } >&5
+  ($PKG_CONFIG --exists --print-errors "libusb-1.0 >= 1.0.18") 2>&5
   ac_status=$?
   $as_echo "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
   test $ac_status = 0; }; then
-  pkg_cv_LIBUSB_LIBS=`$PKG_CONFIG --libs "libusb >= 0.1.5" 2>/dev/null`
+  pkg_cv_LIBUSB_LIBS=`$PKG_CONFIG --libs "libusb-1.0 >= 1.0.18" 2>/dev/null`
 		      test "x$?" != "x0" && pkg_failed=yes
 else
   pkg_failed=yes
@@ -11685,14 +11684,14 @@ else
         _pkg_short_errors_supported=no
 fi
         if test $_pkg_short_errors_supported = yes; then
-	        LIBUSB_PKG_ERRORS=`$PKG_CONFIG --short-errors --print-errors --cflags --libs "libusb >= 0.1.5" 2>&1`
+	        LIBUSB_PKG_ERRORS=`$PKG_CONFIG --short-errors --print-errors --cflags --libs "libusb-1.0 >= 1.0.18" 2>&1`
         else
-	        LIBUSB_PKG_ERRORS=`$PKG_CONFIG --print-errors --cflags --libs "libusb >= 0.1.5" 2>&1`
+	        LIBUSB_PKG_ERRORS=`$PKG_CONFIG --print-errors --cflags --libs "libusb-1.0 >= 1.0.18" 2>&1`
         fi
 	# Put the nasty error message in config.log where it belongs
 	echo "$LIBUSB_PKG_ERRORS" >&5
 
-	as_fn_error $? "Package requirements (libusb >= 0.1.5) were not met:
+	as_fn_error $? "Package requirements (libusb-1.0 >= 1.0.18) were not met:
 
 $LIBUSB_PKG_ERRORS
 

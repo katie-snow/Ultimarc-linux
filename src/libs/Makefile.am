@@ -1,7 +1,7 @@
 # src/libs/Makefile.am
 
-AM_CFLAGS = $(JSON_CFLAGS) 
-AM_LDFLAGS = $(JSON_LIBS)
+AM_CFLAGS = $(JSON_CFLAGS) $(LIBUSB_CFLAGS)
+AM_LDFLAGS = $(JSON_LIBS) $(LIBUSB_LIBS)
 
 
 lib_LTLIBRARIES = libultimarc-0.1.la

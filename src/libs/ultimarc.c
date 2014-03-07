@@ -1,13 +1,13 @@
 
 /* Unix */
 #include <linux/usbdevice_fs.h>
+#include <json.h>
 
 /* C */
 #include <stdio.h>
 #include <string.h>
-#include <usb.h>
+#include <libusb-1.0/libusb.h>
 #include <linux/hiddev.h>
-//#include <libusb-1.0/usb.h>
 
 
 #include "ultimarc.h"
@@ -58,18 +58,18 @@ void initialize ()
 
 struct usb_device * find_usb_dev(u_int16_t vendor, u_int16_t product)
 {
-	if (!lib_ready)
+/*	if (!lib_ready)
 	{
 		printf("usb library not initalized.");
 		return NULL;
 	}
 
-	//usb_find_busses(); usb_find_devices();
+	usb_find_busses(); usb_find_devices();
 
 	struct usb_bus *usb_busses, *usb_bus;
 	struct usb_device *usb_dev, *return_dev;
 
-	//usb_busses = usb_get_busses();
+	usb_busses = usb_get_busses();
 
 	for (usb_bus = usb_busses; usb_bus; usb_bus = usb_bus->next)
 	{
@@ -87,11 +87,13 @@ struct usb_device * find_usb_dev(u_int16_t vendor, u_int16_t product)
 	}
 
 	return return_dev;
-
+*/
+  return NULL;
 }
 
 int write_to_device (char *path, char *data, int len)
 {
+  /*
 	int fd, res, pos = 0;
 	char buf[256];
 	struct usb_device *usb_dev;
@@ -140,7 +142,7 @@ int write_to_device (char *path, char *data, int len)
 	control.timeout =  5000;
 	control.data = &buf[0];
 
-*/
+
 	while (pos < len)
     {
 	   memcpy(buf, &data[pos], 5);
@@ -153,7 +155,7 @@ int write_to_device (char *path, char *data, int len)
 	   					UM_CTRL_INDEX,
 	   	                buf,
 	   	                5,
-	   	                5000);*/
+	   	                5000);
 
 	   if (res < 0) {
 		   printf("ioctl USBDEVFS_CONTROL returned: %d\n", res);
@@ -168,7 +170,7 @@ int write_to_device (char *path, char *data, int len)
 
 	//usb_close(usb_handle);
 
-
+*/
 	return 0;
 
 

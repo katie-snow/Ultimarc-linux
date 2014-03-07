@@ -16,10 +16,20 @@ extern "C" {
 
 /* Required items in the json file for IPAC cards (IPAC32, IPAC64, IPAC-MINI)*/
 #define IPAC_VERSION 1
-#define IPAC_PRODUCT 0x0310
 #define IPAC_DEVICE "0310"
-#define IPAC_DATA_SIZE 204
-#define IPAC_REPORT 0x03
+
+/* Required items for writing out through the USB port */
+#define IPAC_VENDOR       0xD208
+#define IPAC_PRODUCT      0x0310
+#define IPAC_DATA_SIZE    204
+#define IPAC_REPORT       0x03
+#define IPAC_REQUEST_TYPE 0x21
+#define IPAC_REQUEST      9
+#define IPAC_VALUE        0x0203
+#define IPAC_INDEX        2
+#define IPAC_MESG_LENGTH  5
+#define IPAC_TIMEOUT      2000
+#define IPAC_INTERFACE    2
 
 typedef struct json_object json_object;
 
@@ -34,6 +44,9 @@ bool isIPAC (json_object* jobj);
  */
 char convert (json_object* jobj);
 
+/*
+ * Writes the data out to the board.
+ */
 extern bool updateBoard (json_object *jobj);
 
 #ifdef __cplusplus
