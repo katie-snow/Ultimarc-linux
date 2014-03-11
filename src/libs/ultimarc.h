@@ -21,11 +21,19 @@ typedef enum ultimarc_type {
 } ultimarc_type;
 
 /*
- * load_json
+ * determine_device
  * Parameter: path to a json file
  * Returns: true successfully parsed the data, false otherwise
  */
 extern enum ultimarc_type determine_device (json_object* jobj);
+
+/*
+ * updateBoard
+ * Updates a board.  The board is selected based on the json_object contents
+ * Paramter: path to json object
+ * Returns: true if successfully updated a board, false otherwise
+ */
+extern bool updateBoard(const char* file);
 
  extern void foo (void);
 

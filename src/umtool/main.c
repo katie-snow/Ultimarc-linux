@@ -24,6 +24,7 @@ int main(void) {
 	char *dev;
 	int   fd;
 	int   retVal;
+
 /*	int i, j, k = 0;
 
 	char buf3[32];
@@ -106,11 +107,8 @@ int main(void) {
 	//validate_json(test);
 
 
-	json_object *obj = NULL;
-	obj = json_object_from_file ("ipac.json");
-	enum ultimarc_type type = determine_device (obj);
+	updateBoard ("ipac.json");
+	updateBoard ("ultistik.json");
 
-	updateBoard (obj);
-  json_object_put(obj);
 	return EXIT_SUCCESS;
 }

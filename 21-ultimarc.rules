@@ -1,1 +1,2 @@
-ACTION=="add", SUBSYSTEMS=="usb", ATTRS{idVendor}=="d208", ATTRS{idProduct}=="0310", MODE:="666", SYMLINK+="ultimarc%n"
+ACTION=="add", SUBSYSTEMS=="usb", ATTRS{idVendor}=="d208", ATTRS{idProduct}=="0310", MODE:="666"
+ACTION=="add", SUBSYSTEMS=="usb", ATTRS{idVendor}=="d209", ATTRS{idProduct}=="0501", MODE:="666"

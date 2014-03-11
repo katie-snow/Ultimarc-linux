@@ -209,9 +209,50 @@ enum ultimarc_type determine_device (json_object* jobj)
 {
   enum ultimarc_type type = ultimarc_none;
   if (isIPAC(jobj))
-    {
-      type = ultimarc_ipac;
-    }
+  {
+    type = ultimarc_ipac;
+  }
+  else if (isULTISTIK(jobj))
+  {
+    type = ultimarc_ultistik;
+  }
 
   return type;
+}
+
+bool updateBoard (const char* file)
+{
+  bool ret = false;
+  json_object *jobj = NULL;
+
+  jobj = json_object_from_file (file);
+
+  switch (determine_device(jobj))
+  {
+    case ultimarc_ipac:
+      printf ("Updating IPAC board...");
+      ret = updateBoardIPAC(jobj);
+      break;
+
+    case ultimarc_ultistik:
+      printf ("Updating Ultistick board...");
+      ret = updateBoardULTISTIK(jobj);
+      break;
+
+    default:
+      printf ("ERROR: Unknown json file.  ");
+      break;
+  }
+
+  if (ret)
+  {
+    printf ("Update done.\n");
+  }
+  else
+  {
+    printf ("Update failed!\n");
+  }
+
+  json_object_put(jobj);
+  return ret;
 }

@@ -1,0 +1,53 @@
+/*
+ * ultistik.h
+ *
+ *  Created on: Mar 7, 2014
+ *      Author: katie
+ */
+
+#ifndef ULTISTIK_H_
+#define ULTISTIK_H_
+
+#include <stdbool.h>
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+/* Required items in the json file for Ultistik card*/
+#define USTIK_VERSION 1
+#define USTIK_PRODUCT_STR "0501"
+
+/* Required items for writing out through the USB port */
+#define USTIK_VENDOR       0xD209
+#define USTIK_PRODUCT      0x0501
+#define USTIK_DATA_SIZE    96
+#define USTIK_REQUEST_TYPE_1 0x43
+#define USTIK_REQUEST_TYPE_2 0xC3
+#define USTIK_REQUEST_1    0xE9
+#define USTIK_REQUEST_2    0xEB
+#define USTIK_REQUEST_3    0xEA
+#define USTIK_MESG_LENGTH  32
+#define USTIK_TIMEOUT      2000
+#define USTIK_INTERFACE    0
+
+typedef struct json_object json_object;
+
+/*
+ * Determine if the json file is an ULTISTIK configuration
+ */
+bool isULTISTIK (json_object* jobj);
+
+/*
+ * Convert the JSON keys data into IPAC data
+ * This is done one array element at a time
+ */
+char convertULTISTIK (json_object* jobj);
+
+bool updateBoardULTISTIK (json_object* jobj);
+
+#ifdef __cplusplus
+}
+#endif
+
+#endif /* ULTISTIK_H_ */

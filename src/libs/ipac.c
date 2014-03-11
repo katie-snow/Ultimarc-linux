@@ -29,9 +29,10 @@ isIPAC (json_object *jobj)
     if (json_object_get_int(tmp) == IPAC_VERSION)
     {
       if (json_object_object_get_ex(jobj, "keys", &tmp) &&
-          json_object_object_get_ex(jobj, "device", &tmp))
+          json_object_object_get_ex(jobj, "product", &tmp))
       {
-        if (strncmp(json_object_get_string(tmp), IPAC_DEVICE, 4) == 0)
+        /* product needs to be last so we can do this check */
+        if (strncmp(json_object_get_string(tmp), IPAC_PRODUCT_STR, 4) == 0)
         {
           return true;
         }
@@ -43,7 +44,7 @@ isIPAC (json_object *jobj)
 }
 
 char
-convert (json_object *jobj)
+convertIPAC (json_object *jobj)
 {
   char retval = 0x00;
   const char* str = json_object_get_string(jobj);
@@ -514,7 +515,7 @@ convert (json_object *jobj)
 }
 
 bool
-updateBoard (json_object *jobj)
+updateBoardIPAC (json_object *jobj)
 {
   libusb_context *ctx = NULL;
   struct libusb_device_handle *handle = NULL;
@@ -527,7 +528,7 @@ updateBoard (json_object *jobj)
   int idx = 0;
   int ret = 0;
 
-  bool result = false;
+  bool result = true;
 
   char header[4] = {0x50, 0xdd, 0x00, 0x00};
   char data[IPAC_DATA_SIZE];
@@ -573,7 +574,7 @@ updateBoard (json_object *jobj)
   for (idx = 0; idx < json_object_array_length(keys); ++ idx)
   {
     key = json_object_array_get_idx(keys, idx);
-    data[ipac_idx] = convert (key);
+    data[ipac_idx] = convertIPAC (key);
     ++ipac_idx;
   }
 
