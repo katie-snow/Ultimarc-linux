@@ -51,464 +51,192 @@ convertIPAC (json_object *jobj)
 
   if (strlen(str) > 0)
   {
-    switch(str[0])
-    {
-      case 'A':
-        retval = 0x1C;
-        if (strlen(str) == 4)
-        {
-          /* APPS */
-          retval = 0x66;
-        }
-        else if (strlen(str) == 3)
-        {
-          /* APP */
-          retval = 0xAF;
-        }
-        break;
-      case 'B':
-        retval = 0x32;
-        if (strlen(str) > 1)
-        {
-          /* BKSP */
-          retval = 0x66;
-        }
-        break;
-      case 'C':
-        retval = 0x21;
-        if (strlen(str) > 1)
-        {
-          /* CAPS */
-          retval = 0x58;
-        }
-        break;
-      case 'D':
-        retval = 0x23;
-        retval = 0x1C;
-        if (strlen(str) == 6)
-        {
-          /* DELETE */
-          retval = 0xE0;
-        }
-        else if (strlen(str) == 7)
-        {
-          /* D ARROW */
-          retval = 0xF2;
-        }
-        break;
-      case 'E':
-        retval = 0x24;
-        if (strlen(str) > 1)
-        {
-          switch (str[1])
-          {
-            case 'r':
-              /* Err:520 */
-              retval = 0x55;
-              break;
-            case 'N':
-              if (str[2] == 'T')
-              {
-                /* ENTER */
-                retval = 0x5A;
-              }
-              else if (str[2] == 'D')
-              {
-                /* END */
-                retval = 0xE0;
-              }
-              else
-              {
-                /* Set back to E */
-                retval = 0x24;
-              }
-              break;
-            case 'S':
-              /* ESC */
-              retval = 0x76;
-              break;
-            default:
-              /* Set back to E */
-              retval = 0x24;
-              break;
-          }
-        }
-        break;
-      case 'F':
-        retval = 0x28;
-        if (strlen(str) > 1)
-        {
-          switch (str[1])
-          {
-            case '1':
-              if (strcmp(str, "F1") == 0)
-              {
-                retval = 0x05;
-              }
-              else if (strcmp(str, "F10") == 0)
-              {
-                retval = 0x09;
-              }
-              else if (strcmp(str, "F11") == 0)
-              {
-                retval = 0x78;
-              }
-              else if (strcmp(str, "F12") == 0)
-              {
-                retval = 0x07;
-              }
-              break;
-            case '2':
-              /* F2 */
-              retval = 0x06;
-              break;
-            case '3':
-              /* F3 */
-              retval = 0x04;
-              break;
-            case '4':
-              /* F4 */
-              retval = 0x0C;
-              break;
-            case '5':
-              /* F5 */
-              retval = 0x03;
-              break;
-            case '6':
-              /* F6 */
-              retval = 0x0B;
-              break;
-            case '7':
-              /* F7 */
-              retval = 0x83;
-              break;
-            case '8':
-              /* F8 */
-              retval = 0x0A;
-              break;
-            case '9':
-              /* F9 */
-              retval = 0x01;
-              break;
-          }
-        }
-        break;
-      case 'G':
-        retval = 0x34;
-        break;
-      case 'H':
-        retval = 0x33;
-        if (strlen(str) > 0)
-        {
-          /* HOME */
-          retval = 0xE0;
-        }
-        break;
-      case 'I':
-        retval = 0x43;
-        if (strlen(str) > 0)
-        {
-          /* INSERT */
-          retval = 0xE0;
-        }
-        break;
-      case 'J':
-        retval = 0x3B;
-        break;
-      case 'K':
-        retval = 0x42;
-        if (strlen(str) > 0)
-        {
-          switch (str[3])
-          {
-            case '/':
-              retval = 0xE0;
-              break;
-            case '*':
-              retval = 0x7C;
-              break;
-            case '-':
-              retval = 0x7B;
-              break;
-            case '+':
-              retval = 0x79;
-              break;
-            case 'E':
-              retval = 0xE0;
-              break;
-            case '.':
-              retval = 0x71;
-              break;
-            case '0':
-              retval = 0x70;
-              break;
-            case '1':
-              retval = 0x69;
-              break;
-            case '2':
-              retval = 0x72;
-              break;
-            case '3':
-              retval = 0x7A;
-              break;
-            case '4':
-              retval = 0x6B;
-              break;
-            case '5':
-              retval = 0x73;
-              break;
-            case '6':
-              retval = 0x74;
-              break;
-            case '7':
-              retval = 0x6C;
-              break;
-            case '8':
-              retval = 0x75;
-              break;
-            case '9':
-              retval = 0x7D;
-              break;
-          }
-        }
-        break;
-      case 'L':
-        retval = 0x4B;
-        if (strlen(str) > 0)
-        {
-          switch (str[3])
-          {
-            case 'H':
-              /* L SHFT */
-              retval = 0x12;
-              break;
-            case 'T':
-              /* L CTRL */
-              retval = 0x14;
-              break;
-            case 'U':
-              /* L GUI */
-              retval = 0xE0;
-              break;
-            case 'L':
-              /* L ALT */
-              retval = 0x11;
-              break;
-            case 'R':
-              /* L ARROW */
-              retval = 0xEB;
-              break;
-          }
-        }
-        break;
-      case 'M':
-        retval = 0x3A;
-        break;
-      case 'N':
-        retval = 0x31;
-        if (strlen(str) > 1)
-        {
-          /* NUM */
-          retval = 0x77;
-        }
-        break;
-      case 'O':
-        retval = 0x44;
-        break;
-      case 'P':
-        retval = 0x4D;
-        if (strcmp(str, "Power") == 0)
-        {
-          retval = 0xB7;
-        }
-        else if (strcmp(str, "PG DN") == 0)
-        {
-          retval = 0xE0;
-        }
-        else if (strcmp(str, "PG UP") == 0)
-        {
-          retval = 0xE0;
-        }
-        else if (strcmp(str, "PAUSE") == 0)
-        {
-          retval = 0xE1;
-        }
-        else if (strcmp(str, "PRNT SCRN") == 0)
-        {
-          retval = 0xE0;
-        }
-        break;
-      case 'Q':
-        retval = 0x15;
-        break;
-      case 'R':
-        retval = 0x2D;
-        if (strlen(str) > 0)
-        {
-          switch (str[3])
-          {
-            case 'H':
-              /* R SHFT */
-              retval = 0x59;
-              break;
-            case 'T':
-              /* R CTRL */
-              retval = 0xE0;
-              break;
-            case 'U':
-              /* R GUI */
-              retval = 0xE0;
-              break;
-            case 'L':
-              /* R ALT */
-              retval = 0xE0;
-              break;
-            case 'R':
-              /* R ARROW */
-              retval = 0xF4;
-              break;
-          }
-        }
-        break;
-      case 'S':
-        retval = 0x1B;
-        if (strlen(str) > 1)
-        {
-          switch (str[1])
-          {
-            case 'P':
-              /* SPACE */
-              retval = 0x29;
-              break;
-            case 'C':
-              /* SCROLL */
-              retval = 0x7E;
-              break;
-            case 'l':
-              /* Sleep */
-              retval = 0xBF;
-              break;
-          }
-        }
-        break;
-      case 'T':
-        retval = 0x2C;
-        if (strlen(str) > 1)
-        {
-          /* TAB */
-          retval = 0x0D;
-        }
-        break;
-      case 'U':
-        retval = 0x3C;
-        if (strlen(str) > 1)
-        {
-          /* U ARROW */
-          retval = 0xF5;
-        }
-        break;
-      case 'V':
-        retval = 0x2A;
-        if (strlen(str) > 1)
-        {
-          if (strcmp(str, "VolumeUp") == 0)
-          {
-            retval = 0xB8;
-          }
-          else if (strcmp(str, "VolumeDown") == 0)
-          {
-            retval = 0xB9;
-          }
-        }
-        break;
-      case 'W':
-        retval = 0x1D;
-        if (strlen(str) > 1)
-        {
-          if(strcmp(str, "WinLeft") == 0)
-          {
-            retval = 0x9F;
-          }
-          else if (strcmp(str, "WinRight") == 0)
-          {
-            retval = 0xA7;
-          }
-          else if (strcmp(str, "Wake") == 0)
-          {
-            retval = 0xDE;
-          }
-        }
-        break;
-      case 'X':
-        retval = 0x22;
-        break;
-      case 'Y':
-        retval = 0x35;
-        break;
-      case 'Z':
-        retval = 0x1A;
-        break;
-      case '0':
-        retval = 0x45;
-        break;
-      case '1':
-        retval = 0x16;
-        break;
-      case '2':
-        retval = 0x1E;
-        break;
-      case '3':
-        retval = 0x26;
-        break;
-      case '4':
-        retval = 0x25;
-        break;
-      case '5':
-        retval = 0x2E;
-        break;
-      case '6':
-        retval = 0x36;
-        break;
-      case '7':
-        retval = 0x3D;
-        break;
-      case '8':
-        retval = 0x3E;
-        break;
-      case '9':
-        retval = 0x46;
-        break;
-      case '`':
-        retval = 0x0E;
-        break;
-      case '-':
-        retval = 0x4E;
-        break;
-      case '\\':
-        retval = 0x5D;
-        break;
-      case '[':
-        retval = 0x54;
-        break;
-      case ']':
-        retval = 0x5B;
-        break;
-      case ';':
-        retval = 0x4C;
-        break;
-      case ' ':
-        retval = 0x52;
-        break;
-      case '.':
-        retval = 0x49;
-        break;
-      case '/':
-        retval = 0x4A;
-        break;
-      default:
-        retval = 0x00;
-        break;
-    }
+    if (!strcasecmp(str, "A"))
+      retval = 0x1C;
+    if (!strcasecmp(str, "B"))
+      retval = 0x32;
+    if (!strcasecmp(str, "C"))
+      retval = 0x21;
+    if (!strcasecmp(str, "D"))
+      retval = 0x23;
+    if (!strcasecmp(str, "E"))
+      retval = 0x24;
+    if (!strcasecmp(str, "F"))
+      retval = 0x2B;
+    if (!strcasecmp(str, "G"))
+      retval = 0x34;
+    if (!strcasecmp(str, "H"))
+      retval = 0x33;
+    if (!strcasecmp(str, "I"))
+      retval = 0x43;
+    if (!strcasecmp(str, "J"))
+      retval = 0x3B;
+    if (!strcasecmp(str, "K"))
+      retval = 0x42;
+    if (!strcasecmp(str, "L"))
+      retval = 0x4B;
+    if (!strcasecmp(str, "M"))
+      retval = 0x3A;
+    if (!strcasecmp(str, "N"))
+      retval = 0x31;
+    if (!strcasecmp(str, "O"))
+      retval = 0x44;
+    if (!strcasecmp(str, "P"))
+      retval = 0x4D;
+    if (!strcasecmp(str, "Q"))
+      retval = 0x15;
+    if (!strcasecmp(str, "R"))
+      retval = 0x2D;
+    if (!strcasecmp(str, "S"))
+      retval = 0x1B;
+    if (!strcasecmp(str, "T"))
+      retval = 0x2C;
+    if (!strcasecmp(str, "U"))
+      retval = 0x3C;
+    if (!strcasecmp(str, "V"))
+      retval = 0x2A;
+    if (!strcasecmp(str, "W"))
+      retval = 0x1D;
+    if (!strcasecmp(str, "X"))
+      retval = 0x22;
+    if (!strcasecmp(str, "Y"))
+      retval = 0x35;
+    if (!strcasecmp(str, "Z"))
+      retval = 0x1A;
+    if (!strcasecmp(str, "1"))
+      retval = 0x16;
+    if (!strcasecmp(str, "2"))
+      retval = 0x1E;
+    if (!strcasecmp(str, "3"))
+      retval = 0x26;
+    if (!strcasecmp(str, "4"))
+      retval = 0x25;
+    if (!strcasecmp(str, "5"))
+      retval = 0x2E;
+    if (!strcasecmp(str, "6"))
+      retval = 0x36;
+    if (!strcasecmp(str, "7"))
+      retval = 0x3D;
+    if (!strcasecmp(str, "8"))
+      retval = 0x3E;
+    if (!strcasecmp(str, "9"))
+      retval = 0x46;
+    if (!strcasecmp(str, "0"))
+      retval = 0x45;
+    if (!strcasecmp(str, "ESC"))
+      retval = 0x76;
+    if (!strcasecmp(str, "-"))
+      retval = 0x4E;
+    if (!strcasecmp(str, "="))
+      retval = 0x55;
+    if (!strcasecmp(str, "BKSP"))
+      retval = 0x66;
+    if (!strcasecmp(str, "TAB"))
+      retval = 0x0D;
+    if (!strcasecmp(str, "["))
+      retval = 0x54;
+    if (!strcasecmp(str, "]"))
+      retval = 0x5B;
+    if (!strcasecmp(str, "ENTER"))
+      retval = 0x5A;
+    if (!strcasecmp(str, "KP ENTER"))
+      retval = 0x5A;
+    if (!strcasecmp(str, "CTRL L"))
+      retval = 0x14;
+    if (!strcasecmp(str, "CTRL R"))
+      retval = 0x14;
+    if (!strcasecmp(str, ";"))
+      retval = 0x4C;
+    if (!strcasecmp(str, "'"))
+      retval = 0x52;
+    if (!strcasecmp(str, "`"))
+      retval = 0x0E;
+    if (!strcasecmp(str, "SHIFT L"))
+      retval = 0x12;
+    if (!strcasecmp(str, "\\"))
+      retval = 0x5D;
+    if (!strcasecmp(str, ","))
+      retval = 0x41;
+    if (!strcasecmp(str, "."))
+      retval = 0x49;
+    if (!strcasecmp(str, "/"))
+      retval = 0x4A;
+    if (!strcasecmp(str, "KP /"))
+      retval = 0x4A;
+    if (!strcasecmp(str, "SHIFT R"))
+      retval = 0x59;
+    if (!strcasecmp(str, "PRNT SCRN"))
+      retval = 0x7C;
+    if (!strcasecmp(str, "ALT L"))
+      retval = 0x11;
+    if (!strcasecmp(str, "ALT R"))
+      retval = 0x11;
+    if (!strcasecmp(str, "SPACE"))
+      retval = 0x29;
+    if (!strcasecmp(str, "CAPS"))
+      retval = 0x58;
+    if (!strcasecmp(str, "F1"))
+      retval = 0x05;
+    if (!strcasecmp(str, "F2"))
+      retval = 0x06;
+    if (!strcasecmp(str, "F3"))
+      retval = 0x04;
+    if (!strcasecmp(str, "F4"))
+      retval = 0x0C;
+    if (!strcasecmp(str, "F5"))
+      retval = 0x03;
+    if (!strcasecmp(str, "F6"))
+      retval = 0x0B;
+    if (!strcasecmp(str, "F7"))
+      retval = 0x83;
+    if (!strcasecmp(str, "F8"))
+      retval = 0x0A;
+    if (!strcasecmp(str, "F9"))
+      retval = 0x01;
+    if (!strcasecmp(str, "F10"))
+      retval = 0x09;
+    if (!strcasecmp(str, "F11"))
+      retval = 0x78;
+    if (!strcasecmp(str, "F12"))
+      retval = 0x07;
+    if (!strcasecmp(str, "NUM"))
+      retval = 0x77;
+    if (!strcasecmp(str, "SCROLL"))
+      retval = 0x7E;
+    if (!strcasecmp(str, "KP 1"))
+      retval = 0x69;
+    if (!strcasecmp(str, "KP 2"))
+      retval = 0x72;
+    if (!strcasecmp(str, "KP 3"))
+      retval = 0x7A;
+    if (!strcasecmp(str, "KP 4"))
+      retval = 0x6B;
+    if (!strcasecmp(str, "KP 5"))
+      retval = 0x73;
+    if (!strcasecmp(str, "KP 6"))
+      retval = 0x74;
+    if (!strcasecmp(str, "KP 7"))
+      retval = 0x6C;
+    if (!strcasecmp(str, "KP 8"))
+      retval = 0x75;
+    if (!strcasecmp(str, "KP 9"))
+      retval = 0x7D;
+    if (!strcasecmp(str, "KP 0"))
+      retval = 0x70;
+    if (!strcasecmp(str, "KP /"))
+      retval = 0x4A;
+    if (!strcasecmp(str, "KP *"))
+      retval = 0x7C;
+    if (!strcasecmp(str, "KP -"))
+      retval = 0x7B;
+    if (!strcasecmp(str, "KP +"))
+      retval = 0x79;
+    if (!strcasecmp(str, "KP ."))
+      retval = 0x71;
+    if (!strcasecmp(str, "SYSRQ"))
+      retval = 0x84;
+    if (!strcasecmp(str, "WIN MENU"))
+      retval = 0x2F;
   }
 
   return retval;
