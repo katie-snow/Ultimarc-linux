@@ -29,11 +29,19 @@ extern enum ultimarc_type determine_device (json_object* jobj);
 
 /*
  * updateBoard
- * Updates a board.  The board is selected based on the json_object contents
- * Paramter: path to json object
+ * Updates a board.  The board is selected based on the json file contents
+ * Paramter: path to json file
  * Returns: true if successfully updated a board, false otherwise
  */
 extern bool updateBoard(const char* file);
+
+/*
+ * updateController
+ * Updates the Ultistik controller ID based on the json file contents
+ * Paramter: path to json file
+ * Returns: true if successfully updated the controller number, false otherwise
+ */
+extern bool updateController(const char* file);
 
  extern void foo (void);
 

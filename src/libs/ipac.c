@@ -14,7 +14,9 @@
 #include <libusb-1.0/libusb.h>
 
 /* Local */
+#include "common.h"
 #include "ipac.h"
+
 
 bool
 isIPAC (json_object *jobj)
@@ -263,37 +265,14 @@ updateBoardIPAC (json_object *jobj)
   unsigned char *mesg = (unsigned char*) malloc (5);
   mesg[0] = IPAC_REPORT;
 
-  /* Open USB communication */
-  ret = libusb_init(&ctx);
-  if (ret < 0)
-  {
-    printf ("libusb_init failed: %i\n", ret);
-    result = false;
-    goto error;
-  }
-  libusb_set_debug(ctx, 3);
+  handle = openUSB(ctx, IPAC_VENDOR, IPAC_PRODUCT, IPAC_INTERFACE, 1);
 
-  handle = libusb_open_device_with_vid_pid(ctx, IPAC_VENDOR, IPAC_PRODUCT);
   if (!handle)
   {
-    printf ("Unable to open IPAC device\n");
     result = false;
     goto error;
   }
 
-  /* detach the kernel driver */
-  if(libusb_kernel_driver_active(handle, IPAC_INTERFACE) == 1)
-  {
-    printf ("Kernel Driver Active\n");
-    if(libusb_detach_kernel_driver(handle, IPAC_INTERFACE) == 0) //detach it
-      printf ("Kernel Driver Detached!\n");
-  }
-
-  ret = libusb_claim_interface(handle, IPAC_INTERFACE);
-  if (ret < 0)
-  {
-    printf ("Unable to claim interface\n");
-  }
   /* Setup data to send to board */
   memset (&data, 0, sizeof(data));
   memcpy (&data, &header, sizeof(header));
@@ -323,16 +302,12 @@ updateBoardIPAC (json_object *jobj)
     //printf ("Write result: %i\n", ret);
   }
 
-  libusb_release_interface(handle, IPAC_INTERFACE);
-
 exit:
   free (mesg);
-  libusb_close(handle);
-  libusb_exit(ctx);
+  closeUSB(ctx, handle, IPAC_INTERFACE);
   return result;
 
 error:
   free (mesg);
-  libusb_exit(ctx);
   return result;
 }

@@ -107,8 +107,9 @@ int main(void) {
 	//validate_json(test);
 
 
+	updateController("ultistik_config.json");
 	updateBoard ("ipac.json");
-	updateBoard ("ultistik.json");
+	//updateBoard ("ultistik.json");
 
 	return EXIT_SUCCESS;
 }

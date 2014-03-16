@@ -256,3 +256,35 @@ bool updateBoard (const char* file)
   json_object_put(jobj);
   return ret;
 }
+
+bool updateController(const char* file)
+{
+  bool ret = false;
+  json_object *jobj = NULL;
+
+  jobj = json_object_from_file(file);
+
+  switch (determine_device(jobj))
+  {
+    case ultimarc_ultistik:
+      printf("Updating Ultistick controller ID...");
+      ret = updateControllerULTISTIK(jobj);
+      break;
+
+    default:
+      printf("ERROR: Unknown json file.  ");
+      break;
+  }
+
+  if (ret)
+  {
+    printf("Update done.\n");
+  }
+  else
+  {
+    printf("Update failed!\n");
+  }
+
+  json_object_put(jobj);
+  return ret;
+}

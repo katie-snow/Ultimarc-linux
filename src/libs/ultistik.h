@@ -16,12 +16,14 @@ extern "C" {
 
 /* Required items in the json file for Ultistik card*/
 #define USTIK_VERSION 1
+#define USTIK_CONFIG_VERSION 2
 #define USTIK_PRODUCT_STR "0501"
 
 /* Required items for writing out through the USB port */
 #define USTIK_VENDOR       0xD209
 #define USTIK_PRODUCT      0x0501
 #define USTIK_DATA_SIZE    96
+#define USTIK_CONFIG_DATA_SIZE 32
 #define USTIK_REQUEST_TYPE_1 0x43
 #define USTIK_REQUEST_TYPE_2 0xC3
 #define USTIK_REQUEST_1    0xE9
@@ -30,6 +32,7 @@ extern "C" {
 #define USTIK_MESG_LENGTH  32
 #define USTIK_TIMEOUT      2000
 #define USTIK_INTERFACE    0
+#define USTIK_CONFIG_BASE  0x51
 
 typedef struct json_object json_object;
 
@@ -45,6 +48,8 @@ bool isULTISTIK (json_object* jobj);
 char convertULTISTIK (json_object* jobj);
 
 bool updateBoardULTISTIK (json_object* jobj);
+
+bool updateControllerULTISTIK (json_object* jobj);
 
 #ifdef __cplusplus
 }

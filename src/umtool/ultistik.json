@@ -1,7 +1,7 @@
 {
 	"version" : 1,
 	"product" : "0501",
-	"device" : "50",
+	"controller id" : 2,
 	"map size" : 9,
 	"restrictor" : false,
 	"flash" : false,
