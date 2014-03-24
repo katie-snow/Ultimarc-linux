@@ -5,8 +5,8 @@ AM_LDFLAGS = $(JSON_LIBS) $(LIBUSB_LIBS)
 
 
 lib_LTLIBRARIES = libultimarc-0.1.la
-libultimarc_0_1_la_SOURCES = ultimarc.c ipac.c ultistik.c common.c
+libultimarc_0_1_la_SOURCES = ultimarc.c ipac.c ultistik.c pacLED.c common.c
 
 otherincludedir = $(includedir)/ultimarc
-otherinclude_HEADERS = ultimarc.h ipac.h ultistik.h common.h
+otherinclude_HEADERS = ultimarc.h ipac.h ultistik.h pacLED.h common.h
 

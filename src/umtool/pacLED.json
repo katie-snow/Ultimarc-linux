@@ -1,0 +1,25 @@
+{
+  "version": 1,
+  "product": "1401",
+  "board id" : 2,
+  "LED intensities" : [
+    255, 255, 255, 255, 255, 255, 255, 255,
+    255, 255, 255, 255, 255, 255, 255, 255,
+    255, 255, 255, 255, 255, 255, 255, 255,
+    255, 255, 255, 255, 255, 255, 255, 255,
+    255, 255, 255, 255, 255, 255, 255, 255,
+    255, 255, 255, 255, 255, 255, 255, 255,
+    255, 255, 255, 255, 255, 255, 255, 255,
+    255, 255, 255, 255, 255, 255, 255, 255
+  ],
+  "LED states" : [
+    true, true, true, true, true, true, true, true,
+    true, true, true, true, true, true, true, true,
+    true, true, true, true, true, true, true, true,
+    true, true, true, true, true, true, true, true,
+    true, true, true, true, true, true, true, true,
+    true, true, true, true, true, true, true, true,
+    true, true, true, true, true, true, true, true,
+    true, true, true, true, true, true, true, true
+  ]
+}
