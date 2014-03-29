@@ -14,14 +14,26 @@
 extern "C" {
 #endif
 
+#define PACLED_VERSION 1
+#define PACLED_PRODUCT_STR "1401"
+
 typedef struct json_object json_object;
+
+struct pacLED
+{
+  bool ledMapState;
+  bool ledMapIntensity;
+  bool allStates;
+  bool allIntensities;
+  bool random;
+};
 
 /*
  * Determine if the json file is an pacLED configuration
  */
 bool isPacLED (json_object* jobj);
 
-char convertPacLED (json_object* jobj);
+void convertIntensityMap (json_object* jobj);
 
 bool updateBoardPacLED (json_object* jobj);
 

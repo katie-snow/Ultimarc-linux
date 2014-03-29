@@ -216,6 +216,10 @@ enum ultimarc_type determine_device (json_object* jobj)
   {
     type = ultimarc_ultistik;
   }
+  else if (isPacLED(jobj))
+  {
+    type = ultimarc_pacdrive;
+  }
 
   return type;
 }
@@ -237,6 +241,11 @@ bool updateBoard (const char* file)
     case ultimarc_ultistik:
       printf ("Updating Ultistick board...");
       ret = updateBoardULTISTIK(jobj);
+      break;
+
+    case ultimarc_pacdrive:
+      printf ("Updating PAC LED board...");
+      ret = updateBoardPacLED(jobj);
       break;
 
     default:
