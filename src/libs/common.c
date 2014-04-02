@@ -36,13 +36,13 @@ openUSB(libusb_context *ctx, uint16_t vendor, uint16_t product, int interface, i
 
   if (autoconnect == 0)
   {
-  /* detach the kernel driver */
-  if(libusb_kernel_driver_active(handle, interface) == 1)
-  {
-    printf ("Kernel Driver Active\n");
-    if(libusb_detach_kernel_driver(handle, interface) == 0) //detach it
-      printf ("Kernel Driver Detached!\n");
-  }
+    /* detach the kernel driver */
+    if(libusb_kernel_driver_active(handle, interface) == 1)
+    {
+      printf ("Kernel Driver Active\n");
+      if(libusb_detach_kernel_driver(handle, interface) == 0) //detach it
+        printf ("Kernel Driver Detached!\n");
+    }
   }
   else
   {

@@ -1,12 +1,18 @@
 {
   "version": 1,
   "product": "1401",
-  "board id" : 2,
-  "intensity" : [
-  {"led": 2, "intensity" : 255 },
-  {"led": 3, "intensity" : 100 }
+  "board id" : 1,
+  "fade" : [
+  {"led": 0, "fade" : 4 },
+  {"led": 1, "fade" : 2 },
+  {"led": 2, "fade" : 2 },
+  {"led": 4, "fade" : 3 }
   ],
-  "state" : [
-  {"led": 0, "state" : true }
+  "LED states random" : false,
+  "intensity" : [
+  {"led": 0, "intensity" : 10 },
+  {"led": 1, "intensity" : 10 },
+  {"led": 2, "intensity" : 10 },
+  {"led": 4, "intensity" : 10 }
   ]
 }

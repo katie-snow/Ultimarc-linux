@@ -1,8 +1,7 @@
 {
   "version": 1,
   "product": "1401",
-  "board id" : 2,
-  "LED states all" : false,
-  "LED intensity all" : 255,
-  "LED random states" : false,
+  "board id" : 1,
+  "LED fade all" : 4,
+  "LED intensity all" : 255
 }
