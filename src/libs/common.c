@@ -1,8 +1,11 @@
 /*
- * common.c
- *
- *  Created on: Mar 14, 2014
- *      Author: katie
+ ============================================================================
+ Name        : common.c
+ Author      : Robert Abram, Katie Snow
+ Version     :
+ Copyright   : Copyright 2014 Robert Abram, Katie Snow
+ Description : Common functions between device libraries
+ ============================================================================
  */
 
 /* C */
@@ -22,7 +25,7 @@ openUSB(libusb_context *ctx, uint16_t vendor, uint16_t product, int interface, i
   ret = libusb_init(&ctx);
   if (ret < 0)
   {
-    printf("libusb_init failed: %i\n", ret);
+    printf("libusb_init failed: %i.  ", ret);
     goto error;
   }
   libusb_set_debug(ctx, 3);
@@ -30,7 +33,7 @@ openUSB(libusb_context *ctx, uint16_t vendor, uint16_t product, int interface, i
   handle = libusb_open_device_with_vid_pid(ctx, vendor, product);
   if (!handle)
   {
-    printf("Unable to open device\n");
+    printf("Unable to open device.  ");
     goto error;
   }
 
@@ -39,9 +42,9 @@ openUSB(libusb_context *ctx, uint16_t vendor, uint16_t product, int interface, i
     /* detach the kernel driver */
     if(libusb_kernel_driver_active(handle, interface) == 1)
     {
-      printf ("Kernel Driver Active\n");
+      printf ("Kernel Driver Active.  ");
       if(libusb_detach_kernel_driver(handle, interface) == 0) //detach it
-        printf ("Kernel Driver Detached!\n");
+        printf ("Kernel Driver Detached.  ");
     }
   }
   else
@@ -52,7 +55,7 @@ openUSB(libusb_context *ctx, uint16_t vendor, uint16_t product, int interface, i
   ret = libusb_claim_interface(handle, interface);
   if (ret < 0)
   {
-    printf ("Unable to claim interface\n");
+    printf ("Unable to claim interface.  ");
     goto error;
   }
 

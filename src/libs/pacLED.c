@@ -1,8 +1,11 @@
 /*
- * pacLED.c
- *
- *  Created on: Mar 23, 2014
- *      Author: katie
+ ============================================================================
+ Name        : pacLED.c
+ Author      : Robert Abram, Katie Snow
+ Version     :
+ Copyright   : Copyright 2014 Robert Abram, Katie Snow
+ Description : Ultimarc PacLED64 configuration library
+ ============================================================================
  */
 
 /* C */
@@ -245,8 +248,6 @@ bool updateBoardPacLED (json_object *jobj)
       json_object_object_get_ex(led, "intensity", &tmp);
       map[1] = decToHex (json_object_get_int(tmp));
 
-      printf ("Intensity: %d, 0x%02x(%d)\n", map[0], map[1], json_object_get_int(tmp));
-
       /* ship this data off to the USB device */
       libusb_control_transfer(handle,
                               PACLED_REQUEST_TYPE,
@@ -304,8 +305,6 @@ bool updateBoardPacLED (json_object *jobj)
 
       json_object_object_get_ex(led, "fade", &tmp);
       map[1] = decToHex (json_object_get_int(tmp));
-
-      printf ("Fade: %d, 0x%02x(%d)\n", map[0], map[1], json_object_get_int(tmp));
 
       /* ship this data off to the USB device */
       libusb_control_transfer(handle,

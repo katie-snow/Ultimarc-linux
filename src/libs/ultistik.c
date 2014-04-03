@@ -1,8 +1,11 @@
 /*
- * ultistik.c
- *
- *  Created on: Mar 7, 2014
- *      Author: katie
+ ============================================================================
+ Name        : ultistik.c
+ Author      : Robert Abram, Katie Snow
+ Version     :
+ Copyright   : Copyright 2014 Robert Abram, Katie Snow
+ Description : Ultimarc Ultistik configuration library
+ ============================================================================
  */
 
 /* C */
@@ -40,7 +43,18 @@ isULTISTIK (json_object *jobj)
         }
       }
     }
-    else if (json_object_get_int(tmp) == USTIK_CONFIG_VERSION)
+  }
+
+  return false;
+}
+
+bool
+isULTISTIKConfig (json_object* jobj)
+{
+  json_object* tmp = NULL;
+  if (json_object_object_get_ex(jobj, "version", &tmp))
+  {
+    if (json_object_get_int(tmp) == USTIK_CONFIG_VERSION)
     {
       if (json_object_object_get_ex(jobj, "current controller id", &tmp) &&
           json_object_object_get_ex(jobj, "new controller id", &tmp) &&

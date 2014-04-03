@@ -1,8 +1,11 @@
 /*
- * common.h
- *
- *  Created on: Mar 14, 2014
- *      Author: katie
+ ============================================================================
+ Name        : common.h
+ Author      : Robert Abram, Katie Snow
+ Version     :
+ Copyright   : Copyright 2014 Robert Abram, Katie Snow
+ Description : Common functions between device libraries
+ ============================================================================
  */
 
 #ifndef COMMON_H_

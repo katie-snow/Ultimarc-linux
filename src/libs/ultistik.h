@@ -1,8 +1,11 @@
 /*
- * ultistik.h
- *
- *  Created on: Mar 7, 2014
- *      Author: katie
+ ============================================================================
+ Name        : ultistik.h
+ Author      : Robert Abram, Katie Snow
+ Version     :
+ Copyright   : Copyright 2014 Robert Abram, Katie Snow
+ Description : Ultimarc Ultistik configuration library
+ ============================================================================
  */
 
 #ifndef ULTISTIK_H_
@@ -40,6 +43,7 @@ typedef struct json_object json_object;
  * Determine if the json file is an ULTISTIK configuration
  */
 bool isULTISTIK (json_object* jobj);
+bool isULTISTIKConfig (json_object* jobj);
 
 /*
  * Convert the JSON keys data into IPAC data

@@ -1,8 +1,11 @@
 /*
- * ipac.c
- *
- *  Created on: Feb 20, 2014
- *      Author: Katie Snow
+ ============================================================================
+ Name        : ipac.c
+ Author      : Robert Abram, Katie Snow
+ Version     :
+ Copyright   : Copyright 2014 Robert Abram, Katie Snow
+ Description : Ultimarc IPAC/Mini PAC configuration library
+ ============================================================================
  */
 
 /* C */

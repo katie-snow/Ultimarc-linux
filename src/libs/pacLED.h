@@ -1,8 +1,11 @@
 /*
- * pacLED.h
- *
- *  Created on: Mar 23, 2014
- *      Author: katie
+ ============================================================================
+ Name        : pacLED.h
+ Author      : Robert Abram, Katie Snow
+ Version     :
+ Copyright   : Copyright 2014 Robert Abram, Katie Snow
+ Description : Ultimarc PacLED64 configuration library
+ ============================================================================
  */
 
 #ifndef PACLED_H_

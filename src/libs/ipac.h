@@ -1,8 +1,11 @@
 /*
- * ipac.h
- *
- *  Created on: Feb 18, 2014
- *      Author: Katie Snow
+ ============================================================================
+ Name        : ipac.h
+ Author      : Robert Abram, Katie Snow
+ Version     :
+ Copyright   : Copyright 2014 Robert Abram, Katie Snow
+ Description : Ultimarc IPAC/Mini PAC configuration library
+ ============================================================================
  */
 
 #ifndef IPAC_H_
