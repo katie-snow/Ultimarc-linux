@@ -1,6 +1,7 @@
 NEXT.VERSION
 
   * Ability to change board ID for the PacLED64
+  * Added type, range and almost all data validation for the supported boards
 
 0.1
   * initial release
