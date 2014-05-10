@@ -19,11 +19,11 @@ This utility requires folder permission changes to the usb device directories be
 To build this project, at the base directory run the following commands
 * ./configure
 * make
-The executable will be in src/umtool directory and named umtool.out.
 
 If you need extra debug statements for the IPac boards then run the following
 * ./configure CFLAGS='-DDEBUG'
 * make
+
 The executable will be in src/umtool directory and named umtool.out.
 
 #### Project TODO's:
