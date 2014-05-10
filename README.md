@@ -21,7 +21,10 @@ To build this project, at the base directory run the following commands
 * make
 The executable will be in src/umtool directory and named umtool.out.
 
+If you need extra debug statements for the IPac boards then run the following
+* ./configure CFLAGS='-DDEBUG'
+* make
+The executable will be in src/umtool directory and named umtool.out.
+
 #### Project TODO's:
-* Ability to change the device ID for the PacLED64
-* Robust file validation and boundary checking
-* Robust debugging capability
+* Improve debugging capability
