@@ -1,0 +1,21 @@
+{
+	"version" : 1,
+	"product" : "0501",
+	"controller id" : 2,
+	"map size" : 9,
+	"restrictor" : false,
+	"flash" : false,
+	"borders" : 100,	    
+	"map" : 
+	    [
+	        "N", "N", "N", "N", "N", "N", "N", "N", "N",
+	        "N", "N", "N", "N", "N", "N", "N", "N", "N",
+	        "N", "N", "N", "N", "N", "N", "N", "N", "N",
+	        "C", "C", "C", "C", "C", "C", "C", "C", "C",
+	        "C", "C", "C", "C", "C", "C", "C", "C", "C",
+	        "C", "C", "C", "C", "C", "C", "C", "C", "C",
+	        "S", "S", "S", "S", "S", "S", "S", "S", "S",
+	        "S", "S", "S", "S", "S", "S", "S", "S", "S",
+	        "S", "S", "S", "S", "S", "S", "S", "S", "S"
+	    ]
+}

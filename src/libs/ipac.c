@@ -19,33 +19,63 @@
 /* Local */
 #include "common.h"
 #include "ipac.h"
+#include "dbg.h"
 
-
-bool
-isIPAC (json_object *jobj)
+const char* getIPacProductStr ()
 {
-  /* TODO: Check for 'version' and 'keys' objects exist
-   * and are types number and array
-   * and the version is correct and the array is size 200
-   */
+  return IPAC_PRODUCT_STR;
+}
+
+int getIPacVersion()
+{
+  return IPAC_VERSION;
+}
+
+bool validateIPacData(json_object* jobj)
+{
+  bool valid = false;
+  const char invalidKey = 0x00;
+  char data;
+  int idx = 0;
   json_object* tmp = NULL;
-  if (json_object_object_get_ex(jobj, "version", &tmp))
+  json_object* key = NULL;
+
+  if (json_object_object_get_ex(jobj, "keys", &tmp))
   {
-    if (json_object_get_int(tmp) == IPAC_VERSION)
+    if (json_object_get_type(tmp) == json_type_array)
     {
-      if (json_object_object_get_ex(jobj, "keys", &tmp) &&
-          json_object_object_get_ex(jobj, "product", &tmp))
+      if (json_object_array_length(tmp) == 200)
       {
-        /* product needs to be last so we can do this check */
-        if (strncmp(json_object_get_string(tmp), IPAC_PRODUCT_STR, 4) == 0)
+        valid = true;
+
+        for (idx = 0; idx < json_object_array_length(tmp); ++ idx)
         {
-          return true;
+          key = json_object_array_get_idx(tmp, idx);
+          data = convertIPAC (key);
+          if (strcmp(&invalidKey, &data) == 0)
+          {
+            log_err ("Error at index %i in 'keys' array, entry is '%s'", idx, json_object_get_string(key));
+            valid = false;
+            //break;
+          }
         }
       }
+      else
+      {
+        log_err ("'keys' array is not the correct size. Size is %i, should be 200", json_object_array_length(tmp));
+      }
+    }
+    else
+    {
+      log_err ("'keys' is not defined as an array");
     }
   }
+  else
+  {
+    log_err ("'keys' is not defined in the configuration file");
+  }
 
-  return false;
+  return valid;
 }
 
 char
@@ -301,8 +331,8 @@ updateBoardIPAC (json_object *jobj)
                                   mesg,
                                   IPAC_MESG_LENGTH,
                                   IPAC_TIMEOUT);
-    //printf ("Writing out the following data (%i): %x, %x, %x, %x, %x\n", pos, mesg[0], mesg[1], mesg[2], mesg[3], mesg[4]);
-    //printf ("Write result: %i\n", ret);
+    debug ("Writing out the following data (%i): %x, %x, %x, %x, %x", pos, mesg[0], mesg[1], mesg[2], mesg[3], mesg[4]);
+    debug ("Write result: %i", ret);
   }
 
 exit:

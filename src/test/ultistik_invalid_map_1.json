@@ -1,0 +1,13 @@
+{
+	"version" : 1,
+	"product" : "0501",
+	"controller id" : 2,
+	"map size" : 9,
+	"restrictor" : false,
+	"flash" : false,
+	"borders" : 
+	    [
+	        30, 58, 86, 114, 142, 170, 198, 226
+	    ],
+	"map" : "string"
+}

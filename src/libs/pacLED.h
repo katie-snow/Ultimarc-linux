@@ -36,7 +36,6 @@ extern "C" {
 #define PACLED_FADE_ALL_BASE 4
 
 typedef struct json_object json_object;
-struct libusb_device_handle;
 
 struct pacLED
 {
@@ -45,13 +44,15 @@ struct pacLED
   bool allIntensities;
   bool allFade;
   bool random;
+  bool boardIDUpdate;
 };
 
 /*
  * Determine if the json file is an pacLED configuration
  */
-bool isPacLED (json_object* jobj);
-
+const char* getPacLED64ProductStr ();
+int getPacLED64Version();
+bool validatePacLED64Data(json_object* jobj);
 char decToHex (int decimal);
 
 bool updateBoardPacLED (json_object* jobj);

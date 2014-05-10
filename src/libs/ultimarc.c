@@ -17,11 +17,18 @@
 #include <string.h>
 
 #include "ultimarc.h"
+#include "ipac.h"
+#include "pacLED.h"
+#include "ultistik.h"
+#include "dbg.h"
 
-void parseCmdLineArgs (int argc, char **argv)
+
+void loadUltimarcConfigurations (int argc, char **argv)
 {
   int idx;
   int inner_idx;
+
+  const char* fileStr = NULL;
 
   json_object *jobj = NULL;
   json_object *innerobj = NULL;
@@ -30,104 +37,202 @@ void parseCmdLineArgs (int argc, char **argv)
   for (idx = 1; idx < argc; ++idx)
   {
     jobj = json_object_from_file (argv[idx]);
-
-    if (determine_device(jobj) == ultimarc_multiple)
+    if (jobj)
     {
-      json_object_object_get_ex(jobj, "configurations", &innerobj);
-      for (inner_idx = 0; inner_idx < json_object_array_length(innerobj); ++ inner_idx)
+      log_info ("Loading %s...", argv[idx]);
+
+      if (json_object_object_get_ex(jobj, "configurations", &innerobj))
       {
-        item = json_object_array_get_idx(innerobj, inner_idx);
-        updateBoard(json_object_get_string(item));
+        printf ("\n");
+        for (inner_idx = 0; inner_idx < json_object_array_length(innerobj); ++ inner_idx)
+        {
+          item = json_object_array_get_idx(innerobj, inner_idx);
+          fileStr = json_object_get_string(item);
+          item = json_object_from_file (fileStr);
+
+          if (item)
+          {
+            log_info ("Loading %s...", fileStr);
+            updateUltimarcBoard(item);
+          }
+          else
+          {
+            log_err ("%s. Format invalid\n", fileStr);
+          }
+        }
+      }
+      else
+      {
+        updateUltimarcBoard(jobj);
       }
     }
     else
     {
-      updateBoard(argv[idx]);
+      log_err ("%s. Format invalid\n", argv[idx]);
     }
   }
 }
 
-enum ultimarc_type determine_device (json_object* jobj)
-{
-  enum ultimarc_type type = ultimarc_none;
-  if (isMultiple(jobj))
-  {
-    type = ultimarc_multiple;
-  }
-  else if (isIPAC(jobj))
-  {
-    type = ultimarc_ipac;
-  }
-  else if (isULTISTIK(jobj))
-  {
-    type = ultimarc_ultistik;
-  }
-  else if (isULTISTIKConfig(jobj))
-  {
-    type = ultimarc_ultistik_config;
-  }
-  else if (isPacLED(jobj))
-  {
-    type = ultimarc_pacled64;
-  }
-
-  return type;
-}
-
-bool updateBoard (const char* file)
+bool updateUltimarcBoard (json_object* jobj)
 {
   bool ret = false;
-  json_object *jobj = NULL;
 
-  jobj = json_object_from_file (file);
+  enum ultimarc_type product;
 
-  switch (determine_device(jobj))
+  product = validateProduct(jobj);
+  if (product != ultimarc_none &&
+      validateVersion(jobj, product) &&
+      validateData(jobj, product))
   {
-    case ultimarc_ipac:
-      printf ("Updating IPAC board...");
-      ret = updateBoardIPAC(jobj);
-      break;
+    switch (product)
+    {
+      case ultimarc_ipac:
+        log_info ("Updating IPAC board...");
+        ret = updateBoardIPAC(jobj);
+        break;
 
-    case ultimarc_ultistik:
-      printf ("Updating Ultistick board...");
-      ret = updateBoardULTISTIK(jobj);
-      break;
+      case ultimarc_ultistik:
+        log_info ("Updating Ultistick board...");
+        ret = updateBoardULTISTIK(jobj);
+        break;
 
-    case ultimarc_ultistik_config:
-      printf("Updating Ultistick controller ID...");
-      ret = updateControllerULTISTIK(jobj);
-      break;
+      case ultimarc_pacled64:
+        log_info ("Updating PAC LED 64 board...");
+        ret = updateBoardPacLED(jobj);
+        break;
 
-    case ultimarc_pacled64:
-      printf ("Updating PAC LED 64 board...");
-      ret = updateBoardPacLED(jobj);
-      break;
-
-    default:
-      printf ("ERROR: Unknown json file.  ");
-      break;
+      default:
+        break;
+    }
   }
 
   if (ret)
   {
-    printf ("Update done.\n");
+    log_info ("Update done.\n");
   }
   else
   {
-    printf ("Update failed!\n");
+    log_info ("Update failed!\n");
   }
 
   json_object_put(jobj);
   return ret;
 }
 
-bool isMultiple(json_object* jobj)
+enum ultimarc_type validateProduct(json_object* jobj)
 {
-  json_object* tmp = NULL;
-  if (json_object_object_get_ex(jobj, "configurations", &tmp))
+  enum ultimarc_type type = ultimarc_none;
+  const char* s1 = NULL;
+  char* s2 = NULL;
+
+  json_object* prodobj = NULL;
+
+  if (json_object_object_get_ex(jobj, "product", &prodobj) &&
+      json_object_get_type(prodobj) == json_type_string)
   {
-    return true;
+    if (strcmp(json_object_get_string(prodobj), getIPacProductStr()) == 0)
+    {
+      type = ultimarc_ipac;
+    }
+    else if (strcmp(json_object_get_string(prodobj), getUltistikProductStr()) == 0)
+    {
+      type = ultimarc_ultistik;
+    }
+    else if (strcmp(json_object_get_string(prodobj), getPacLED64ProductStr()) == 0)
+    {
+      type = ultimarc_pacled64;
+    }
+    else
+    {
+      log_err ("'product' does not have a valid entry");
+    }
+  }
+  else
+  {
+    if (json_object_object_get_ex(jobj, "product", &prodobj))
+    {
+      log_err ("'product' is not defined as a string");
+    }
+    else
+    {
+      log_err ("'product' is not defined in the configuration file");
+    }
   }
 
-  return false;
+  return type;
+}
+
+bool validateVersion(json_object* jobj, enum ultimarc_type device)
+{
+  json_object* verobj = NULL;
+  int version = 0;
+  bool valid = false;
+
+  if (json_object_object_get_ex(jobj, "version", &verobj) &&
+      json_object_get_type(verobj) == json_type_int)
+  {
+    switch(device)
+    {
+      case ultimarc_ipac:
+        version = getIPacVersion();
+        break;
+
+      case ultimarc_ultistik:
+        version = getUltistikVersion();
+        break;
+
+      case ultimarc_pacled64:
+        version = getPacLED64Version();
+        break;
+
+      default:
+        break;
+    }
+
+    if (version == json_object_get_int(verobj))
+    {
+      valid = true;
+    }
+    else
+    {
+      log_err ("Expected version %i, but configuration file contained %i", version, json_object_get_int(verobj));
+    }
+  }
+  else
+  {
+    if (json_object_object_get_ex(jobj, "version", &verobj))
+    {
+      log_err ("'version' is not defined as a integer");
+    }
+    else
+    {
+      log_err ("'version' is not defined in the configuration file");
+    }
+  }
+
+  return valid;
+}
+
+bool validateData(json_object*jobj, enum ultimarc_type device)
+{
+  bool dataValid = false;
+  switch(device)
+  {
+    case ultimarc_ipac:
+      dataValid = validateIPacData(jobj);
+      break;
+
+    case ultimarc_ultistik:
+      dataValid = validateUltistikData(jobj);
+      break;
+
+    case ultimarc_pacled64:
+      dataValid = validatePacLED64Data(jobj);
+      break;
+
+    default:
+      break;
+  }
+
+  return dataValid;
 }

@@ -39,11 +39,17 @@ extern "C" {
 
 typedef struct json_object json_object;
 
+struct Ultistik
+{
+  bool controllerIDUpdate;
+};
+
 /*
  * Determine if the json file is an ULTISTIK configuration
  */
-bool isULTISTIK (json_object* jobj);
-bool isULTISTIKConfig (json_object* jobj);
+const char* getUltistikProductStr ();
+int getUltistikVersion();
+bool validateUltistikData(json_object* jobj);
 
 /*
  * Convert the JSON keys data into IPAC data
@@ -52,8 +58,6 @@ bool isULTISTIKConfig (json_object* jobj);
 char convertULTISTIK (json_object* jobj);
 
 bool updateBoardULTISTIK (json_object* jobj);
-
-bool updateControllerULTISTIK (json_object* jobj);
 
 #ifdef __cplusplus
 }

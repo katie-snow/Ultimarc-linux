@@ -13,6 +13,10 @@
 
 #include <libusb-1.0/libusb.h>
 
+#include <stdbool.h>
+
+typedef struct json_object json_object;
+
 
 /**
  * Will attempt to open the USB product and claim the interface specified.
@@ -33,5 +37,10 @@ struct libusb_device_handle* openUSB(libusb_context *ctx,
 void closeUSB(libusb_context *ctx,
               struct libusb_device_handle *handle,
               int interface);
+
+/**
+ * Validates an integer entry (board ID) and the value is between 1-4 inclusive
+ */
+bool checkBoardID(json_object* jobj, const char* entry);
 
 #endif /* COMMON_H_ */

@@ -36,10 +36,9 @@ extern "C" {
 
 typedef struct json_object json_object;
 
-/*
- * Determine if the json file is an IPAC configuration
- */
-bool isIPAC (json_object* jobj);
+const char* getIPacProductStr ();
+int getIPacVersion();
+bool validateIPacData(json_object* jobj);
 
 /*
  * Convert the JSON keys data into IPAC data

@@ -1,0 +1,42 @@
+{
+	"configurations" : [
+		"../test/invalid_path.json",
+		"../test/invalid_format.json",
+		"../test/product_invalid_missing.json",
+		"../test/product_invalid_not_a_string.json",
+		"../test/product_invalid.json",
+		"../test/version_invalid_missing.json",
+		"../test/version_invalid_not_an_integer.json",
+		"../test/version_invalid.json",
+		"../test/ipac_invalid_no_keys.json",
+		"../test/ipac_invalid_wrong_number_of_keys.json",
+		"../test/ipac_invalid_keys_entry.json",
+		"../test/pacLED_invalid_board_id.json",
+		"../test/pacLED_invalid_missing_board_id.json",
+		"../test/pacLED_invalid_intensity_1.json",
+		"../test/pacLED_invalid_intensity_2.json",
+		"../test/pacLED_invalid_intensity_3.json",
+		"../test/pacLED_invalid_fade_1.json",
+		"../test/pacLED_invalid_fade_2.json",
+		"../test/pacLED_invalid_fade_3.json",
+		"../test/pacLED_invalid_states_random.json",
+		"../test/pacLED_invalid_current_board_id_1.json",
+		"../test/pacLED_invalid_current_board_id_2.json",
+		"../test/pacLED_invalid_new_board_id_1.json",
+		"../test/pacLED_invalid_new_board_id_2.json",
+		"../test/ultistik_invalid_controller_id.json",
+		"../test/ultistik_invalid_missing_controller_id.json",
+		"../test/ultistik_invalid_missing_5.json",
+		"../test/ultistik_invalid_map_size_1.json",
+		"../test/ultistik_invalid_map_size_2.json",
+		"../test/ultistik_invalid_restrictor_1.json",
+		"../test/ultistik_invalid_flash_1.json",
+		"../test/ultistik_invalid_borders_1.json",
+		"../test/ultistik_invalid_borders_2.json",
+		"../test/ultistik_invalid_map_1.json",
+		"../test/ultistik_invalid_map_2.json",
+		"../test/ultistik_invalid_map_3.json"
+		
+		
+	]
+}

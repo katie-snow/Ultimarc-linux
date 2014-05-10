@@ -10,9 +10,10 @@
 
 /* C */
 #include <stdio.h>
-
+#include <json.h>
 
 #include "common.h"
+#include "dbg.h"
 
 struct libusb_device_handle*
 openUSB(libusb_context *ctx, uint16_t vendor, uint16_t product, int interface, int autoconnect)
@@ -25,7 +26,7 @@ openUSB(libusb_context *ctx, uint16_t vendor, uint16_t product, int interface, i
   ret = libusb_init(&ctx);
   if (ret < 0)
   {
-    printf("libusb_init failed: %i.  ", ret);
+    log_err("libusb_init failed: %i.", ret);
     goto error;
   }
   libusb_set_debug(ctx, 3);
@@ -33,7 +34,7 @@ openUSB(libusb_context *ctx, uint16_t vendor, uint16_t product, int interface, i
   handle = libusb_open_device_with_vid_pid(ctx, vendor, product);
   if (!handle)
   {
-    printf("Unable to open device.  ");
+    log_err("Unable to open device.");
     goto error;
   }
 
@@ -42,9 +43,9 @@ openUSB(libusb_context *ctx, uint16_t vendor, uint16_t product, int interface, i
     /* detach the kernel driver */
     if(libusb_kernel_driver_active(handle, interface) == 1)
     {
-      printf ("Kernel Driver Active.  ");
+      log_info ("Kernel Driver Active.");
       if(libusb_detach_kernel_driver(handle, interface) == 0) //detach it
-        printf ("Kernel Driver Detached.  ");
+        log_info ("Kernel Driver Detached.");
     }
   }
   else
@@ -55,7 +56,7 @@ openUSB(libusb_context *ctx, uint16_t vendor, uint16_t product, int interface, i
   ret = libusb_claim_interface(handle, interface);
   if (ret < 0)
   {
-    printf ("Unable to claim interface.  ");
+    log_err ("Unable to claim interface.");
     goto error;
   }
 
@@ -79,4 +80,34 @@ closeUSB(libusb_context *ctx, struct libusb_device_handle *handle, int interface
   if (ctx)
     libusb_exit(ctx);
 
+}
+
+bool checkBoardID(json_object* jobj, const char* entry)
+{
+  bool valid = false;
+  int id = -1;
+
+  json_object* tmp = NULL;
+
+  if (json_object_object_get_ex(jobj, entry, &tmp))
+  {
+    if (json_object_get_type(tmp) == json_type_int)
+    {
+      id = json_object_get_int(tmp);
+      if (id > 0 && id < 5)
+      {
+        valid = true;
+      }
+      else
+      {
+        log_err ("'%s' is not a valid entry.  Valid entries are 1 - 4", entry);
+      }
+    }
+    else
+    {
+      log_err ("'%s' is not defined as an integer", entry);
+    }
+  }
+
+  return valid;
 }

@@ -19,57 +19,171 @@
 /* Local */
 #include "common.h"
 #include "ultistik.h"
+#include "dbg.h"
 
-bool
-isULTISTIK (json_object *jobj)
+struct Ultistik ustik;
+
+
+const char* getUltistikProductStr ()
 {
-  json_object* tmp = NULL;
-  if (json_object_object_get_ex(jobj, "version", &tmp))
-  {
-    if (json_object_get_int(tmp) == USTIK_VERSION)
-    {
-      if (json_object_object_get_ex(jobj, "map", &tmp) &&
-          json_object_object_get_ex(jobj, "map size", &tmp) &&
-          json_object_object_get_ex(jobj, "restrictor", &tmp) &&
-          json_object_object_get_ex(jobj, "flash", &tmp) &&
-          json_object_object_get_ex(jobj, "borders", &tmp) &&
-          json_object_object_get_ex(jobj, "controller id", &tmp) &&
-          json_object_object_get_ex(jobj, "product", &tmp))
-      {
-        /* product needs to be last so we can do this check */
-        if (strncmp(json_object_get_string(tmp), USTIK_PRODUCT_STR, 4) == 0)
-        {
-          return true;
-        }
-      }
-    }
-  }
-
-  return false;
+  return USTIK_PRODUCT_STR;
 }
 
-bool
-isULTISTIKConfig (json_object* jobj)
+int getUltistikVersion()
 {
+  return USTIK_VERSION;
+}
+
+bool validateUltistikData(json_object* jobj)
+{
+  int idx = 0;
+  bool valid = false;
+
+  char data;
+  const char invalidKey = 0x00;
+
   json_object* tmp = NULL;
-  if (json_object_object_get_ex(jobj, "version", &tmp))
+  json_object* key = NULL;
+
+  ustik.controllerIDUpdate = false;
+
+  if (checkBoardID(jobj, "controller id"))
   {
-    if (json_object_get_int(tmp) == USTIK_CONFIG_VERSION)
+    // Must have a valid controller id in the configuration file to even attempt to say
+    // the configuration is valid.  Do Not place valid = true in any
+    // of the other checks
+    valid = true;
+
+    if (json_object_object_get_ex(jobj, "map", &tmp))
     {
-      if (json_object_object_get_ex(jobj, "current controller id", &tmp) &&
-          json_object_object_get_ex(jobj, "new controller id", &tmp) &&
-          json_object_object_get_ex(jobj, "product", &tmp))
+      if (json_object_get_type(tmp) == json_type_array)
       {
-        /* product needs to be last so we can do this check */
-        if (strncmp(json_object_get_string(tmp), USTIK_PRODUCT_STR, 4) == 0)
+        if (json_object_array_length(tmp) == 81)
         {
-          return true;
+          for (idx = 0; idx < json_object_array_length(tmp); ++ idx)
+          {
+            key = json_object_array_get_idx(tmp, idx);
+            data = convertULTISTIK (key);
+            if (strcmp(&invalidKey, &data) == 0)
+            {
+              log_err ("Error at index %i in 'map' array, entry is '%s'", idx, json_object_get_string(key));
+              valid = false;
+            }
+          }
         }
+        else
+        {
+          log_err ("'map' array is not the correct size. Size is %i, should be 81", json_object_array_length(tmp));
+          valid = false;
+        }
+      }
+      else
+      {
+        log_err ("'map' is not defined as an array");
+        valid = false;
+      }
+    }
+    else
+    {
+      log_err ("'map' is not defined in the configuration file");
+      valid = false;
+    }
+
+    if (json_object_object_get_ex(jobj, "borders", &tmp))
+    {
+      if (json_object_get_type(tmp) == json_type_array)
+      {
+        if (json_object_array_length(tmp) != 8)
+        {
+          valid = false;
+          log_err ("'borders' array is not the correct size. Size is %i, should be 8", json_object_array_length(tmp));
+        }
+      }
+      else
+      {
+        log_err ("'borders' is not defined as an array");
+        valid = false;
+      }
+    }
+    else
+    {
+      log_err ("'borders' is not defined in the configuration file");
+      valid = false;
+    }
+
+    if (json_object_object_get_ex(jobj, "map size", &tmp))
+    {
+      if (json_object_get_type(tmp) == json_type_int)
+      {
+        if (json_object_get_int(tmp) != 9)
+        {
+          valid = false;
+          log_err ("'map size' value is not the correct, should be 9");
+        }
+      }
+      else
+      {
+        log_err ("'map size' is not defined as an integer");
+        valid = false;
+      }
+    }
+    else
+    {
+      log_err ("'map size' is not defined in the configuration file");
+      valid = false;
+    }
+
+    if (json_object_object_get_ex(jobj, "restrictor", &tmp))
+    {
+      if (json_object_get_type(tmp) != json_type_boolean)
+      {
+        log_err ("'restictor' is not defined as a boolean");
+        valid = false;
+      }
+    }
+    else
+    {
+      log_err ("'restrictor' is not defined in the configuration file");
+      valid = false;
+    }
+
+    if (json_object_object_get_ex(jobj, "flash", &tmp))
+    {
+      if (json_object_get_type(tmp) != json_type_boolean)
+      {
+        log_err ("'flash' is not defined as a boolean");
+        valid = false;
+      }
+    }
+    else
+    {
+      log_err ("'flash' is not defined in the configuration file");
+      valid = false;
+    }
+  }
+  else if (checkBoardID(jobj, "current controller id"))
+  {
+    if (checkBoardID(jobj, "new controller id"))
+    {
+      ustik.controllerIDUpdate = true;
+      valid = true;
+    }
+    else
+    {
+      valid = false;
+
+      if (!json_object_object_get_ex(jobj, "new controller id", &tmp))
+      {
+        log_err ("'new controller id' is not defined in the configuration file");
       }
     }
   }
+  else
+  {
+    log_err ("Ultistik configuration file is not configured correctly");
+  }
 
-  return false;
+  return valid;
 }
 
 char
@@ -126,69 +240,129 @@ bool updateBoardULTISTIK (json_object* jobj)
   json_object *innerobj  = NULL;
   json_object *item = NULL;
 
-  json_object_object_get_ex(jobj, "controller id", &innerobj);
-  controller = json_object_get_int(innerobj);
-  product += (controller - 1);
-
-  handle = openUSB(ctx, USTIK_VENDOR, product, USTIK_INTERFACE, 1);
-
-  if (!handle)
+  if (ustik.controllerIDUpdate == false)
   {
-    result = false;
-    goto error;
+    json_object_object_get_ex(jobj, "controller id", &innerobj);
+    controller = json_object_get_int(innerobj);
+    product += (controller - 1);
+
+    handle = openUSB(ctx, USTIK_VENDOR, product, USTIK_INTERFACE, 1);
+
+    if (!handle)
+    {
+      result = false;
+      goto error;
+    }
+
+    memset(data, 0, sizeof(data));
+    data[0] = 0x50;
+
+    json_object_object_get_ex(jobj, "map size", &innerobj);
+    data[1] = json_object_get_int (innerobj);
+
+    // Restrictor: false off(0x10), true on(0x09)
+    json_object_object_get_ex(jobj, "restrictor", &innerobj);
+    data[2] = (json_object_get_boolean(innerobj)? 0x09 : 0x10);
+
+    // Flash: false RAM(0xFF), true FLASH(0x00)  (Support in Firmware 2.2)
+    json_object_object_get_ex(jobj, "flash", &innerobj);
+    data[95] = (json_object_get_boolean(innerobj)? 0x00 : 0xFF);
+
+    // Borders 3 - 10
+    itemidx = 3;
+    json_object_object_get_ex(jobj, "borders", &innerobj);
+    for (idx = 0; idx < json_object_array_length(innerobj); ++ idx)
+    {
+      item = json_object_array_get_idx(innerobj, idx);
+      data[itemidx] = json_object_get_int(item);
+      ++itemidx;
+    }
+
+    // Map
+    itemidx = 11;
+    json_object_object_get_ex(jobj, "map", &innerobj);
+    for (idx = 0; idx < json_object_array_length(innerobj); ++ idx)
+    {
+      item = json_object_array_get_idx(innerobj, idx);
+      data[itemidx] = convertULTISTIK(item);
+      ++itemidx;
+    }
+
+    ret = libusb_control_transfer(handle,
+                                  USTIK_REQUEST_TYPE_1,
+                                  USTIK_REQUEST_1,
+                                  1,
+                                  0,
+                                  NULL,
+                                  0,
+                                  USTIK_TIMEOUT);
+
+    for (idx = 0; idx < 3; ++ idx)
+    {
+      ret = libusb_control_transfer(handle,
+                                    USTIK_REQUEST_TYPE_1,
+                                    USTIK_REQUEST_2,
+                                    0,
+                                    0,
+                                    data + (32*idx),
+                                    USTIK_MESG_LENGTH,
+                                    USTIK_TIMEOUT);
+
+      ret = libusb_control_transfer(handle,
+                                    USTIK_REQUEST_TYPE_2,
+                                    USTIK_REQUEST_3,
+                                    0,
+                                    0,
+                                    NULL,
+                                    0,
+                                    USTIK_TIMEOUT);
+    }
+
+    ret = libusb_control_transfer(handle,
+                                  USTIK_REQUEST_TYPE_1,
+                                  USTIK_REQUEST_1,
+                                  0,
+                                  0,
+                                  NULL,
+                                  0,
+                                  USTIK_TIMEOUT);
   }
-
-  memset(data, 0, sizeof(data));
-  data[0] = 0x50;
-
-  json_object_object_get_ex(jobj, "map size", &innerobj);
-  data[1] = json_object_get_int (innerobj);
-
-  // Restrictor: false off(0x10), true on(0x09)
-  json_object_object_get_ex(jobj, "restrictor", &innerobj);
-  data[2] = (json_object_get_boolean(innerobj)? 0x09 : 0x10);
-
-  // Flash: false RAM(0xFF), true FLASH(0x00)  (Support in Firmware 2.2)
-  json_object_object_get_ex(jobj, "flash", &innerobj);
-  data[95] = (json_object_get_boolean(innerobj)? 0x00 : 0xFF);
-
-  // Borders 3 - 10
-  itemidx = 3;
-  json_object_object_get_ex(jobj, "borders", &innerobj);
-  for (idx = 0; idx < json_object_array_length(innerobj); ++ idx)
+  else
   {
-    item = json_object_array_get_idx(innerobj, idx);
-    data[itemidx] = json_object_get_int(item);
-    ++itemidx;
-  }
+    json_object_object_get_ex(jobj, "current controller id", &innerobj);
+    controller = json_object_get_int(innerobj);
+    product += (controller - 1);
 
-  // Map
-  itemidx = 11;
-  json_object_object_get_ex(jobj, "map", &innerobj);
-  for (idx = 0; idx < json_object_array_length(innerobj); ++ idx)
-  {
-    item = json_object_array_get_idx(innerobj, idx);
-    data[itemidx] = convertULTISTIK(item);
-    ++itemidx;
-  }
+    handle = openUSB(ctx, USTIK_VENDOR, product, USTIK_INTERFACE, 0);
 
-  ret = libusb_control_transfer(handle,
-                                USTIK_REQUEST_TYPE_1,
-                                USTIK_REQUEST_1,
-                                1,
-                                0,
-                                NULL,
-                                0,
-                                USTIK_TIMEOUT);
+    if (!handle)
+    {
+      result = false;
+      goto error;
+    }
 
-  for (idx = 0; idx < 3; ++ idx)
-  {
+    memset(data, 0, sizeof(data));
+    data[0] = USTIK_CONFIG_BASE;
+
+    json_object_object_get_ex(jobj, "new controller id", &innerobj);
+    controller = json_object_get_int(innerobj);
+    data[0] += (controller - 1);
+
+    ret = libusb_control_transfer(handle,
+                                  USTIK_REQUEST_TYPE_1,
+                                  USTIK_REQUEST_1,
+                                  1,
+                                  0,
+                                  NULL,
+                                  0,
+                                  USTIK_TIMEOUT);
+
     ret = libusb_control_transfer(handle,
                                   USTIK_REQUEST_TYPE_1,
                                   USTIK_REQUEST_2,
                                   0,
                                   0,
-                                  data + (32*idx),
+                                  data,
                                   USTIK_MESG_LENGTH,
                                   USTIK_TIMEOUT);
 
@@ -200,97 +374,19 @@ bool updateBoardULTISTIK (json_object* jobj)
                                   NULL,
                                   0,
                                   USTIK_TIMEOUT);
+
+    ret = libusb_control_transfer(handle,
+                                  USTIK_REQUEST_TYPE_1,
+                                  USTIK_REQUEST_1,
+                                  0,
+                                  0,
+                                  NULL,
+                                  0,
+                                  USTIK_TIMEOUT);
+
+    log_info ("Ultistik #%i needs to be physically disconnected and reconnected before use.", controller);
   }
 
-  ret = libusb_control_transfer(handle,
-                                USTIK_REQUEST_TYPE_1,
-                                USTIK_REQUEST_1,
-                                0,
-                                0,
-                                NULL,
-                                0,
-                                USTIK_TIMEOUT);
-
-exit:
-  closeUSB(ctx, handle, USTIK_INTERFACE);
-  return result;
-
-error:
-  return result;
-}
-
-bool updateControllerULTISTIK (json_object* jobj)
-{
-  int ret = 0;
-  int controller = 0;
-
-  uint16_t product = USTIK_PRODUCT;
-
-  bool result = true;
-
-  json_object *innerobj  = NULL;
-
-  unsigned char data[USTIK_CONFIG_DATA_SIZE];
-
-  libusb_context *ctx = NULL;
-  struct libusb_device_handle *handle = NULL;
-
-  json_object_object_get_ex(jobj, "current controller id", &innerobj);
-  controller = json_object_get_int(innerobj);
-  product += (controller - 1);
-
-  handle = openUSB(ctx, USTIK_VENDOR, product, USTIK_INTERFACE, 0);
-
-  if (!handle)
-  {
-    result = false;
-    goto error;
-  }
-
-  memset(data, 0, sizeof(data));
-  data[0] = USTIK_CONFIG_BASE;
-
-  json_object_object_get_ex(jobj, "new controller id", &innerobj);
-  controller = json_object_get_int(innerobj);
-  data[0] += (controller - 1);
-
-  ret = libusb_control_transfer(handle,
-                                USTIK_REQUEST_TYPE_1,
-                                USTIK_REQUEST_1,
-                                1,
-                                0,
-                                NULL,
-                                0,
-                                USTIK_TIMEOUT);
-
-  ret = libusb_control_transfer(handle,
-                                USTIK_REQUEST_TYPE_1,
-                                USTIK_REQUEST_2,
-                                0,
-                                0,
-                                data,
-                                USTIK_MESG_LENGTH,
-                                USTIK_TIMEOUT);
-
-  ret = libusb_control_transfer(handle,
-                                USTIK_REQUEST_TYPE_2,
-                                USTIK_REQUEST_3,
-                                0,
-                                0,
-                                NULL,
-                                0,
-                                USTIK_TIMEOUT);
-
-  ret = libusb_control_transfer(handle,
-                                USTIK_REQUEST_TYPE_1,
-                                USTIK_REQUEST_1,
-                                0,
-                                0,
-                                NULL,
-                                0,
-                                USTIK_TIMEOUT);
-
-  printf ("Ultistik #%i needs to be physically disconnected and reconnected before use.\n", controller);
   exit:
   closeUSB(ctx, handle, USTIK_INTERFACE);
   return result;

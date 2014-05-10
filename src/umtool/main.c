@@ -30,7 +30,7 @@ int main(int argc, char **argv) {
 	  }
 	}
 
-	parseCmdLineArgs(argc, argv);
+	loadUltimarcConfigurations(argc, argv);
 
 	exit:
 	return retVal;

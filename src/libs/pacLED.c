@@ -19,15 +19,26 @@
 /* Local */
 #include "common.h"
 #include "pacLED.h"
+#include "dbg.h"
 
 struct pacLED pLED;
 
-bool isPacLED (json_object* jobj)
+const char* getPacLED64ProductStr ()
 {
+  return PACLED_PRODUCT_STR;
+}
+
+int getPacLED64Version()
+{
+  return PACLED_VERSION;
+}
+
+bool validatePacLED64Data(json_object* jobj)
+{
+  bool valid = false;
   int idx = 0;
-
+  int boardID = 0;
   json_object* tmp = NULL;
-
   json_object* leds = NULL;
   json_object* led = NULL;
 
@@ -36,82 +47,133 @@ bool isPacLED (json_object* jobj)
   pLED.allFade = false;
   pLED.ledMapFade = false;
   pLED.random = false;
+  pLED.boardIDUpdate = false;
 
-  if (json_object_object_get_ex(jobj, "version", &tmp))
+  if (checkBoardID(jobj, "board id"))
   {
-    if (json_object_get_int(tmp) == PACLED_VERSION)
+    valid = true;
+
+    /* Figure out what items we have in this file */
+    if (json_object_object_get_ex(jobj, "intensity", &leds))
     {
-      if (json_object_object_get_ex(jobj, "board id", &tmp)
-          && json_object_object_get_ex(jobj, "product", &tmp))
+      if (json_object_get_type(leds) == json_type_array)
       {
-        /* product needs to be last in the if statement so we can do this check */
-        if (strncmp(json_object_get_string(tmp), PACLED_PRODUCT_STR, 4) == 0)
+        for (idx = 0; idx < json_object_array_length(leds); ++ idx)
         {
-          /* Figure out what items we have in this file */
-          if (json_object_object_get_ex(jobj, "intensity", &leds))
+          led = json_object_array_get_idx(leds, idx);
+          /* required entries */
+          if (!json_object_object_get_ex(led, "led", &tmp) &&
+              !json_object_object_get_ex(led, "intensity", &tmp))
           {
-            for (idx = 0; idx < json_object_array_length(leds); ++ idx)
-            {
-              led = json_object_array_get_idx(leds, idx);
-              /* required entries */
-              if (!json_object_object_get_ex(led, "led", &tmp) &&
-                  !json_object_object_get_ex(led, "intensity", &tmp))
-              {
-                printf ("failed in intensity map\n");
-                return false;
-              }
-                pLED.ledMapIntensity = true;
-            }
-          }
-          if (json_object_object_get_ex(jobj, "LED intensity all", &tmp))
-          {
-            /* can't have the intensity entry with 'LED intensity all' */
-            if (pLED.ledMapIntensity == true)
-            {
-              return false;
-            }
-
-            pLED.allIntensities = true;
+            log_err ("Missing required entries.  Valid entries 'led' and 'intensity'");
+            valid = false;
           }
 
-          if (json_object_object_get_ex(jobj, "LED states random", &tmp))
-          {
-            pLED.random = json_object_get_boolean(tmp);
-          }
-
-          if (json_object_object_get_ex(jobj, "fade", &leds))
-          {
-            for (idx = 0; idx < json_object_array_length(leds); ++ idx)
-            {
-              led = json_object_array_get_idx(leds, idx);
-              /* required entries */
-              if (!json_object_object_get_ex(led, "led", &tmp) &&
-                  !json_object_object_get_ex(led, "fade", &tmp))
-              {
-                printf ("failed in fade map\n");
-                return false;
-              }
-                pLED.ledMapFade = true;
-            }
-          }
-          if (json_object_object_get_ex(jobj, "LED fade all", &tmp))
-          {
-            /* can't have the fade entry with 'LED fade all' */
-            if (pLED.ledMapFade == true)
-            {
-              return false;
-            }
-
-            pLED.allFade = true;
-          }
-
-          return true;
+          pLED.ledMapIntensity = true;
         }
+      }
+      else
+      {
+        log_err ("'intensity' is not defined as an array");
+      }
+    }
+    if (json_object_object_get_ex(jobj, "LED intensity all", &tmp))
+    {
+      /* can't have the intensity entry with 'LED intensity all' */
+      if (pLED.ledMapIntensity == true)
+      {
+        log_err ("'intensity' and 'LED intensity all' are not permitted same configuration file");
+        valid = false;
+      }
+      else if (json_object_get_type(tmp) == json_type_int)
+      {
+        pLED.allIntensities = true;
+      }
+      else
+      {
+        log_err ("'LED intensity all' is not defined as an integer");
+        valid = false;
+      }
+    }
+
+    if (json_object_object_get_ex(jobj, "LED states random", &tmp))
+    {
+      if (json_object_get_type(tmp) == json_type_boolean)
+      {
+        pLED.random = json_object_get_boolean(tmp);
+      }
+      else
+      {
+        log_err ("'LED states random' is not defined as a boolean");
+        valid = false;
+      }
+    }
+
+    if (json_object_object_get_ex(jobj, "fade", &leds))
+    {
+      if (json_object_get_type(leds) == json_type_array)
+      {
+        for (idx = 0; idx < json_object_array_length(leds); ++ idx)
+        {
+          led = json_object_array_get_idx(leds, idx);
+          /* required entries */
+          if (!json_object_object_get_ex(led, "led", &tmp) &&
+              !json_object_object_get_ex(led, "fade", &tmp))
+          {
+            log_err ("Missing required entries.  Valid entries 'led' and 'fade' both are type integers");
+            valid = false;
+          }
+
+          pLED.ledMapFade = true;
+        }
+      }
+      else
+      {
+        log_err ("'fade' is not defined as an array");
+      }
+    }
+    if (json_object_object_get_ex(jobj, "LED fade all", &tmp))
+    {
+      /* can't have the fade entry with 'LED fade all' */
+      if (pLED.ledMapFade == true)
+      {
+        log_err ("'fade' and 'LED fade all' are not permitted same configuration file");
+        valid = false;
+      }
+      else if (json_object_get_type(tmp) == json_type_int)
+      {
+        pLED.allFade = true;
+      }
+      else
+      {
+        log_err ("'LED fade all' is not defined as an integer");
+        valid = false;
       }
     }
   }
+  else if (checkBoardID(jobj, "current board id"))
+  {
+    if (checkBoardID(jobj, "new board id"))
+    {
+      pLED.boardIDUpdate = true;
+      valid = true;
+    }
+    else
+    {
+      valid = false;
 
-  return false;
+      if (!json_object_object_get_ex(jobj, "new board id", &tmp))
+      {
+        log_err ("'new board id' is not defined in the configuration file");
+      }
+    }
+  }
+  else
+  {
+    log_err ("PAC LED configuration file is not configured correctly");
+  }
+
+  return valid;
 }
 
 char decToHex (int decimal)
@@ -218,6 +280,8 @@ bool updateBoardPacLED (json_object *jobj)
 
   int idx = 0;
   int intensity = 0;
+  int board = 0;
+  uint16_t product = PACLED_PRODUCT;
 
   char map[PACLED_DATA_SIZE] = {0,0};
 
@@ -227,7 +291,20 @@ bool updateBoardPacLED (json_object *jobj)
   json_object *led  = NULL;
   json_object *tmp  = NULL;
 
-  handle = openUSB(ctx, PACLED_VENDOR, PACLED_PRODUCT, PACLED_INTERFACE, 1);
+  if (pLED.boardIDUpdate == true)
+  {
+    json_object_object_get_ex(jobj, "current board id", &tmp);
+    board = json_object_get_int(tmp);
+    product += (board - 1);
+  }
+  else
+  {
+    json_object_object_get_ex(jobj, "board id", &tmp);
+    board = json_object_get_int(tmp);
+    product += (board - 1);
+  }
+
+  handle = openUSB(ctx, PACLED_VENDOR, product, PACLED_INTERFACE, 1);
 
   if (!handle)
   {
@@ -333,6 +410,24 @@ bool updateBoardPacLED (json_object *jobj)
                             PACLED_MESG_LENGTH,
                             PACLED_TIMEOUT);
   }
+
+  if (pLED.boardIDUpdate == true)
+  {
+    map[0] = 0xFE;  // 254 decimal
+    json_object_object_get_ex(jobj, "new board id", &tmp);
+    map[1] = decToHex ((json_object_get_int(tmp) + 240));
+
+    /* ship this data off to the USB device */
+    libusb_control_transfer(handle,
+                            PACLED_REQUEST_TYPE,
+                            PACLED_REQUEST,
+                            PACLED_VALUE,
+                            PACLED_INDEX,
+                            map,
+                            PACLED_MESG_LENGTH,
+                            PACLED_TIMEOUT);
+  }
+
   exit:
     closeUSB(ctx, handle, PACLED_INTERFACE);
     return result;
