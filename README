@@ -1,7 +1,7 @@
 Library and command line utility
 
 Introduction:
-This utility will configure the following Ultimarc boards; I-Pac 2, I-Pac 4, Mini-Pac, UltraStik 360 and PacLED64.  It uses json configuration files to configure the different boards.  It also supports the ability to change the device ID of the UltraStik 360 boards.  Allowing for the configuring of four different boards at once.
+This utility will configure the following Ultimarc boards; I-Pac 2, I-Pac 4, Mini-Pac, UltraStik 360, PACDrive and PacLED64.  It uses JSON configuration files to configure the different boards.  It also supports the ability to change the device ID of the UltraStik 360 boards.  Allowing for the configuring of four different boards at once.
 
 Required Libraries
 To build this tool the following libraries need to be install on your system.  
@@ -65,7 +65,9 @@ LED states random:  true or false.  If true then all the LED states (on/off) are
 LED fade all: 0-3 are the valid integer options for this entry.  NOTE: This entry and the fade array entry are not allowed in the same configuration file.  The utility will not process the configuration file since it will consider it invalid.
 LED intensity all: 0-255 are the valid integer values for this entry.  NOTE: This entry and the intensity array entry are not allowed in the same configuration file.  The utility will not process the configuration file since it will consider it invalid.
 
-Project TODO's:
-Ability to change the device ID for the PacLED64
-Robust file validation and boundary checking
-Robust debugging capability
+PACDrive:
+version: This should be set to 1 always.  This is used for version control of the configuration file in the future
+product: The PACDrive product number in string format “1500”
+board id: This number is 1-4.  This states which board this configuration is for.
+led: an array that is variable size.  It states which leds will be turned on.  Valid values are 1 - 16.
+ 
