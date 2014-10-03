@@ -68,6 +68,8 @@ LED intensity all: 0-255 are the valid integer values for this entry.  NOTE: Thi
 PACDrive:
 version: This should be set to 1 always.  This is used for version control of the configuration file in the future
 product: The PACDrive product number in string format “1500”
-board id: This number is 1-4.  This states which board this configuration is for.
-led: an array that is variable size.  It states which leds will be turned on.  Valid values are 1 - 16.
- 
+board id: This number is 1-4.  This states which board this configuration is for
+led: an array that is variable size.  It states which leds will be turned on.  Valid values are 1 - 16
+
+Donations:
+<a href='https://pledgie.com/campaigns/26846'><img alt='Click here to lend your support to: Ultimarc-Linux and make a donation at pledgie.com !' src='https://pledgie.com/campaigns/26846.png?skin_name=chrome' border='0' ></a>
