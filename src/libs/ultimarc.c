@@ -20,6 +20,7 @@
 #include "ipac.h"
 #include "pacLED.h"
 #include "ultistik.h"
+#include "pacdrive.h"
 #include "dbg.h"
 
 
@@ -92,7 +93,7 @@ bool updateUltimarcBoard (json_object* jobj)
         break;
 
       case ultimarc_ultistik:
-        log_info ("Updating Ultistick board...");
+        log_info ("Updating Ultistik board...");
         ret = updateBoardULTISTIK(jobj);
         break;
 
@@ -100,6 +101,11 @@ bool updateUltimarcBoard (json_object* jobj)
         log_info ("Updating PAC LED 64 board...");
         ret = updateBoardPacLED(jobj);
         break;
+
+      case ultimarc_pacdrive:
+    	log_info ("Updating PAC Drive board...");
+    	ret = updateBoardPacDrive(jobj);
+    	break;
 
       default:
         break;
@@ -141,6 +147,10 @@ enum ultimarc_type validateProduct(json_object* jobj)
     else if (strcmp(json_object_get_string(prodobj), getPacLED64ProductStr()) == 0)
     {
       type = ultimarc_pacled64;
+    }
+    else if (strcmp(json_object_get_string(prodobj), getPacDriveProductStr()) == 0)
+    {
+      type = ultimarc_pacdrive;
     }
     else
     {
@@ -185,6 +195,10 @@ bool validateVersion(json_object* jobj, enum ultimarc_type device)
         version = getPacLED64Version();
         break;
 
+      case ultimarc_pacdrive:
+    	version = getPacDriveVersion();
+    	break;
+
       default:
         break;
     }
@@ -228,6 +242,10 @@ bool validateData(json_object*jobj, enum ultimarc_type device)
 
     case ultimarc_pacled64:
       dataValid = validatePacLED64Data(jobj);
+      break;
+
+    case ultimarc_pacdrive:
+      dataValid = validatePacDriveData(jobj);
       break;
 
     default:

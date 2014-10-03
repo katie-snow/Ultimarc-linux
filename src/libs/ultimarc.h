@@ -26,6 +26,7 @@ typedef enum ultimarc_type {
   ultimarc_ipac,
   ultimarc_ultistik,
   ultimarc_pacled64,
+  ultimarc_pacdrive,
 } ultimarc_type;
 
 extern void loadUltimarcConfigurations(int argc, char **argv);

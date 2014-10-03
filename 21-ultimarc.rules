@@ -7,3 +7,4 @@ ACTION=="add", SUBSYSTEMS=="usb", ATTRS{idVendor}=="d209", ATTRS{idProduct}=="14
 ACTION=="add", SUBSYSTEMS=="usb", ATTRS{idVendor}=="d209", ATTRS{idProduct}=="1402", MODE:="666"
 ACTION=="add", SUBSYSTEMS=="usb", ATTRS{idVendor}=="d209", ATTRS{idProduct}=="1403", MODE:="666"
 ACTION=="add", SUBSYSTEMS=="usb", ATTRS{idVendor}=="d209", ATTRS{idProduct}=="1405", MODE:="666"
+ACTION=="add", SUBSYSTEMS=="usb", ATTRS{idVendor}=="d209", ATTRS{idProduct}=="1500", MODE:="666"

@@ -1,0 +1,6 @@
+{
+  "version": 1,
+  "product": "1500",
+  "board id" : 1,
+  "led" : [1, "string", 9, 11]
+}
