@@ -53,8 +53,6 @@ struct pacLED
 const char* getPacLED64ProductStr ();
 int getPacLED64Version();
 bool validatePacLED64Data(json_object* jobj);
-char decToHex (int decimal);
-
 bool updateBoardPacLED (json_object* jobj);
 
 #ifdef __cplusplus
