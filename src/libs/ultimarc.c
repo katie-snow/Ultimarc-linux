@@ -21,6 +21,7 @@
 #include "pacLED.h"
 #include "ultistik.h"
 #include "pacdrive.h"
+#include "ipacultimate.h"
 #include "dbg.h"
 
 
@@ -107,6 +108,11 @@ bool updateUltimarcBoard (json_object* jobj)
     	ret = updateBoardPacDrive(jobj);
     	break;
 
+      case ultimarc_ipacultimate:
+    	log_info ("Updating IPAC Ultimate board...");
+    	ret = updateBoardIPacUltimate(jobj);
+    	break;
+
       default:
         break;
     }
@@ -152,6 +158,10 @@ enum ultimarc_type validateProduct(json_object* jobj)
     {
       type = ultimarc_pacdrive;
     }
+    else if (strcmp(json_object_get_string(prodobj), getIPacUltimateProductStr()) == 0)
+	{
+	  type = ultimarc_ipacultimate;
+	}
     else
     {
       log_err ("'product' does not have a valid entry");
@@ -198,6 +208,10 @@ bool validateVersion(json_object* jobj, enum ultimarc_type device)
       case ultimarc_pacdrive:
     	version = getPacDriveVersion();
     	break;
+
+      case ultimarc_ipacultimate:
+	    version = getIPacUltimateVersion();
+	    break;
 
       default:
         break;
@@ -247,6 +261,10 @@ bool validateData(json_object*jobj, enum ultimarc_type device)
     case ultimarc_pacdrive:
       dataValid = validatePacDriveData(jobj);
       break;
+
+    case ultimarc_ipacultimate:
+	  dataValid = validateIPacUltimateData(jobj);
+	  break;
 
     default:
       break;
