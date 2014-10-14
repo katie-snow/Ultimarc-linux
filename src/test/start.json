@@ -38,6 +38,9 @@
 		"../test/ultistik_invalid_map_3.json",
 		"../test/pacdrive_invalid_led_1.json",
 		"../test/pacdrive_invalid_led_2.json",
-		"../test/pacdrive_invalid_led_3.json"
+		"../test/pacdrive_invalid_led_3.json",
+		"../test/ipac_ultimate_invalid_flash_rate_1.json",
+		"../test/ipac_ultimate_invalid_flash_rate_2.json",
+		"../test/ipac_ultimate_invalid_flash_rate_3.json"
 	]
 }

@@ -41,6 +41,7 @@ struct ipacultimate
   bool allIntensities;
   bool random;
   bool boardIDUpdate;
+  bool flashRate;
 };
 
 /*

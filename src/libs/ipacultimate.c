@@ -105,6 +105,28 @@ bool validateIPacUltimateData(json_object* jobj)
 		valid = false;
 	  }
 	}
+
+	if (json_object_object_get_ex(jobj, "flash rate", &tmp))
+	{
+	  if (json_object_get_type(tmp) == json_type_int)
+	  {
+	    if (json_object_get_int(tmp) >= 0 &&
+	        json_object_get_int(tmp) <= 255)
+	    {
+	      pLED.flashRate = true;
+	    }
+	    else
+	    {
+	      log_err ("'Flash rate' value is not between 0 and 255");
+	      valid = false;
+	    }
+      }
+      else
+      {
+        log_err ("'Flash rate' is not defined as an integer");
+        valid = false;
+      }
+	}
   }
   else if (checkBoardID(jobj, "current board id"))
   {
