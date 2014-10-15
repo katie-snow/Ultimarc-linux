@@ -4,10 +4,10 @@
   "board id" : 1,
   "LED states random" : true,
   "intensity" : [
-  {"led": 93, "intensity" : 10 },
-  {"led": 1, "intensity" : 20 },
-  {"led": 3, "intensity" : 10 },
-  {"led": 4, "intensity" : 20 }
+  {"led": 93, "intensity" : 1 },
+  {"led": 1, "intensity" : 10 },
+  {"led": 3, "intensity" : 40 },
+  {"led": 4, "intensity" : 111 }
   ],
-  "flash rate" : 1
+  "fade rate" : 0
 }

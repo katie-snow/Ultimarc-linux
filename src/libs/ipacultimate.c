@@ -106,24 +106,24 @@ bool validateIPacUltimateData(json_object* jobj)
 	  }
 	}
 
-	if (json_object_object_get_ex(jobj, "flash rate", &tmp))
+	if (json_object_object_get_ex(jobj, "fade rate", &tmp))
 	{
 	  if (json_object_get_type(tmp) == json_type_int)
 	  {
 	    if (json_object_get_int(tmp) >= 0 &&
 	        json_object_get_int(tmp) <= 255)
 	    {
-	      pLED.flashRate = true;
+	      pLED.fadeRate = true;
 	    }
 	    else
 	    {
-	      log_err ("'Flash rate' value is not between 0 and 255");
+	      log_err ("'Fade rate' value is not between 0 and 255");
 	      valid = false;
 	    }
       }
       else
       {
-        log_err ("'Flash rate' is not defined as an integer");
+        log_err ("'Fade rate' is not defined as an integer");
         valid = false;
       }
 	}
@@ -250,7 +250,25 @@ bool updateBoardIPacUltimate(json_object* jobj)
 							IPACULTIMATE_TIMEOUT);
   }
 
-if (pLED.boardIDUpdate == true)
+  /* Fade rate */
+  if (pLED.fadeRate == true)
+  {
+	map[1] = 0xc0; // 192 decimal
+	json_object_object_get_ex(jobj, "fade rate", &tmp);
+	map[2] = convertDecimalToHex (json_object_get_int(tmp));
+
+	/* ship this data off to the USB device */
+	libusb_control_transfer(handle,
+							IPACULTIMATE_REQUEST_TYPE,
+							IPACULTIMATE_REQUEST,
+							IPACULTIMATE_VALUE,
+							IPACULTIMATE_INDEX,
+							map,
+							IPACULTIMATE_MESG_LENGTH,
+							IPACULTIMATE_TIMEOUT);
+  }
+
+  if (pLED.boardIDUpdate == true)
   {
     /*
 	map[1] = 0xFE;  // 254 decimal
