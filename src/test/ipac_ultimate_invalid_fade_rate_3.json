@@ -9,5 +9,5 @@
   {"led": 3, "intensity" : 200 },
   {"led": 4, "intensity" : 50 }
   ],
-  "flash rate": "string"
+  "fade rate": "string"
 }
