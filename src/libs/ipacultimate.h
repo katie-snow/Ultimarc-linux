@@ -23,15 +23,14 @@ extern "C" {
 /* Required items for writing out through the USB port */
 #define IPACULTIMATE_VENDOR         0xD209
 #define IPACULTIMATE_PRODUCT        0x0410
-#define IPACULTIMATE_DATA_SIZE      5
+#define IPACULTIMATE_MESG_LENGTH    5
 #define IPACULTIMATE_REPORT         0x03
 #define IPACULTIMATE_REQUEST_TYPE   0x21
 #define IPACULTIMATE_REQUEST        9
 #define IPACULTIMATE_VALUE          0x0203
-#define IPACULTIMATE_INDEX          3
-#define IPACULTIMATE_MESG_LENGTH    5
 #define IPACULTIMATE_TIMEOUT        2000
 #define IPACULTIMATE_INTERFACE      3
+#define IPACULTIMATE_DATA_SIZE      260
 
 typedef struct json_object json_object;
 
@@ -42,6 +41,7 @@ struct ipacultimate
   bool random;
   bool boardIDUpdate;
   bool fadeRate;
+  bool pins;
 };
 
 /*
@@ -50,7 +50,22 @@ struct ipacultimate
 const char* getIPacUltimateProductStr ();
 int getIPacUltimateVersion();
 bool validateIPacUltimateData(json_object* jobj);
-char decToHex (int decimal);
+
+/** populates the data array from the json configuration file */
+bool populateIPACUltimateData(json_object* jobj, unsigned char* data);
+
+/*
+ * Convert the JSON keys data into IPAC Ultimate data
+ * This is done one array element at a time
+ */
+unsigned char convertIPACUltimate (json_object* jobj);
+
+/*
+ * Assigns the quadrature pins to the correct corresponding value
+ * Only certain pins need this function
+ */
+bool quadAssignmentIPACUltimate (unsigned char* data, unsigned char keyval,
+                                 int idx1, int idx2, int idx3, int idx4);
 
 bool updateBoardIPacUltimate (json_object* jobj);
 
