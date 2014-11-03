@@ -35,7 +35,6 @@ autom4te.cache
 /autom4te.cache/
 /config/
 Makefile
-Makefile.in
 aclocal.m4
 app.info
 compile
@@ -49,7 +48,6 @@ coverage_report
 depcomp
 install-sh
 libtool
-ltmain.sh
 missing
 stamp-h1
 *~
