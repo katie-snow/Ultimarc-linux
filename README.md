@@ -27,6 +27,7 @@ If you need extra debug statements for the IPac boards then run the following
 The executable will be in src/umtool directory and named umtool.out.
 
 #### Project TODO's:
+* Improve the IPAC configuration file format.  Match the IPAC Ultimate board keyboard configuration.
 * MACRO support for boards that use MACRO's.
 * Flash rate for PACLED64 board.
 
