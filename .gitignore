@@ -26,7 +26,6 @@ linux-kernel/.*
 
 # Eclipse stuff
 */.deps
-autom4te.cache
 .cproject
 .settings
 .project
@@ -35,7 +34,6 @@ autom4te.cache
 /autom4te.cache/
 /config/
 Makefile
-aclocal.m4
 app.info
 compile
 config.h
