@@ -24,7 +24,7 @@ int main(int argc, char **argv) {
 	  {
 	    printf ("umtool [-h] [--help] [config files...]\n");
 	    printf ("-h | --help\t\t Prints this information\n");
-	    printf ("config files\t\t Configuration files to be processed\n");
+	    printf ("config files\t\t JSON Configuration files to be processed\n");
 	    retVal = EXIT_SUCCESS;
 	    goto exit;
 	  }
