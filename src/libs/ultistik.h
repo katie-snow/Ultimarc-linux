@@ -21,6 +21,7 @@ extern "C" {
 #define USTIK_VERSION 1
 #define USTIK_CONFIG_VERSION 2
 #define USTIK_PRODUCT_STR "0501"
+#define USTIK_STR "ULTISTIK"
 
 /* Required items for writing out through the USB port */
 #define USTIK_VENDOR       0xD209
@@ -43,6 +44,8 @@ struct Ultistik
 {
   bool controllerIDUpdate;
 };
+
+bool isUltistikConfig (const char* prodStr, int version, json_object* jobj);
 
 /*
  * Determine if the json file is an ULTISTIK configuration

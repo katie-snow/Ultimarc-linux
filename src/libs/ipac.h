@@ -17,27 +17,35 @@
 extern "C" {
 #endif
 
-/* Required items in the json file for IPAC cards (IPAC32, IPAC64, IPAC-MINI)*/
-#define IPAC_VERSION 1
-#define IPAC_PRODUCT_STR "0310"
+/* Required items in the json file for IPAC cards (IPAC2, IPAC4, IPAC-MINI)*/
+#define IPAC_STR_2 "ipac2"
+#define IPAC_STR_4 "ipac4"
+#define IPAC_STR_M "ipac-mini"
 
 /* Required items for writing out through the USB port */
-#define IPAC_VENDOR       0xD208
-#define IPAC_PRODUCT      0x0310
-#define IPAC_DATA_SIZE    204
-#define IPAC_REPORT       0x03
-#define IPAC_REQUEST_TYPE 0x21
-#define IPAC_REQUEST      9
-#define IPAC_VALUE        0x0203
-#define IPAC_INDEX        2
-#define IPAC_MESG_LENGTH  5
-#define IPAC_TIMEOUT      2000
-#define IPAC_INTERFACE    2
+#define IPAC_VENDOR           0xD208
+#define IPAC_PRODUCT_PRE_2015 0x0310
+#define IPAC_2_PRODUCT        0x0420
+#define IPAC_4_PRODUCT        0x0430
+#define IPAC_M_PRODUCT        0x0440
+#define IPAC_DATA_SIZE        200
+#define IPAC_REPORT           0x03
+#define IPAC_REQUEST_TYPE     0x21
+#define IPAC_REQUEST          9
+#define IPAC_VALUE            0x0203
+#define IPAC_INDEX            2
+#define IPAC_MESG_LENGTH      5
+#define IPAC_TIMEOUT          2000
+#define IPAC_INTERFACE        2
 
 typedef struct json_object json_object;
 
-const char* getIPacProductStr ();
-int getIPacVersion();
+struct ipac
+{
+  bool ipac4;
+};
+
+bool isIPACConfig (const char* prodStr, int version, json_object* jobj);
 bool validateIPacData(json_object* jobj);
 
 /*
@@ -52,6 +60,8 @@ char convertIPAC (json_object* jobj);
  * Writes the data out to the board.
  */
 bool updateBoardIPAC (json_object *jobj);
+
+bool populateIPACData(json_object* jobj, unsigned char* data);
 
 #ifdef __cplusplus
 }

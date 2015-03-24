@@ -21,23 +21,7 @@ extern "C" {
 
 typedef struct json_object json_object;
 
-typedef enum ultimarc_type {
-  ultimarc_none,
-  ultimarc_ipac,
-  ultimarc_ultistik,
-  ultimarc_pacled64,
-  ultimarc_pacdrive,
-  ultimarc_ipacultimate
-} ultimarc_type;
-
 extern void loadUltimarcConfigurations(int argc, char **argv);
-
-/*
- * determine_device
- * Parameter: json object
- * Returns: true successfully parsed the data, false otherwise
- */
-enum ultimarc_type determine_device (json_object* jobj);
 
 /*
  * updateUltimarcBoard
@@ -47,11 +31,7 @@ enum ultimarc_type determine_device (json_object* jobj);
  */
 bool updateUltimarcBoard(json_object* jobj);
 
-enum ultimarc_type validateProduct(json_object* jobj);
-bool validateVersion(json_object* jobj, enum ultimarc_type device);
-bool validateData(json_object*jobj, enum ultimarc_type device);
-
- #ifdef __cplusplus
+#ifdef __cplusplus
 }
 #endif
 

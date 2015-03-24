@@ -22,6 +22,22 @@
 #include "common.h"
 #include "dbg.h"
 
+bool isPACDriveConfig(const char* prodStr, int version, json_object* jobj)
+{
+  bool isBoardCfg = false;
+
+  if (strcmp(prodStr, PACDRIVE_PRODUCT_STR) == 0 ||
+      strcmp(prodStr, PACDRIVE_STR) == 0)
+  {
+    if (version == PACDRIVE_VERSION)
+    {
+      isBoardCfg = validatePacDriveData(jobj);
+    }
+  }
+
+  return isBoardCfg;
+}
+
 const char* getPacDriveProductStr ()
 {
   return PACDRIVE_PRODUCT_STR;

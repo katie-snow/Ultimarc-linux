@@ -23,6 +23,25 @@
 
 struct Ultistik ustik;
 
+bool isUltistikConfig (const char* prodStr, int version, json_object* jobj)
+{
+  bool isBoardCfg = false;
+
+  if (strcmp(prodStr, USTIK_PRODUCT_STR) == 0 ||
+      strcmp(prodStr, USTIK_STR) == 0)
+  {
+    if (version == USTIK_VERSION)
+    {
+      isBoardCfg = validateUltistikData(jobj);
+    }
+    else
+    {
+      log_info ("Configuration file version '%i' incorrect", version);
+    }
+  }
+
+  return isBoardCfg;
+}
 
 const char* getUltistikProductStr ()
 {

@@ -79,92 +79,57 @@ bool updateUltimarcBoard (json_object* jobj)
 {
   bool ret = false;
 
-  enum ultimarc_type product;
-
-  product = validateProduct(jobj);
-  if (product != ultimarc_none &&
-      validateVersion(jobj, product) &&
-      validateData(jobj, product))
-  {
-    switch (product)
-    {
-      case ultimarc_ipac:
-        log_info ("Updating IPAC board...");
-        ret = updateBoardIPAC(jobj);
-        break;
-
-      case ultimarc_ultistik:
-        log_info ("Updating Ultistik board...");
-        ret = updateBoardULTISTIK(jobj);
-        break;
-
-      case ultimarc_pacled64:
-        log_info ("Updating PAC LED 64 board...");
-        ret = updateBoardPacLED(jobj);
-        break;
-
-      case ultimarc_pacdrive:
-    	log_info ("Updating PAC Drive board...");
-    	ret = updateBoardPacDrive(jobj);
-    	break;
-
-      case ultimarc_ipacultimate:
-    	log_info ("Updating IPAC Ultimate board...");
-    	ret = updateBoardIPacUltimate(jobj);
-    	break;
-
-      default:
-        break;
-    }
-  }
-
-  if (ret)
-  {
-    log_info ("Update done.\n");
-  }
-  else
-  {
-    log_info ("Update failed!\n");
-  }
-
-  json_object_put(jobj);
-  return ret;
-}
-
-enum ultimarc_type validateProduct(json_object* jobj)
-{
-  enum ultimarc_type type = ultimarc_none;
-  const char* s1 = NULL;
-  char* s2 = NULL;
+  const char* prodstr = NULL;
+  int version = 0;
 
   json_object* prodobj = NULL;
+  json_object* verobj = NULL;
 
   if (json_object_object_get_ex(jobj, "product", &prodobj) &&
       json_object_get_type(prodobj) == json_type_string)
   {
-    if (strcmp(json_object_get_string(prodobj), getIPacProductStr()) == 0)
+    if (json_object_object_get_ex(jobj, "version", &verobj) &&
+        json_object_get_type(verobj) == json_type_int)
     {
-      type = ultimarc_ipac;
+      prodstr = json_object_get_string(prodobj);
+      version = json_object_get_int(verobj);
+
+      if (isIPACConfig(prodstr, version, jobj))
+      {
+        log_info ("Updating IPAC board...");
+        ret = updateBoardIPAC(jobj);
+      }
+      else if (isIPACUltimateConfig(prodstr, version, jobj))
+      {
+        log_info ("Updating IPAC Ultimate board...");
+        ret = updateBoardIPacUltimate(jobj);
+      }
+      else if (isPACDriveConfig(prodstr, version, jobj))
+      {
+        log_info ("Updating PAC Drive board...");
+        ret = updateBoardPacDrive(jobj);
+      }
+      else if (isPACLED64Config(prodstr, version, jobj))
+      {
+        log_info ("Updating PAC LED 64 board...");
+        ret = updateBoardPacLED(jobj);
+      }
+      else if (isUltistikConfig(prodstr, version, jobj))
+      {
+        log_info ("Updating Ultistik board...");
+        ret = updateBoardULTISTIK(jobj);
+      }
     }
-    else if (strcmp(json_object_get_string(prodobj), getUltistikProductStr()) == 0)
-    {
-      type = ultimarc_ultistik;
-    }
-    else if (strcmp(json_object_get_string(prodobj), getPacLED64ProductStr()) == 0)
-    {
-      type = ultimarc_pacled64;
-    }
-    else if (strcmp(json_object_get_string(prodobj), getPacDriveProductStr()) == 0)
-    {
-      type = ultimarc_pacdrive;
-    }
-    else if (strcmp(json_object_get_string(prodobj), getIPacUltimateProductStr()) == 0)
-	{
-	  type = ultimarc_ipacultimate;
-	}
     else
     {
-      log_err ("'product' does not have a valid entry");
+      if (json_object_object_get_ex(jobj, "version", &verobj))
+      {
+        log_err ("'version' is not defined as a integer");
+      }
+      else
+      {
+        log_err ("'version' is not defined in the configuration file");
+      }
     }
   }
   else
@@ -179,96 +144,15 @@ enum ultimarc_type validateProduct(json_object* jobj)
     }
   }
 
-  return type;
-}
-
-bool validateVersion(json_object* jobj, enum ultimarc_type device)
-{
-  json_object* verobj = NULL;
-  int version = 0;
-  bool valid = false;
-
-  if (json_object_object_get_ex(jobj, "version", &verobj) &&
-      json_object_get_type(verobj) == json_type_int)
+  if (ret)
   {
-    switch(device)
-    {
-      case ultimarc_ipac:
-        version = getIPacVersion();
-        break;
-
-      case ultimarc_ultistik:
-        version = getUltistikVersion();
-        break;
-
-      case ultimarc_pacled64:
-        version = getPacLED64Version();
-        break;
-
-      case ultimarc_pacdrive:
-    	version = getPacDriveVersion();
-    	break;
-
-      case ultimarc_ipacultimate:
-	    version = getIPacUltimateVersion();
-	    break;
-
-      default:
-        break;
-    }
-
-    if (version == json_object_get_int(verobj))
-    {
-      valid = true;
-    }
-    else
-    {
-      log_err ("Expected version %i, but configuration file contained %i", version, json_object_get_int(verobj));
-    }
+    log_info ("Update done.\n");
   }
   else
   {
-    if (json_object_object_get_ex(jobj, "version", &verobj))
-    {
-      log_err ("'version' is not defined as a integer");
-    }
-    else
-    {
-      log_err ("'version' is not defined in the configuration file");
-    }
+    log_info ("Update failed!\n");
   }
 
-  return valid;
-}
-
-bool validateData(json_object*jobj, enum ultimarc_type device)
-{
-  bool dataValid = false;
-  switch(device)
-  {
-    case ultimarc_ipac:
-      dataValid = validateIPacData(jobj);
-      break;
-
-    case ultimarc_ultistik:
-      dataValid = validateUltistikData(jobj);
-      break;
-
-    case ultimarc_pacled64:
-      dataValid = validatePacLED64Data(jobj);
-      break;
-
-    case ultimarc_pacdrive:
-      dataValid = validatePacDriveData(jobj);
-      break;
-
-    case ultimarc_ipacultimate:
-	  dataValid = validateIPacUltimateData(jobj);
-	  break;
-
-    default:
-      break;
-  }
-
-  return dataValid;
+  json_object_put(jobj);
+  return ret;
 }

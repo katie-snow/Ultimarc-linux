@@ -19,6 +19,7 @@ extern "C" {
 
 #define PACLED_VERSION 1
 #define PACLED_PRODUCT_STR "1401"
+#define PACLED_STR "PACLED64"
 
 /* Required items for writing out through the USB port */
 #define PACLED_VENDOR        0xD209
@@ -50,6 +51,7 @@ struct pacLED
 /*
  * Determine if the json file is an pacLED configuration
  */
+bool isPACLED64Config(const char* prodStr, int version, json_object* jobj);
 const char* getPacLED64ProductStr ();
 int getPacLED64Version();
 bool validatePacLED64Data(json_object* jobj);

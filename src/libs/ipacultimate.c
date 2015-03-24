@@ -22,6 +22,26 @@
 
 struct ipacultimate pLED;
 
+bool isIPACUltimateConfig(const char* prodStr, int version, json_object* jobj)
+{
+  bool isBoardCfg = false;
+
+  if (strcmp(prodStr, IPACULTIMATE_PRODUCT_STR) == 0 ||
+      strcmp(prodStr, IPACULTIMATE_STR) == 0)
+  {
+    if (version >= IPACULTIMATE_VERSION_MIN &&
+        version <= IPACULTIMATE_VERSION_MAX)
+    {
+      if (version == 1)
+      {
+        isBoardCfg = validateIPacUltimateData(jobj);
+      }
+    }
+  }
+
+  return isBoardCfg;
+}
+
 const char* getIPacUltimateProductStr ()
 {
   return IPACULTIMATE_PRODUCT_STR;
@@ -29,7 +49,7 @@ const char* getIPacUltimateProductStr ()
 
 int getIPacUltimateVersion()
 {
-  return IPACULTIMATE_VERSION;
+  return IPACULTIMATE_VERSION_MIN;
 }
 
 bool validateIPacUltimateData(json_object* jobj)

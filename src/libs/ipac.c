@@ -19,60 +19,112 @@
 /* Local */
 #include "common.h"
 #include "ipac.h"
+#include "ipacseries.h"
 #include "dbg.h"
 
-const char* getIPacProductStr ()
-{
-  return IPAC_PRODUCT_STR;
-}
+struct ipac pIPAC;
 
-int getIPacVersion()
+bool isIPACConfig (const char* prodStr, int version, json_object* jobj)
 {
-  return IPAC_VERSION;
+  bool isBoardCfg = false;
+
+  pIPAC.ipac4 = (strcmp(prodStr, IPAC_STR_4) == 0);
+
+
+  if (strcmp(prodStr, IPAC_STR_2) == 0 ||
+      pIPAC.ipac4 ||
+      strcmp(prodStr, IPAC_STR_M) == 0)
+  {
+    switch (version)
+    {
+    case 1:
+      isBoardCfg = validateIPacData(jobj);
+      break;
+
+    case 2:
+      isBoardCfg = validateIPACSeriesData(jobj);
+      break;
+
+    default:
+      log_info ("Configuration file version '%i' incorrect", version);
+    }
+  }
+
+  return isBoardCfg;
 }
 
 bool validateIPacData(json_object* jobj)
 {
-  bool valid = false;
-  const char invalidKey = 0x00;
-  char data;
-  int idx = 0;
+  bool valid = true;
   json_object* tmp = NULL;
-  json_object* key = NULL;
+  json_object* pin = NULL;
+  json_object* pins = NULL;
 
-  if (json_object_object_get_ex(jobj, "keys", &tmp))
+  int pinCount = 0;
+  int tmpCount = 0;
+  char* key = NULL;
+  char* tmpKey = NULL;
+
+  /* Required */
+  if (json_object_object_get_ex(jobj, "1/2 shift key", &tmp))
   {
-    if (json_object_get_type(tmp) == json_type_array)
+    if (!json_object_is_type(tmp, json_type_string))
     {
-      if (json_object_array_length(tmp) == 200)
-      {
-        valid = true;
-
-        for (idx = 0; idx < json_object_array_length(tmp); ++ idx)
-        {
-          key = json_object_array_get_idx(tmp, idx);
-          data = convertIPAC (key);
-          if (strcmp(&invalidKey, &data) == 0)
-          {
-            log_err ("Error at index %i in 'keys' array, entry is '%s'", idx, json_object_get_string(key));
-            valid = false;
-            //break;
-          }
-        }
-      }
-      else
-      {
-        log_err ("'keys' array is not the correct size. Size is %i, should be 200", json_object_array_length(tmp));
-      }
-    }
-    else
-    {
-      log_err ("'keys' is not defined as an array");
+      log_err ("1/2 shift key needs to be of type string");
+      valid = false;
     }
   }
   else
   {
-    log_err ("'keys' is not defined in the configuration file");
+    log_err ("'1/2 shift key' is not defined in the configuration");
+    valid = false;
+  }
+
+  /* Optional */
+  if (json_object_object_get_ex(jobj, "3/4 shift key", &tmp))
+  {
+    if (!json_object_is_type(tmp, json_type_string))
+    {
+      log_err ("3/4 shift key needs to be of type string");
+      valid = false;
+    }
+  }
+
+  /* Required */
+  if (json_object_object_get_ex(jobj, "pins", &pins))
+  {
+    if (json_object_is_type(pins, json_type_object))
+    {
+      json_object_object_foreach(pins, key, pin)
+      {
+        pinCount++;
+
+        tmpCount = 0;
+        if (json_object_is_type(pin, json_type_object))
+        {
+          json_object_object_foreach(pin, tmpKey, tmp)
+          {
+            tmpCount++;
+            if (!json_object_is_type(tmp, json_type_string))
+            {
+              valid = false;
+            }
+          }
+
+          if (tmpCount != 2)
+          {
+            log_err("pin '%s' has to many children entities.", key);
+            valid = false;
+          }
+        }
+      }
+
+      if (pinCount != 28 && pinCount != 56)
+      {
+        log_err("Incorrect number of pin objects.  Needs to be 28 or 56 entries.");
+        valid = false;
+      }
+    }
   }
 
   return valid;
@@ -272,6 +324,70 @@ convertIPAC (json_object *jobj)
       retval = 0x84;
     if (!strcasecmp(str, "WIN MENU"))
       retval = 0x2F;
+    if (!strcasecmp(str, "up"))
+      retval = 0xF5;
+    if (!strcasecmp(str, "down"))
+      retval = 0xF2;
+    if (!strcasecmp(str, "right"))
+      retval = 0xF4;
+    if (!strcasecmp(str, "left"))
+      retval = 0xEB;
+    if (!strcasecmp(str, "1right") || !strcasecmp(str, "3right"))
+      retval = 0x02;
+    if (!strcasecmp(str, "1up") || !strcasecmp(str, "3up"))
+      retval = 0x01;
+    if (!strcasecmp(str, "1down") || !strcasecmp(str, "3down"))
+      retval = 0x06;
+    if (!strcasecmp(str, "1left") || !strcasecmp(str, "3left"))
+      retval = 0x04;
+    if (!strcasecmp(str, "1sw1") || !strcasecmp(str, "3sw1"))
+      retval = 0x03;
+    if (!strcasecmp(str, "1sw2") || !strcasecmp(str, "3sw2"))
+      retval = 0x08;
+    if (!strcasecmp(str, "1sw3") || !strcasecmp(str, "3sw3"))
+      retval = 0x05;
+    if (!strcasecmp(str, "1sw4") || !strcasecmp(str, "3sw4"))
+      retval = 0x0A;
+    if (!strcasecmp(str, "1sw5") || !strcasecmp(str, "3sw5"))
+      retval = 0x07;
+    if (!strcasecmp(str, "1sw6") || !strcasecmp(str, "3sw6"))
+      retval = 0x0C;
+    if (!strcasecmp(str, "1sw7") || !strcasecmp(str, "3sw7"))
+      retval = 0x18;
+    if (!strcasecmp(str, "1sw8") || !strcasecmp(str, "3sw8"))
+      retval = 0x1A;
+    if (!strcasecmp(str, "1start") || !strcasecmp(str, "3start"))
+      retval = 0x10;
+    if (!strcasecmp(str, "1coin") || !strcasecmp(str, "3coin"))
+      retval = 0x14;
+    if (!strcasecmp(str, "2right") || !strcasecmp(str, "4right"))
+      retval = 0x09;
+    if (!strcasecmp(str, "2up") || !strcasecmp(str, "4up"))
+      retval = 0x0D;
+    if (!strcasecmp(str, "2down") || !strcasecmp(str, "4down"))
+      retval = 0x0E;
+    if (!strcasecmp(str, "2left") || !strcasecmp(str, "4left"))
+      retval = 0x0B;
+    if (!strcasecmp(str, "2sw1") || !strcasecmp(str, "4sw1"))
+      retval = 0x0F;
+    if (!strcasecmp(str, "2sw2") || !strcasecmp(str, "4sw2"))
+      retval = 0x11;
+    if (!strcasecmp(str, "2sw3") || !strcasecmp(str, "4sw3"))
+      retval = 0x13;
+    if (!strcasecmp(str, "2sw4") || !strcasecmp(str, "4sw4"))
+      retval = 0x15;
+    if (!strcasecmp(str, "2sw5") || !strcasecmp(str, "4sw5"))
+      retval = 0x17;
+    if (!strcasecmp(str, "2sw6") || !strcasecmp(str, "4sw6"))
+      retval = 0x19;
+    if (!strcasecmp(str, "2sw7") || !strcasecmp(str, "4sw7"))
+      retval = 0x1B;
+    if (!strcasecmp(str, "2sw8") || !strcasecmp(str, "4sw8"))
+      retval = 0x1C;
+    if (!strcasecmp(str, "2start") || !strcasecmp(str, "4start"))
+      retval = 0x12;
+    if (!strcasecmp(str, "2coin") || !strcasecmp(str, "4coin"))
+      retval = 0x16;
   }
 
   return retval;
@@ -283,13 +399,15 @@ updateBoardIPAC (json_object *jobj)
   libusb_context *ctx = NULL;
   struct libusb_device_handle *handle = NULL;
 
-  json_object *keys = NULL;
-  json_object *key  = NULL;
+  json_object *shiftKey = NULL;
+  json_object *pins = NULL;
 
   int ipac_idx = 4;
   int pos = 0;
-  int idx = 0;
   int ret = 0;
+
+  /* divide by 2 the data size (200) for the IPAC2 and Mini-PAC. */
+  int div = 2;
 
   bool result = true;
 
@@ -298,7 +416,7 @@ updateBoardIPAC (json_object *jobj)
   unsigned char *mesg = (unsigned char*) malloc (5);
   mesg[0] = IPAC_REPORT;
 
-  handle = openUSB(ctx, IPAC_VENDOR, IPAC_PRODUCT, IPAC_INTERFACE, 1);
+  handle = openUSB(ctx, IPAC_VENDOR, IPAC_PRODUCT_PRE_2015, IPAC_INTERFACE, 1);
 
   if (!handle)
   {
@@ -308,17 +426,33 @@ updateBoardIPAC (json_object *jobj)
 
   /* Setup data to send to board */
   memset (&data, 0, sizeof(data));
-  memcpy (&data, &header, sizeof(header));
 
-  json_object_object_get_ex(jobj, "keys", &keys);
-  for (idx = 0; idx < json_object_array_length(keys); ++ idx)
+  /* Header data */
+  memcpy (&data, &header, sizeof(header));
+  memcpy (&data[100], &header, sizeof(header));
+
+  /* Macro data */
+  data[61] = 0x30;
+  data[161] = 0xFB;
+  data[162] = 0x01;
+
+  json_object_object_get_ex(jobj, "1/2 shift key", &shiftKey);
+  data[4] = convertIPAC(shiftKey);
+
+  if (json_object_object_get_ex(jobj, "3/4 shift key", &shiftKey))
   {
-    key = json_object_array_get_idx(keys, idx);
-    data[ipac_idx] = convertIPAC (key);
-    ++ipac_idx;
+    data[104] = convertIPAC(shiftKey);
   }
 
-  while (pos < IPAC_DATA_SIZE)
+  if (pIPAC.ipac4)
+  {
+    div = 1;
+  }
+
+  json_object_object_get_ex(jobj, "pins", &pins);
+  populateIPACData(pins, data);
+
+  while (pos < (IPAC_DATA_SIZE/div))
   {
     memcpy(&mesg[1], &data[pos], 4);
     pos+=4;
@@ -343,4 +477,260 @@ exit:
 error:
   free (mesg);
   return result;
+}
+
+bool populateIPACData(json_object* jobj, unsigned char* data)
+{
+  bool retval = false;
+
+  int idx = 0;
+  int keypos = 0;
+  int shiftpos = 0;
+
+  unsigned char keyval;
+  char shiftval;
+  char swapval;
+
+  json_object *tmp = NULL;
+
+  json_object_object_foreach(jobj, key, pin)
+  {
+    /* Key value */
+    json_object_object_get_ex(pin, "key", &tmp);
+    keyval = convertIPAC(tmp);
+
+    /* Shift key value */
+    json_object_object_get_ex(pin, "shift", &tmp);
+    shiftval = convertIPAC(tmp);
+
+    /*IPAC2 and IPAC4 data */
+    if (!strcasecmp(key, "1up"))
+    {
+      data[5] = keyval; data[33] = shiftval;
+    }
+    if (!strcasecmp(key, "1right"))
+    {
+      data[6] = keyval; data[34] = shiftval;
+    }
+    if (!strcasecmp(key, "1sw1"))
+    {
+      data[7] = keyval; data[35] = shiftval;
+    }
+    if (!strcasecmp(key, "1left"))
+    {
+      data[8] = keyval; data[36] = shiftval;
+    }
+    if (!strcasecmp(key, "1sw3"))
+    {
+      data[9] = keyval; data[37] = shiftval;
+    }
+    if (!strcasecmp(key, "1down"))
+    {
+      data[10] = keyval; data[38] = shiftval;
+    }
+    if (!strcasecmp(key, "1sw5"))
+    {
+      data[11] = keyval; data[39] = shiftval;
+    }
+    if (!strcasecmp(key, "1sw2"))
+    {
+      data[12] = keyval; data[40] = shiftval;
+    }
+    if (!strcasecmp(key, "2right"))
+    {
+      data[13] = keyval; data[41] = shiftval;
+    }
+    if (!strcasecmp(key, "1sw4"))
+    {
+      data[14] = keyval; data[42] = shiftval;
+    }
+    if (!strcasecmp(key, "2left"))
+    {
+      data[15] = keyval; data[43] = shiftval;
+    }
+    if (!strcasecmp(key, "1sw6"))
+    {
+      data[16] = keyval; data[44] = shiftval;
+    }
+    if (!strcasecmp(key, "2up"))
+    {
+      data[17] = keyval; data[45] = shiftval;
+    }
+    if (!strcasecmp(key, "2down"))
+    {
+      data[18] = keyval; data[46] = shiftval;
+    }
+    if (!strcasecmp(key, "2sw1"))
+    {
+      data[19] = keyval; data[47] = shiftval;
+    }
+    if (!strcasecmp(key, "1start"))
+    {
+      data[20] = keyval; data[48] = shiftval;
+    }
+    if (!strcasecmp(key, "2sw2"))
+    {
+      data[21] = keyval; data[49] = shiftval;
+    }
+    if (!strcasecmp(key, "2start"))
+    {
+      data[22] = keyval; data[50] = shiftval;
+    }
+    if (!strcasecmp(key, "2sw3"))
+    {
+      data[23] = keyval; data[51] = shiftval;
+    }
+    if (!strcasecmp(key, "1coin"))
+    {
+      data[24] = keyval; data[52] = shiftval;
+    }
+    if (!strcasecmp(key, "2sw4"))
+    {
+      data[25] = keyval; data[53] = shiftval;
+    }
+    if (!strcasecmp(key, "2coin"))
+    {
+      data[26] = keyval; data[54] = shiftval;
+    }
+    if (!strcasecmp(key, "2sw5"))
+    {
+      data[27] = keyval; data[55] = shiftval;
+    }
+    if (!strcasecmp(key, "1sw7"))
+    {
+      data[28] = keyval; data[56] = shiftval;
+    }
+    if (!strcasecmp(key, "2sw6"))
+    {
+      data[29] = keyval; data[57] = shiftval;
+    }
+    if (!strcasecmp(key, "1sw8"))
+    {
+      data[30] = keyval; data[58] = shiftval;
+    }
+    if (!strcasecmp(key, "2sw7"))
+    {
+      data[31] = keyval; data[59] = shiftval;
+    }
+    if (!strcasecmp(key, "2sw8"))
+    {
+      data[32] = keyval; data[60] = shiftval;
+    }
+
+    /* IPAC4 data */
+    if (!strcasecmp(key, "3up"))
+    {
+      data[105] = keyval; data[133] = shiftval;
+    }
+    if (!strcasecmp(key, "3right"))
+    {
+      data[106] = keyval; data[134] = shiftval;
+    }
+    if (!strcasecmp(key, "3sw1"))
+    {
+      data[107] = keyval; data[135] = shiftval;
+    }
+    if (!strcasecmp(key, "3left"))
+    {
+      data[108] = keyval; data[136] = shiftval;
+    }
+    if (!strcasecmp(key, "3sw3"))
+    {
+      data[109] = keyval; data[137] = shiftval;
+    }
+    if (!strcasecmp(key, "3down"))
+    {
+      data[110] = keyval; data[138] = shiftval;
+    }
+    if (!strcasecmp(key, "3sw5"))
+    {
+      data[111] = keyval; data[139] = shiftval;
+    }
+    if (!strcasecmp(key, "3sw2"))
+    {
+      data[112] = keyval; data[140] = shiftval;
+    }
+    if (!strcasecmp(key, "4right"))
+    {
+      data[113] = keyval; data[141] = shiftval;
+    }
+    if (!strcasecmp(key, "3sw4"))
+    {
+      data[114] = keyval; data[142] = shiftval;
+    }
+    if (!strcasecmp(key, "4left"))
+    {
+      data[115] = keyval; data[143] = shiftval;
+    }
+    if (!strcasecmp(key, "3sw6"))
+    {
+      data[116] = keyval; data[144] = shiftval;
+    }
+    if (!strcasecmp(key, "4up"))
+    {
+      data[117] = keyval; data[145] = shiftval;
+    }
+    if (!strcasecmp(key, "4down"))
+    {
+      data[118] = keyval; data[146] = shiftval;
+    }
+    if (!strcasecmp(key, "4sw1"))
+    {
+      data[119] = keyval; data[147] = shiftval;
+    }
+    if (!strcasecmp(key, "3start"))
+    {
+      data[120] = keyval; data[148] = shiftval;
+    }
+    if (!strcasecmp(key, "4sw2"))
+    {
+      data[121] = keyval; data[149] = shiftval;
+    }
+    if (!strcasecmp(key, "4start"))
+    {
+      data[122] = keyval; data[150] = shiftval;
+    }
+    if (!strcasecmp(key, "4sw3"))
+    {
+      data[123] = keyval; data[151] = shiftval;
+    }
+    if (!strcasecmp(key, "3coin"))
+    {
+      data[124] = keyval; data[152] = shiftval;
+    }
+    if (!strcasecmp(key, "4sw4"))
+    {
+      data[125] = keyval; data[153] = shiftval;
+    }
+    if (!strcasecmp(key, "4coin"))
+    {
+      data[126] = keyval; data[154] = shiftval;
+    }
+    if (!strcasecmp(key, "4sw5"))
+    {
+      data[127] = keyval; data[155] = shiftval;
+    }
+    if (!strcasecmp(key, "3sw7"))
+    {
+      data[128] = keyval; data[156] = shiftval;
+    }
+    if (!strcasecmp(key, "4sw6"))
+    {
+      data[129] = keyval; data[157] = shiftval;
+    }
+    if (!strcasecmp(key, "3sw8"))
+    {
+      data[130] = keyval; data[158] = shiftval;
+    }
+    if (!strcasecmp(key, "4sw7"))
+    {
+      data[131] = keyval; data[159] = shiftval;
+    }
+    if (!strcasecmp(key, "4sw8"))
+    {
+      data[132] = keyval; data[160] = shiftval;
+    }
+  }
+
+  return retval;
 }

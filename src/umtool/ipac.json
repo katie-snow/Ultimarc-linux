@@ -1,46 +1,232 @@
 {
-  "version": 1,
-  "product": "0310",
-  "keys": [
-    "Q", "Q", "Q", "Q", "Q",
-    "Q", "Q", "Q", "Q", "Q",
-    "Q", "Q", "Q", "Q", "Q",
-    "Q", "Q", "Q", "Q", "Q",
-    "Q", "Q", "Q", "Q", "Q",
-    "Q", "Q", "Q", "Q", "Q",
-    "Q", "Q", "Q", "Q", "Q",
-    "Q", "Q", "Q", "Q", "Q",
-    "Q", "Q", "Q", "Q", "Q",
-    "Q", "Q", "Q", "Q", "Q",
-    "Q", "Q", "Q", "Q", "Q",
-    "Q", "Q", "Q", "Q", "Q",
-    "Q", "Q", "Q", "Q", "Q",
-    "Q", "Q", "Q", "Q", "Q",
-    "Q", "Q", "Q", "Q", "Q",
-    "Q", "Q", "Q", "Q", "Q",
-    "Q", "Q", "Q", "Q", "Q",
-    "Q", "Q", "Q", "Q", "Q",
-    "Q", "Q", "Q", "Q", "Q",
-    "Q", "Q", "Q", "Q", "Q",
-    "Q", "Q", "Q", "Q", "Q",
-    "Q", "Q", "Q", "Q", "Q",
-    "Q", "Q", "Q", "Q", "Q",
-    "Q", "Q", "Q", "Q", "Q",
-    "Q", "Q", "Q", "Q", "Q",
-    "Q", "Q", "Q", "Q", "Q",
-    "Q", "Q", "Q", "Q", "Q",
-    "Q", "Q", "Q", "Q", "Q",
-    "Q", "Q", "Q", "Q", "Q",
-    "Q", "Q", "Q", "Q", "Q",
-    "Q", "Q", "Q", "Q", "Q",
-    "Q", "Q", "Q", "Q", "Q",
-    "Q", "Q", "Q", "Q", "Q",
-    "Q", "Q", "Q", "Q", "Q",
-    "Q", "Q", "Q", "Q", "Q",
-    "Q", "Q", "Q", "Q", "Q",
-    "Q", "Q", "Q", "Q", "Q",
-    "Q", "Q", "Q", "Q", "Q",
-    "Q", "Q", "Q", "Q", "Q",
-    "Q", "Q", "Q", "Q", "Q"
-    ]  
+  "version" : 1,
+  "product" : "ipac4",
+  "1/2 shift key" : "1start",
+  "3/4 shift key" : "3start",
+  "pins": {
+    "1right": {
+      "key": "right",
+      "shift": "1"
+    },
+    "1up": {
+      "key": "b",
+      "shift": "2"
+    },
+    "1down": {
+      "key": "c",
+      "shift": "3"
+    },
+    "1left": {
+      "key": "d",
+      "shift": "4"
+    },
+    "1sw1": {
+      "key": "e",
+      "shift": "5"
+    },
+    "1sw2": {
+      "key": "f",
+      "shift": "6"
+    },
+    "1sw3": {
+      "key": "g",
+      "shift": "7"
+    },
+    "1sw4": {
+      "key": "h",
+      "shift": "8"
+    },
+    "1sw5": {
+      "key": "i",
+      "shift": "9"
+    },
+    "1sw6": {
+      "key": "j",
+      "shift": "0"
+    },
+    "1sw7": {
+      "key": "k",
+      "shift": "1"
+    },
+    "1sw8": {
+      "key": "l",
+      "shift": "2"
+    },
+    "1start": {
+      "key": "",
+      "shift": ""
+    },
+    "1coin": {
+      "key": "m",
+      "shift": "4"
+    },
+    "2right": {
+      "key": "o",
+      "shift": "5"
+    },
+    "2up": {
+      "key": "p",
+      "shift": "6"
+    },
+    "2down": {
+      "key": "q",
+      "shift": "7"
+    },
+    "2left": {
+      "key": "r",
+      "shift": "8"
+    },
+    "2sw1": {
+      "key": "s",
+      "shift": "9"
+    },
+    "2sw2": {
+      "key": "t",
+      "shift": "0"
+    },
+    "2sw3": {
+      "key": "u",
+      "shift": "1"
+    },
+    "2sw4": {
+      "key": "v",
+      "shift": "2"
+    },
+    "2sw5": {
+      "key": "w",
+      "shift": "3"
+    },
+    "2sw6": {
+      "key": "x",
+      "shift": "4"
+    },
+    "2sw7": {
+      "key": "y",
+      "shift": "5"
+    },
+    "2sw8": {
+      "key": "z",
+      "shift": "6"
+    },
+    "2start": {
+      "key": "a",
+      "shift": "7"
+    },
+    "2coin": {
+      "key": "b",
+      "shift": "8"
+    },
+    "3right": {
+      "key": "c",
+      "shift": "9"
+    },
+    "3up": {
+      "key": "d",
+      "shift": "0"
+    },
+    "3down": {
+      "key": "e",
+      "shift": "1"
+    },
+    "3left": {
+      "key": "f",
+      "shift": "2"
+    },
+    "3sw1": {
+      "key": "g",
+      "shift": "3"
+    },
+    "3sw2": {
+      "key": "h",
+      "shift": "4"
+    },
+    "3sw3": {
+      "key": "i",
+      "shift": "5"
+    },
+    "3sw4": {
+      "key": "j",
+      "shift": "6"
+    },
+    "3sw5": {
+      "key": "k",
+      "shift": "7"
+    },
+    "3sw6": {
+      "key": "l",
+      "shift": "8"
+    },
+    "3sw7": {
+      "key": "m",
+      "shift": "9"
+    },
+    "3sw8": {
+      "key": "n",
+      "shift": "0"
+    },
+    "3start": {
+      "key": "o",
+      "shift": "1"
+    },
+    "3coin": {
+      "key": "",
+      "shift": ""
+    },
+    "4right": {
+      "key": "q",
+      "shift": "3"
+    },
+    "4up": {
+      "key": "r",
+      "shift": "4"
+    },
+    "4down": {
+      "key": "s",
+      "shift": "5"
+    },
+    "4left": {
+      "key": "t",
+      "shift": "6"
+    },
+    "4sw1": {
+      "key": "u",
+      "shift": "7"
+    },
+    "4sw2": {
+      "key": "v",
+      "shift": "8"
+    },
+    "4sw3": {
+      "key": "w",
+      "shift": "9"
+    },
+    "4sw4": {
+      "key": "x",
+      "shift": "0"
+    },
+    "4sw5": {
+      "key": "y",
+      "shift": "1"
+    },
+    "4sw6": {
+      "key": "z",
+      "shift": "2"
+    },
+    "4sw7": {
+      "key": "a",
+      "shift": "3"
+    },
+    "4sw8": {
+      "key": "b",
+      "shift": "4"
+    },
+    "4start": {
+      "key": "c",
+      "shift": "5"
+    },
+    "4coin": {
+      "key": "d",
+      "shift": "6"
+    }
+  }
 }

@@ -23,6 +23,22 @@
 
 struct pacLED pLED;
 
+bool isPACLED64Config(const char* prodStr, int version, json_object* jobj)
+{
+  bool isBoardCfg = false;
+
+  if (strcmp(prodStr, PACLED_PRODUCT_STR) == 0 ||
+      strcmp(prodStr, PACLED_STR) == 0)
+  {
+    if (version == PACLED_VERSION)
+    {
+      isBoardCfg = validatePacLED64Data(jobj);
+    }
+  }
+
+  return isBoardCfg;
+}
+
 const char* getPacLED64ProductStr ()
 {
   return PACLED_PRODUCT_STR;

@@ -17,8 +17,10 @@
 extern "C" {
 #endif
 
-#define IPACULTIMATE_VERSION 1
+#define IPACULTIMATE_VERSION_MIN 1
+#define IPACULTIMATE_VERSION_MAX 2
 #define IPACULTIMATE_PRODUCT_STR "0410"
+#define IPACULTIMATE_STR "ULTIMATE"
 
 /* Required items for writing out through the USB port */
 #define IPACULTIMATE_VENDOR         0xD209
@@ -47,6 +49,7 @@ struct ipacultimate
 /*
  * Determine if the json file is an IPac Ultimate configuration
  */
+bool isIPACUltimateConfig(const char* prodStr, int version, json_object* jobj);
 const char* getIPacUltimateProductStr ();
 int getIPacUltimateVersion();
 bool validateIPacUltimateData(json_object* jobj);
