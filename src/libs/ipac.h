@@ -3,8 +3,8 @@
  Name        : ipac.h
  Author      : Robert Abram, Katie Snow
  Version     :
- Copyright   : Copyright 2014 Robert Abram, Katie Snow
- Description : Ultimarc IPAC/Mini PAC configuration library
+ Copyright   : Copyright 2015 Robert Abram, Katie Snow
+ Description : Ultimarc IPAC2, IPAC4 and Mini-PAC configuration library
  ============================================================================
  */
 
@@ -17,7 +17,7 @@
 extern "C" {
 #endif
 
-/* Required items in the json file for IPAC cards (IPAC2, IPAC4, IPAC-MINI)*/
+/* Required items in the json file for IPAC cards (IPAC2, IPAC4, MINI-PAC)*/
 #define IPAC_STR_2 "ipac2"
 #define IPAC_STR_4 "ipac4"
 #define IPAC_STR_M "mini-pac"

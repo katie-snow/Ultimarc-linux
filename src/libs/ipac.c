@@ -4,7 +4,7 @@
  Author      : Robert Abram, Katie Snow
  Version     :
  Copyright   : Copyright 2014 Robert Abram, Katie Snow
- Description : Ultimarc IPAC/Mini PAC configuration library
+ Description : Ultimarc IPAC2, IPAC4 and Mini-PAC configuration library
  ============================================================================
  */
 
