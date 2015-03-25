@@ -419,8 +419,7 @@ updateBoardIPAC (json_object *jobj)
 
   char header[4] = {0x50, 0xdd, 0x00, 0x00};
   char data[IPAC_DATA_SIZE];
-  unsigned char *mesg = (unsigned char*) malloc (5);
-  mesg[0] = IPAC_REPORT;
+  unsigned char mesg[IPAC_MESG_LENGTH] = {0x03,0,0,0,0};
 
   handle = openUSB(ctx, IPAC_VENDOR, IPAC_PRODUCT_PRE_2015, IPAC_INTERFACE, 1);
 
@@ -463,6 +462,7 @@ updateBoardIPAC (json_object *jobj)
     memcpy(&mesg[1], &data[pos], 4);
     pos+=4;
 
+    debug ("Writing out the following data (%i): %x, %x, %x, %x, %x", pos, mesg[0], mesg[1], mesg[2], mesg[3], mesg[4]);
     ret = libusb_control_transfer(handle,
                                   IPAC_REQUEST_TYPE,
                                   IPAC_REQUEST,
@@ -471,17 +471,14 @@ updateBoardIPAC (json_object *jobj)
                                   mesg,
                                   IPAC_MESG_LENGTH,
                                   IPAC_TIMEOUT);
-    debug ("Writing out the following data (%i): %x, %x, %x, %x, %x", pos, mesg[0], mesg[1], mesg[2], mesg[3], mesg[4]);
     debug ("Write result: %i", ret);
   }
 
 exit:
-  free (mesg);
   closeUSB(ctx, handle, IPAC_INTERFACE);
   return result;
 
 error:
-  free (mesg);
   return result;
 }
 

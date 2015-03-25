@@ -29,7 +29,6 @@ extern "C" {
 #define IPAC_4_PRODUCT        0x0430
 #define IPAC_M_PRODUCT        0x0440
 #define IPAC_DATA_SIZE        200
-#define IPAC_REPORT           0x03
 #define IPAC_REQUEST_TYPE     0x21
 #define IPAC_REQUEST          9
 #define IPAC_VALUE            0x0203
