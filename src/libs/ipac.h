@@ -20,7 +20,7 @@ extern "C" {
 /* Required items in the json file for IPAC cards (IPAC2, IPAC4, IPAC-MINI)*/
 #define IPAC_STR_2 "ipac2"
 #define IPAC_STR_4 "ipac4"
-#define IPAC_STR_M "ipac-mini"
+#define IPAC_STR_M "mini-pac"
 
 /* Required items for writing out through the USB port */
 #define IPAC_VENDOR           0xD208
@@ -42,7 +42,8 @@ typedef struct json_object json_object;
 
 struct ipac
 {
-  bool ipac4;
+  bool ipac32;
+  bool ipac56;
 };
 
 bool isIPACConfig (const char* prodStr, int version, json_object* jobj);
@@ -61,7 +62,7 @@ char convertIPAC (json_object* jobj);
  */
 bool updateBoardIPAC (json_object *jobj);
 
-bool populateIPACData(json_object* jobj, unsigned char* data);
+void populateIPACData(json_object* jobj, unsigned char* data);
 
 #ifdef __cplusplus
 }
