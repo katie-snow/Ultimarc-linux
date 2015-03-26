@@ -27,7 +27,11 @@ If you need extra debug statements for the IPac boards then run the following
 The executable will be in src/umtool directory and named umtool.out.
 
 #### Project TODO's:
-* Improve the IPAC configuration file format.  Match the IPAC Ultimate board keyboard configuration.
+* Support the JPAC board (2015 board)
+* The following boards have had firmware upgrades as of 2015 and are configured differently.  
+  * IPAC2
+  * IPAC4
+  * Mini-PAC.
 * MACRO support for boards that use MACRO's.
 * Flash rate for PACLED64 board.
 
