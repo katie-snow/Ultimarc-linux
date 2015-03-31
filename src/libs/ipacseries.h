@@ -28,9 +28,9 @@ typedef struct json_object json_object;
 bool validateIPACSeriesData(json_object* jobj);
 
 /**
- * Populates the data array
+ * 2015 board and the pre-2015 Ultimate I/O board.  Key value to hex value.
  */
-bool populatePACSeriesData(json_object* jobj, unsigned char* data);
+unsigned char convertIPACSeries (json_object* jobj);
 
 /**
  * Update one of the PAC Series boards.  These boards are the 2015 boards from Ultimarc.

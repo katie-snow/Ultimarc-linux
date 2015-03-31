@@ -58,12 +58,6 @@ bool validateIPacUltimateData(json_object* jobj);
 bool populateIPACUltimateData(json_object* jobj, unsigned char* data);
 
 /*
- * Convert the JSON keys data into IPAC Ultimate data
- * This is done one array element at a time
- */
-unsigned char convertIPACUltimate (json_object* jobj);
-
-/*
  * Assigns the quadrature pins to the correct corresponding value
  * Only certain pins need this function
  */
