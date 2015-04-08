@@ -34,7 +34,6 @@ extern "C" {
 #define USTIK_REQUEST_2    0xEB
 #define USTIK_REQUEST_3    0xEA
 #define USTIK_MESG_LENGTH  32
-#define USTIK_TIMEOUT      2000
 #define USTIK_INTERFACE    0
 #define USTIK_CONFIG_BASE  0x51
 

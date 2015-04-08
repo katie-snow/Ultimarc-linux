@@ -246,13 +246,13 @@ bool updateBoardPacLED (json_object *jobj)
 
       /* ship this data off to the USB device */
       libusb_control_transfer(handle,
-                              PACLED_REQUEST_TYPE,
-                              PACLED_REQUEST,
+                              UM_REQUEST_TYPE,
+                              UM_REQUEST,
                               PACLED_VALUE,
                               PACLED_INDEX,
                               map,
                               PACLED_MESG_LENGTH,
-                              PACLED_TIMEOUT);
+                              UM_TIMEOUT);
     }
   }
   else if (pLED.allIntensities == true)
@@ -263,13 +263,13 @@ bool updateBoardPacLED (json_object *jobj)
 
     /* ship this data off to the USB device */
     libusb_control_transfer(handle,
-                            PACLED_REQUEST_TYPE,
-                            PACLED_REQUEST,
+                            UM_REQUEST_TYPE,
+                            UM_REQUEST,
                             PACLED_VALUE,
                             PACLED_INDEX,
                             map,
                             PACLED_MESG_LENGTH,
-                            PACLED_TIMEOUT);
+                            UM_TIMEOUT);
   }
 
   /* Random states */
@@ -280,13 +280,13 @@ bool updateBoardPacLED (json_object *jobj)
 
     /* ship this data off to the USB device */
     libusb_control_transfer(handle,
-                            PACLED_REQUEST_TYPE,
-                            PACLED_REQUEST,
+                            UM_REQUEST_TYPE,
+                            UM_REQUEST,
                             PACLED_VALUE,
                             PACLED_INDEX,
                             map,
                             PACLED_MESG_LENGTH,
-                            PACLED_TIMEOUT);
+                            UM_TIMEOUT);
   }
 
   /* Fade settings */
@@ -304,13 +304,13 @@ bool updateBoardPacLED (json_object *jobj)
 
       /* ship this data off to the USB device */
       libusb_control_transfer(handle,
-                              PACLED_REQUEST_TYPE,
-                              PACLED_REQUEST,
+                              UM_REQUEST_TYPE,
+                              UM_REQUEST,
                               PACLED_VALUE,
                               PACLED_INDEX,
                               map,
                               PACLED_MESG_LENGTH,
-                              PACLED_TIMEOUT);
+                              UM_TIMEOUT);
     }
   }
   else if (pLED.allFade == true)
@@ -321,13 +321,13 @@ bool updateBoardPacLED (json_object *jobj)
 
     /* ship this data off to the USB device */
     libusb_control_transfer(handle,
-                            PACLED_REQUEST_TYPE,
-                            PACLED_REQUEST,
+                            UM_REQUEST_TYPE,
+                            UM_REQUEST,
                             PACLED_VALUE,
                             PACLED_INDEX,
                             map,
                             PACLED_MESG_LENGTH,
-                            PACLED_TIMEOUT);
+                            UM_TIMEOUT);
   }
 
   if (pLED.boardIDUpdate == true)
@@ -338,13 +338,13 @@ bool updateBoardPacLED (json_object *jobj)
 
     /* ship this data off to the USB device */
     libusb_control_transfer(handle,
-                            PACLED_REQUEST_TYPE,
-                            PACLED_REQUEST,
+                            UM_REQUEST_TYPE,
+                            UM_REQUEST,
                             PACLED_VALUE,
                             PACLED_INDEX,
                             map,
                             PACLED_MESG_LENGTH,
-                            PACLED_TIMEOUT);
+                            UM_TIMEOUT);
   }
 
   exit:

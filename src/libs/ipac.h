@@ -23,24 +23,22 @@ extern "C" {
 #define IPAC_STR_M "mini-pac"
 
 /* Required items for writing out through the USB port */
-#define IPAC_VENDOR           0xD208
+#define IPAC_VENDOR_PRE_2015  0xD208
+#define IPAC_VENDOR_2015      0xD209
 #define IPAC_PRODUCT_PRE_2015 0x0310
 #define IPAC_2_PRODUCT        0x0420
 #define IPAC_4_PRODUCT        0x0430
 #define IPAC_M_PRODUCT        0x0440
-#define IPAC_DATA_SIZE        200
-#define IPAC_REQUEST_TYPE     0x21
-#define IPAC_REQUEST          9
-#define IPAC_VALUE            0x0203
-#define IPAC_INDEX            2
-#define IPAC_MESG_LENGTH      5
-#define IPAC_TIMEOUT          2000
+#define IPAC_SIZE_PRE_2015    200
+#define IPAC_SIZE_2015        260
 #define IPAC_INTERFACE        2
 
 typedef struct json_object json_object;
 
 struct ipac
 {
+  int version;
+  bool minipac;
   bool ipac32;
   bool ipac56;
 };
@@ -61,6 +59,13 @@ char convertIPAC (json_object* jobj);
  */
 bool updateBoardIPAC (json_object *jobj);
 
+bool updatePre2015Board (json_object *jobj);
+
+bool update2015Board (json_object *jobj);
+
+/**
+ * Update data array that will be written out to the board.
+ */
 void populateIPACData(json_object* jobj, unsigned char* data);
 
 #ifdef __cplusplus

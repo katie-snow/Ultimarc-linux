@@ -15,6 +15,10 @@
 
 #include <stdbool.h>
 
+#define UM_REQUEST_TYPE 0x21
+#define UM_REQUEST      9
+#define UM_TIMEOUT      2000
+
 typedef struct json_object json_object;
 
 

@@ -28,8 +28,10 @@ bool isIPACConfig (const char* prodStr, int version, json_object* jobj)
 {
   bool isBoardCfg = false;
 
+  pIPAC.version = version;
   pIPAC.ipac56 = (strcmp(prodStr, IPAC_STR_4) == 0);
   pIPAC.ipac32 = ((strcmp(prodStr, IPAC_STR_2) == 0) || strcmp(prodStr, IPAC_STR_M) == 0);
+  pIPAC.minipac = (strcmp(prodStr, IPAC_STR_M) == 0);
 
   if (pIPAC.ipac32 || pIPAC.ipac56)
   {
@@ -399,8 +401,24 @@ convertIPAC (json_object *jobj)
   return retval;
 }
 
-bool
-updateBoardIPAC (json_object *jobj)
+bool updateBoardIPAC (json_object *jobj)
+{
+  bool result = false;
+
+  switch (pIPAC.version)
+  {
+  case 1:
+    result = updatePre2015Board (jobj);
+    break;
+
+  case 2:
+    result = update2015Board(jobj);
+    break;
+  }
+  return result;
+}
+
+bool updatePre2015Board (json_object *jobj)
 {
   libusb_context *ctx = NULL;
   struct libusb_device_handle *handle = NULL;
@@ -418,10 +436,10 @@ updateBoardIPAC (json_object *jobj)
   bool result = true;
 
   char header[4] = {0x50, 0xdd, 0x00, 0x00};
-  char data[IPAC_DATA_SIZE];
-  unsigned char mesg[IPAC_MESG_LENGTH] = {0x03,0,0,0,0};
+  char data[IPAC_SIZE_PRE_2015];
+  unsigned char mesg[IPACSERIES_MESG_LENGTH] = {0x03,0,0,0,0};
 
-  handle = openUSB(ctx, IPAC_VENDOR, IPAC_PRODUCT_PRE_2015, IPAC_INTERFACE, 1);
+  handle = openUSB(ctx, IPAC_VENDOR_PRE_2015, IPAC_PRODUCT_PRE_2015, IPAC_INTERFACE, 1);
 
   if (!handle)
   {
@@ -457,20 +475,98 @@ updateBoardIPAC (json_object *jobj)
   json_object_object_get_ex(jobj, "pins", &pins);
   populateIPACData(pins, data);
 
-  while (pos < (IPAC_DATA_SIZE/div))
+  while (pos < (IPAC_SIZE_PRE_2015/div))
   {
     memcpy(&mesg[1], &data[pos], 4);
     pos+=4;
 
     debug ("Writing out the following data (%i): %x, %x, %x, %x, %x", pos, mesg[0], mesg[1], mesg[2], mesg[3], mesg[4]);
     ret = libusb_control_transfer(handle,
-                                  IPAC_REQUEST_TYPE,
-                                  IPAC_REQUEST,
-                                  IPAC_VALUE,
-                                  IPAC_INDEX,
+                                  UM_REQUEST_TYPE,
+                                  UM_REQUEST,
+                                  IPACSERIES_VALUE,
+                                  IPAC_INTERFACE,
                                   mesg,
-                                  IPAC_MESG_LENGTH,
-                                  IPAC_TIMEOUT);
+                                  IPACSERIES_MESG_LENGTH,
+                                  UM_TIMEOUT);
+    debug ("Write result: %i", ret);
+  }
+
+exit:
+  closeUSB(ctx, handle, IPAC_INTERFACE);
+  return result;
+
+error:
+  return result;
+}
+
+bool update2015Board (json_object *jobj)
+{
+  libusb_context *ctx = NULL;
+  struct libusb_device_handle *handle = NULL;
+
+  json_object *shiftKey = NULL;
+  json_object *pins = NULL;
+
+  int ipac_idx = 4;
+  int pos = 0;
+  int ret = 0;
+
+  uint16_t product;
+
+  bool result = true;
+
+  char header[4] = {0x50, 0xdd, 0x00, 0x00};
+  char data[IPAC_SIZE_2015];
+  unsigned char mesg[IPACSERIES_MESG_LENGTH] = {0x03,0,0,0,0};
+
+
+
+  handle = openUSB(ctx, IPAC_VENDOR_2015, IPAC_PRODUCT_PRE_2015, IPAC_INTERFACE, 1);
+
+  if (!handle)
+  {
+    result = false;
+    goto error;
+  }
+
+  /* Setup data to send to board */
+  memset (&data, 0, sizeof(data));
+
+  /* Header data */
+  memcpy (&data, &header, sizeof(header));
+  memcpy (&data[100], &header, sizeof(header));
+
+  /* Macro data */
+  data[61] = 0x30;
+  data[161] = 0xFB;
+  data[162] = 0x01;
+
+  json_object_object_get_ex(jobj, "1/2 shift key", &shiftKey);
+  data[4] = convertIPAC(shiftKey);
+
+  if (json_object_object_get_ex(jobj, "3/4 shift key", &shiftKey))
+  {
+    data[104] = convertIPAC(shiftKey);
+  }
+
+  json_object_object_get_ex(jobj, "pins", &pins);
+  populateIPACData(pins, data);
+
+  while (pos < (IPACSERIES_MESG_LENGTH))
+  {
+    memcpy(&mesg[1], &data[pos], 4);
+    pos+=4;
+
+    debug ("Writing out the following data (%i): %x, %x, %x, %x, %x", pos, mesg[0], mesg[1], mesg[2], mesg[3], mesg[4]);
+    ret = libusb_control_transfer(handle,
+                                  UM_REQUEST_TYPE,
+                                  UM_REQUEST,
+                                  IPACSERIES_VALUE,
+                                  IPAC_INTERFACE,
+                                  mesg,
+                                  IPACSERIES_MESG_LENGTH,
+                                  UM_TIMEOUT);
     debug ("Write result: %i", ret);
   }
 

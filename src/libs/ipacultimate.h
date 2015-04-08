@@ -25,12 +25,8 @@ extern "C" {
 /* Required items for writing out through the USB port */
 #define IPACULTIMATE_VENDOR         0xD209
 #define IPACULTIMATE_PRODUCT        0x0410
-#define IPACULTIMATE_MESG_LENGTH    5
 #define IPACULTIMATE_REPORT         0x03
-#define IPACULTIMATE_REQUEST_TYPE   0x21
-#define IPACULTIMATE_REQUEST        9
 #define IPACULTIMATE_VALUE          0x0203
-#define IPACULTIMATE_TIMEOUT        2000
 #define IPACULTIMATE_INTERFACE      3
 #define IPACULTIMATE_DATA_SIZE      260
 

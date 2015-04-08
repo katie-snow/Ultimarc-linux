@@ -153,13 +153,13 @@ bool updateBoardPacDrive (json_object *jobj)
 
   /* ship this data off to the USB device */
   libusb_control_transfer(handle,
-						PACDRIVE_REQUEST_TYPE,
-						PACDRIVE_REQUEST,
+						UM_REQUEST_TYPE,
+						UM_REQUEST,
 						PACDRIVE_VALUE,
 						PACDRIVE_INDEX,
 						map,
 						PACDRIVE_MESG_LENGTH,
-						PACDRIVE_TIMEOUT);
+						UM_TIMEOUT);
 
   if (!handle)
   {

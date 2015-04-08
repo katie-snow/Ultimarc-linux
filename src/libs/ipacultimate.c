@@ -18,6 +18,7 @@
 /* Local */
 #include "common.h"
 #include "ipacultimate.h"
+#include "ipacseries.h"
 #include "dbg.h"
 
 struct ipacultimate pLED;
@@ -595,7 +596,7 @@ bool updateBoardIPacUltimate(json_object* jobj)
 
   unsigned char data[IPACULTIMATE_DATA_SIZE];
   char header[4] = {0x50, 0xdd, 0x18, 0x00};
-  unsigned char map[IPACULTIMATE_MESG_LENGTH] = {0x03,0,0,0,0};
+  unsigned char map[IPACSERIES_MESG_LENGTH] = {0x03,0,0,0,0};
 
   bool result = true;
 
@@ -641,13 +642,13 @@ bool updateBoardIPacUltimate(json_object* jobj)
 
 	  /* ship this data off to the USB device */
 	  libusb_control_transfer(handle,
-							  IPACULTIMATE_REQUEST_TYPE,
-							  IPACULTIMATE_REQUEST,
+							  UM_REQUEST_TYPE,
+							  UM_REQUEST,
 							  IPACULTIMATE_VALUE,
 							  IPACULTIMATE_INTERFACE,
 							  map,
-							  IPACULTIMATE_MESG_LENGTH,
-							  IPACULTIMATE_TIMEOUT);
+							  IPACSERIES_MESG_LENGTH,
+							  UM_TIMEOUT);
 	}
   }
   else if (pLED.allIntensities == true)
@@ -658,13 +659,13 @@ bool updateBoardIPacUltimate(json_object* jobj)
 
 	/* ship this data off to the USB device */
 	libusb_control_transfer(handle,
-							IPACULTIMATE_REQUEST_TYPE,
-							IPACULTIMATE_REQUEST,
+							UM_REQUEST_TYPE,
+							UM_REQUEST,
 							IPACULTIMATE_VALUE,
 							IPACULTIMATE_INTERFACE,
 							map,
-							IPACULTIMATE_MESG_LENGTH,
-							IPACULTIMATE_TIMEOUT);
+							IPACSERIES_MESG_LENGTH,
+							UM_TIMEOUT);
   }
 
   /* Random states */
@@ -675,13 +676,13 @@ bool updateBoardIPacUltimate(json_object* jobj)
 
 	/* ship this data off to the USB device */
 	libusb_control_transfer(handle,
-							IPACULTIMATE_REQUEST_TYPE,
-							IPACULTIMATE_REQUEST,
+							UM_REQUEST_TYPE,
+							UM_REQUEST,
 							IPACULTIMATE_VALUE,
 							IPACULTIMATE_INTERFACE,
 							map,
-							IPACULTIMATE_MESG_LENGTH,
-							IPACULTIMATE_TIMEOUT);
+							IPACSERIES_MESG_LENGTH,
+							UM_TIMEOUT);
   }
 
   /* Fade rate */
@@ -693,13 +694,13 @@ bool updateBoardIPacUltimate(json_object* jobj)
 
 	/* ship this data off to the USB device */
 	libusb_control_transfer(handle,
-							IPACULTIMATE_REQUEST_TYPE,
-							IPACULTIMATE_REQUEST,
+							UM_REQUEST_TYPE,
+							UM_REQUEST,
 							IPACULTIMATE_VALUE,
 							IPACULTIMATE_INTERFACE,
 							map,
-							IPACULTIMATE_MESG_LENGTH,
-							IPACULTIMATE_TIMEOUT);
+							IPACSERIES_MESG_LENGTH,
+							UM_TIMEOUT);
   }
 
   if (pLED.pins == true)
@@ -734,13 +735,13 @@ bool updateBoardIPacUltimate(json_object* jobj)
 
        debug ("Writing out the following data (%i): %x, %x, %x, %x, %x", pos, map[0], map[1], map[2], map[3], map[4]);
        ret = libusb_control_transfer(handle,
-                                     IPACULTIMATE_REQUEST_TYPE,
-                                     IPACULTIMATE_REQUEST,
+                                     UM_REQUEST_TYPE,
+                                     UM_REQUEST,
                                      IPACULTIMATE_VALUE,
                                      IPACULTIMATE_INTERFACE,
                                      map,
-                                     IPACULTIMATE_MESG_LENGTH,
-                                     IPACULTIMATE_TIMEOUT);
+                                     IPACSERIES_MESG_LENGTH,
+                                     UM_TIMEOUT);
        debug ("Write result: %i", ret);
      }
   }
@@ -754,13 +755,13 @@ bool updateBoardIPacUltimate(json_object* jobj)
 
 	/* ship this data off to the USB device */
 	ret = libusb_control_transfer(handle,
-							IPACULTIMATE_REQUEST_TYPE,
-							IPACULTIMATE_REQUEST,
+							UM_REQUEST_TYPE,
+							UM_REQUEST,
 							IPACULTIMATE_VALUE,
 							IPACULTIMATE_INTERFACE,
 							map,
-							IPACULTIMATE_MESG_LENGTH,
-							IPACULTIMATE_TIMEOUT);
+							IPACSERIES_MESG_LENGTH,
+							UM_TIMEOUT);
   }
 
 exit:

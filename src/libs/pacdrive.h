@@ -26,12 +26,9 @@ extern "C" {
 #define PACDRIVE_PRODUCT       0x1500
 #define PACDRIVE_DATA_SIZE     4
 #define PACDRIVE_REPORT        0x03
-#define PACDRIVE_REQUEST_TYPE  0x21
-#define PACDRIVE_REQUEST       9
 #define PACDRIVE_VALUE         0x0200
 #define PACDRIVE_INDEX         0
 #define PACDRIVE_MESG_LENGTH   4
-#define PACDRIVE_TIMEOUT       2000
 #define PACDRIVE_INTERFACE     0
 
 typedef struct json_object json_object;

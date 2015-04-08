@@ -314,7 +314,7 @@ bool updateBoardULTISTIK (json_object* jobj)
                                   0,
                                   NULL,
                                   0,
-                                  USTIK_TIMEOUT);
+                                  UM_TIMEOUT);
 
     for (idx = 0; idx < 3; ++ idx)
     {
@@ -325,7 +325,7 @@ bool updateBoardULTISTIK (json_object* jobj)
                                     0,
                                     data + (32*idx),
                                     USTIK_MESG_LENGTH,
-                                    USTIK_TIMEOUT);
+                                    UM_TIMEOUT);
 
       ret = libusb_control_transfer(handle,
                                     USTIK_REQUEST_TYPE_2,
@@ -334,7 +334,7 @@ bool updateBoardULTISTIK (json_object* jobj)
                                     0,
                                     NULL,
                                     0,
-                                    USTIK_TIMEOUT);
+                                    UM_TIMEOUT);
     }
 
     ret = libusb_control_transfer(handle,
@@ -344,7 +344,7 @@ bool updateBoardULTISTIK (json_object* jobj)
                                   0,
                                   NULL,
                                   0,
-                                  USTIK_TIMEOUT);
+                                  UM_TIMEOUT);
   }
   else
   {
@@ -374,7 +374,7 @@ bool updateBoardULTISTIK (json_object* jobj)
                                   0,
                                   NULL,
                                   0,
-                                  USTIK_TIMEOUT);
+                                  UM_TIMEOUT);
 
     ret = libusb_control_transfer(handle,
                                   USTIK_REQUEST_TYPE_1,
@@ -383,7 +383,7 @@ bool updateBoardULTISTIK (json_object* jobj)
                                   0,
                                   data,
                                   USTIK_MESG_LENGTH,
-                                  USTIK_TIMEOUT);
+                                  UM_TIMEOUT);
 
     ret = libusb_control_transfer(handle,
                                   USTIK_REQUEST_TYPE_2,
@@ -392,7 +392,7 @@ bool updateBoardULTISTIK (json_object* jobj)
                                   0,
                                   NULL,
                                   0,
-                                  USTIK_TIMEOUT);
+                                  UM_TIMEOUT);
 
     ret = libusb_control_transfer(handle,
                                   USTIK_REQUEST_TYPE_1,
@@ -401,7 +401,7 @@ bool updateBoardULTISTIK (json_object* jobj)
                                   0,
                                   NULL,
                                   0,
-                                  USTIK_TIMEOUT);
+                                  UM_TIMEOUT);
 
     log_info ("Ultistik #%i needs to be physically disconnected and reconnected before use.", controller);
   }

@@ -26,12 +26,9 @@ extern "C" {
 #define PACLED_PRODUCT       0x1401
 #define PACLED_DATA_SIZE     2
 #define PACLED_REPORT        0x03
-#define PACLED_REQUEST_TYPE  0x21
-#define PACLED_REQUEST       9
 #define PACLED_VALUE         0x0200
 #define PACLED_INDEX         0
 #define PACLED_MESG_LENGTH   2
-#define PACLED_TIMEOUT       2000
 #define PACLED_INTERFACE     0
 #define PACLED_FADE_BASE     64
 #define PACLED_FADE_ALL_BASE 4
