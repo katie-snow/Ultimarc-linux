@@ -19,7 +19,6 @@ extern "C" {
 
 /* Required items in the json file for IPAC cards (IPAC2, IPAC4, MINI-PAC)*/
 #define IPAC_STR_2 "ipac2"
-#define IPAC_STR_4 "ipac4"
 #define IPAC_STR_M "mini-pac"
 
 /* Required items for writing out through the USB port */
@@ -27,7 +26,6 @@ extern "C" {
 #define IPAC_VENDOR_2015      0xD209
 #define IPAC_PRODUCT_PRE_2015 0x0310
 #define IPAC_2_PRODUCT        0x0420
-#define IPAC_4_PRODUCT        0x0430
 #define IPAC_M_PRODUCT        0x0440
 #define IPAC_SIZE_PRE_2015    200
 #define IPAC_SIZE_2015        260

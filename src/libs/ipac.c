@@ -29,7 +29,8 @@ bool isIPACConfig (const char* prodStr, int version, json_object* jobj)
   bool isBoardCfg = false;
 
   pIPAC.version = version;
-  pIPAC.ipac56 = (strcmp(prodStr, IPAC_STR_4) == 0);
+  //pIPAC.ipac56 = (strcmp(prodStr, IPAC_STR_4) == 0);
+  pIPAC.ipac56 = false;
   pIPAC.ipac32 = ((strcmp(prodStr, IPAC_STR_2) == 0) || strcmp(prodStr, IPAC_STR_M) == 0);
   pIPAC.minipac = (strcmp(prodStr, IPAC_STR_M) == 0);
 
