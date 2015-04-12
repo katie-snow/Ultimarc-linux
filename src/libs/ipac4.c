@@ -27,6 +27,24 @@ bool isIPAC4Config (const char* prodStr, int version, json_object* jobj)
 {
   bool isBoardCfg = false;
 
+  pIPAC4.version = version;
+
+  if (strcmp(prodStr, IPAC4_STR) == 0)
+  {
+    switch(version)
+    {
+    case 1:
+      isBoardCfg = validateIPAC4Data(jobj);
+      break;
+
+    case 2:
+      isBoardCfg = validateIPACSeriesData(jobj);
+      break;
+
+    default:
+      log_info ("Configuration file version '%i' incorrect", version);
+    }
+  }
 
   return isBoardCfg;
 }
@@ -35,6 +53,80 @@ bool validateIPAC4Data (json_object* jobj)
 {
   bool valid = false;
 
+  json_object* tmp = NULL;
+  json_object* pin = NULL;
+  json_object* pins = NULL;
+
+  int pinCount = 0;
+  int tmpCount = 0;
+  char* key = NULL;
+  char* tmpKey = NULL;
+
+  /* Required */
+  if (json_object_object_get_ex(jobj, "1/2 shift key", &tmp))
+  {
+    if (!json_object_is_type(tmp, json_type_string))
+    {
+      log_err ("1/2 shift key needs to be of type string");
+      valid = false;
+    }
+  }
+  else
+  {
+    log_err ("'1/2 shift key' is not defined in the configuration");
+    valid = false;
+  }
+
+  if (json_object_object_get_ex(jobj, "3/4 shift key", &tmp))
+  {
+    if (!json_object_is_type(tmp, json_type_string))
+    {
+      log_err ("3/4 shift key needs to be of type string");
+      valid = false;
+    }
+  }
+  else
+  {
+    log_err ("'3/4 shift key' is not defined in the configuration");
+    valid = false;
+  }
+
+  /* Required */
+  if (json_object_object_get_ex(jobj, "pins", &pins))
+  {
+    if (json_object_is_type(pins, json_type_object))
+    {
+      json_object_object_foreach(pins, key, pin)
+      {
+        pinCount++;
+
+        tmpCount = 0;
+        if (json_object_is_type(pin, json_type_object))
+        {
+          json_object_object_foreach(pin, tmpKey, tmp)
+          {
+            tmpCount++;
+            if (!json_object_is_type(tmp, json_type_string))
+            {
+              valid = false;
+            }
+          }
+
+          if (tmpCount != 2)
+          {
+            log_err("pin '%s' has to many children entities.", key);
+            valid = false;
+          }
+        }
+      }
+
+      if (pinCount != 56)
+      {
+        log_err("Incorrect number of pin objects.  Needs to be 56 entries.");
+        valid = false;
+      }
+    }
+  }
 
   return valid;
 }
