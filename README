@@ -23,8 +23,11 @@ There are example configuration files for each of the boards in the src/umtool d
 
 I-Pac/Mini-Pac:
 version: This should be set to 1 always.  This is used for version control of the configuration file in the future
-product: The I-Pac product number in string format “0310”
-keys: This is an array of every button possible.  The array size is 200 and each entry is a possible button press and what key should be sent.  You will have to know where your buttons are connected to your device and map that out in the array.
+product: This is either 'ipac2', 'ipac4', or 'mini-pac' depending on what board you are configuring
+1/2 shift key: Key that will be used as the shift key for player 1 and 2
+3/4 shift key: Key that will be used as the shift key for player 3 and 4
+pins: list of all the pins(keys) that are on the board.  There are 32 entries for the IPAC2 and MINI-IPAC, 56 for IPAC4
+
 
 UltiStik 360:
 version: This should be set to 1 for updating the joystick mapping or 2 for device ID changes.
