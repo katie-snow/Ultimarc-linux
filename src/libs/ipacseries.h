@@ -33,6 +33,14 @@ bool validateIPACSeriesData(json_object* jobj);
  */
 unsigned char convertIPACSeries (json_object* jobj);
 
+/*
+ * Convert the JSON keys data into IPAC data
+ * This is done one array element at a time
+ * NOTE: The IPAC uses scan codes set 2.
+ * http://www.quadibloc.com/comp/scan.htm Has the three sets listed out for reference
+ */
+char convertIPAC (json_object* jobj);
+
 /**
  * Update one of the PAC Series boards.  These boards are the 2015 boards from Ultimarc.
  */

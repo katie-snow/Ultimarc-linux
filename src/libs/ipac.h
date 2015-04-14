@@ -45,14 +45,6 @@ bool isIPACConfig (const char* prodStr, int version, json_object* jobj);
 bool validateIPacData(json_object* jobj);
 
 /*
- * Convert the JSON keys data into IPAC data
- * This is done one array element at a time
- * NOTE: The IPAC uses scan codes set 2.
- * http://www.quadibloc.com/comp/scan.htm Has the three sets listed out for reference
- */
-char convertIPAC (json_object* jobj);
-
-/*
  * Writes the data out to the board.
  */
 bool updateBoardIPAC (json_object *jobj);
