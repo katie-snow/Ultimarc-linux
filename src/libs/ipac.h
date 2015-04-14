@@ -27,7 +27,7 @@ extern "C" {
 #define IPAC_PRODUCT_PRE_2015 0x0310
 #define IPAC_2_PRODUCT        0x0420
 #define IPAC_M_PRODUCT        0x0440
-#define IPAC_SIZE_PRE_2015    200
+#define IPAC_SIZE_PRE_2015    100
 #define IPAC_SIZE_2015        260
 #define IPAC_INTERFACE        2
 

@@ -29,7 +29,6 @@ bool isIPACConfig (const char* prodStr, int version, json_object* jobj)
   bool isBoardCfg = false;
 
   pIPAC.version = version;
-  //pIPAC.ipac56 = (strcmp(prodStr, IPAC_STR_4) == 0);
   pIPAC.ipac56 = false;
   pIPAC.ipac32 = ((strcmp(prodStr, IPAC_STR_2) == 0) || strcmp(prodStr, IPAC_STR_M) == 0);
   pIPAC.minipac = (strcmp(prodStr, IPAC_STR_M) == 0);
@@ -81,16 +80,6 @@ bool validateIPacData(json_object* jobj)
     valid = false;
   }
 
-  /* Optional */
-  if (json_object_object_get_ex(jobj, "3/4 shift key", &tmp))
-  {
-    if (!json_object_is_type(tmp, json_type_string))
-    {
-      log_err ("3/4 shift key needs to be of type string");
-      valid = false;
-    }
-  }
-
   /* Required */
   if (json_object_object_get_ex(jobj, "pins", &pins))
   {
@@ -120,9 +109,9 @@ bool validateIPacData(json_object* jobj)
         }
       }
 
-      if (pinCount != 32 && pinCount != 56)
+      if (pinCount != 32)
       {
-        log_err("Incorrect number of pin objects.  Needs to be 32 or 56 entries.");
+        log_err("Incorrect number of pin objects.  Needs to be 32 entries.");
         valid = false;
       }
     }
@@ -431,9 +420,6 @@ bool updatePre2015Board (json_object *jobj)
   int pos = 0;
   int ret = 0;
 
-  /* divide by 2 the data size (200) for the IPAC2 and Mini-PAC. */
-  int div = 2;
-
   bool result = true;
 
   char header[4] = {0x50, 0xdd, 0x00, 0x00};
@@ -453,30 +439,17 @@ bool updatePre2015Board (json_object *jobj)
 
   /* Header data */
   memcpy (&data, &header, sizeof(header));
-  memcpy (&data[100], &header, sizeof(header));
 
   /* Macro data */
   data[61] = 0x30;
-  data[161] = 0xFB;
-  data[162] = 0x01;
 
   json_object_object_get_ex(jobj, "1/2 shift key", &shiftKey);
   data[4] = convertIPAC(shiftKey);
 
-  if (json_object_object_get_ex(jobj, "3/4 shift key", &shiftKey))
-  {
-    data[104] = convertIPAC(shiftKey);
-  }
-
-  if (pIPAC.ipac56)
-  {
-    div = 1;
-  }
-
   json_object_object_get_ex(jobj, "pins", &pins);
   populateIPACData(pins, data);
 
-  while (pos < (IPAC_SIZE_PRE_2015/div))
+  while (pos < (IPAC_SIZE_PRE_2015))
   {
     memcpy(&mesg[1], &data[pos], 4);
     pos+=4;
@@ -599,366 +572,133 @@ void populateIPACData(json_object* jobj, unsigned char* data)
     json_object_object_get_ex(pin, "shift", &tmp);
     shiftval = convertIPAC(tmp);
 
-    /*IPAC2 and IPAC-MINI data */
-    if (pIPAC.ipac32)
+    if (!strcasecmp(key, "1up"))
     {
-      if (!strcasecmp(key, "1up"))
-      {
-        data[5] = keyval; data[37] = shiftval;
-      }
-      if (!strcasecmp(key, "1right"))
-      {
-        data[6] = keyval; data[38] = shiftval;
-      }
-      if (!strcasecmp(key, "1sw1"))
-      {
-        data[7] = keyval; data[39] = shiftval;
-      }
-      if (!strcasecmp(key, "1left"))
-      {
-        data[8] = keyval; data[40] = shiftval;
-      }
-      if (!strcasecmp(key, "1sw3"))
-      {
-        data[9] = keyval; data[41] = shiftval;
-      }
-      if (!strcasecmp(key, "1down"))
-      {
-        data[10] = keyval; data[42] = shiftval;
-      }
-      if (!strcasecmp(key, "1sw5"))
-      {
-        data[11] = keyval; data[43] = shiftval;
-      }
-      if (!strcasecmp(key, "1sw2"))
-      {
-        data[12] = keyval; data[44] = shiftval;
-      }
-      if (!strcasecmp(key, "2right"))
-      {
-        data[13] = keyval; data[45] = shiftval;
-      }
-      if (!strcasecmp(key, "1sw4"))
-      {
-        data[14] = keyval; data[46] = shiftval;
-      }
-      if (!strcasecmp(key, "2left"))
-      {
-        data[15] = keyval; data[47] = shiftval;
-      }
-      if (!strcasecmp(key, "1sw6"))
-      {
-        data[16] = keyval; data[48] = shiftval;
-      }
-      if (!strcasecmp(key, "2up"))
-      {
-        data[17] = keyval; data[49] = shiftval;
-      }
-      if (!strcasecmp(key, "2down"))
-      {
-        data[18] = keyval; data[50] = shiftval;
-      }
-      if (!strcasecmp(key, "2sw1"))
-      {
-        data[19] = keyval; data[51] = shiftval;
-      }
-      if (!strcasecmp(key, "1start"))
-      {
-        data[20] = keyval; data[52] = shiftval;
-      }
-      if (!strcasecmp(key, "2sw2"))
-      {
-        data[21] = keyval; data[53] = shiftval;
-      }
-      if (!strcasecmp(key, "2start"))
-      {
-        data[22] = keyval; data[54] = shiftval;
-      }
-      if (!strcasecmp(key, "2sw3"))
-      {
-        data[23] = keyval; data[55] = shiftval;
-      }
-      if (!strcasecmp(key, "1coin"))
-      {
-        data[24] = keyval; data[56] = shiftval;
-      }
-      if (!strcasecmp(key, "2sw4"))
-      {
-        data[25] = keyval; data[57] = shiftval;
-      }
-      if (!strcasecmp(key, "2coin"))
-      {
-        data[26] = keyval; data[58] = shiftval;
-      }
-      if (!strcasecmp(key, "2sw5"))
-      {
-        data[27] = keyval; data[59] = shiftval;
-      }
-      if (!strcasecmp(key, "1sw7"))
-      {
-        data[28] = keyval; data[60] = shiftval;
-      }
-      if (!strcasecmp(key, "2sw6"))
-      {
-        data[29] = keyval; data[61] = shiftval;
-      }
-      if (!strcasecmp(key, "1sw8"))
-      {
-        data[30] = keyval; data[62] = shiftval;
-      }
-      if (!strcasecmp(key, "2sw7"))
-      {
-        data[31] = keyval; data[63] = shiftval;
-      }
-      if (!strcasecmp(key, "2sw8"))
-      {
-        data[32] = keyval; data[63] = shiftval;
-      }
-      if (!strcasecmp(key, "1a"))
-      {
-        data[33] = keyval; data[64] = shiftval;
-      }
-      if (!strcasecmp(key, "1b"))
-      {
-        data[34] = keyval; data[65] = shiftval;
-      }
-      if (!strcasecmp(key, "2a"))
-      {
-        data[35] = keyval; data[66] = shiftval;
-      }
-      if (!strcasecmp(key, "2b"))
-      {
-        data[36] = keyval; data[67] = shiftval;
-      }
+      data[5] = keyval; data[37] = shiftval;
     }
-
-    /* IPAC4 data */
-    if (pIPAC.ipac56)
+    if (!strcasecmp(key, "1right"))
     {
-      if (!strcasecmp(key, "1up"))
-      {
-        data[5] = keyval; data[33] = shiftval;
-      }
-      if (!strcasecmp(key, "1right"))
-      {
-        data[6] = keyval; data[34] = shiftval;
-      }
-      if (!strcasecmp(key, "1sw1"))
-      {
-        data[7] = keyval; data[35] = shiftval;
-      }
-      if (!strcasecmp(key, "1left"))
-      {
-        data[8] = keyval; data[36] = shiftval;
-      }
-      if (!strcasecmp(key, "1sw3"))
-      {
-        data[9] = keyval; data[37] = shiftval;
-      }
-      if (!strcasecmp(key, "1down"))
-      {
-        data[10] = keyval; data[38] = shiftval;
-      }
-      if (!strcasecmp(key, "1sw5"))
-      {
-        data[11] = keyval; data[39] = shiftval;
-      }
-      if (!strcasecmp(key, "1sw2"))
-      {
-        data[12] = keyval; data[40] = shiftval;
-      }
-      if (!strcasecmp(key, "2right"))
-      {
-        data[13] = keyval; data[41] = shiftval;
-      }
-      if (!strcasecmp(key, "1sw4"))
-      {
-        data[14] = keyval; data[42] = shiftval;
-      }
-      if (!strcasecmp(key, "2left"))
-      {
-        data[15] = keyval; data[43] = shiftval;
-      }
-      if (!strcasecmp(key, "1sw6"))
-      {
-        data[16] = keyval; data[44] = shiftval;
-      }
-      if (!strcasecmp(key, "2up"))
-      {
-        data[17] = keyval; data[45] = shiftval;
-      }
-      if (!strcasecmp(key, "2down"))
-      {
-        data[18] = keyval; data[46] = shiftval;
-      }
-      if (!strcasecmp(key, "2sw1"))
-      {
-        data[19] = keyval; data[47] = shiftval;
-      }
-      if (!strcasecmp(key, "1start"))
-      {
-        data[20] = keyval; data[48] = shiftval;
-      }
-      if (!strcasecmp(key, "2sw2"))
-      {
-        data[21] = keyval; data[49] = shiftval;
-      }
-      if (!strcasecmp(key, "2start"))
-      {
-        data[22] = keyval; data[50] = shiftval;
-      }
-      if (!strcasecmp(key, "2sw3"))
-      {
-        data[23] = keyval; data[51] = shiftval;
-      }
-      if (!strcasecmp(key, "1coin"))
-      {
-        data[24] = keyval; data[52] = shiftval;
-      }
-      if (!strcasecmp(key, "2sw4"))
-      {
-        data[25] = keyval; data[53] = shiftval;
-      }
-      if (!strcasecmp(key, "2coin"))
-      {
-        data[26] = keyval; data[54] = shiftval;
-      }
-      if (!strcasecmp(key, "2sw5"))
-      {
-        data[27] = keyval; data[55] = shiftval;
-      }
-      if (!strcasecmp(key, "1sw7"))
-      {
-        data[28] = keyval; data[56] = shiftval;
-      }
-      if (!strcasecmp(key, "2sw6"))
-      {
-        data[29] = keyval; data[57] = shiftval;
-      }
-      if (!strcasecmp(key, "1sw8"))
-      {
-        data[30] = keyval; data[58] = shiftval;
-      }
-      if (!strcasecmp(key, "2sw7"))
-      {
-        data[31] = keyval; data[59] = shiftval;
-      }
-      if (!strcasecmp(key, "2sw8"))
-      {
-        data[32] = keyval; data[60] = shiftval;
-      }
-      if (!strcasecmp(key, "3up"))
-      {
-        data[105] = keyval; data[133] = shiftval;
-      }
-      if (!strcasecmp(key, "3right"))
-      {
-        data[106] = keyval; data[134] = shiftval;
-      }
-      if (!strcasecmp(key, "3sw1"))
-      {
-        data[107] = keyval; data[135] = shiftval;
-      }
-      if (!strcasecmp(key, "3left"))
-      {
-        data[108] = keyval; data[136] = shiftval;
-      }
-      if (!strcasecmp(key, "3sw3"))
-      {
-        data[109] = keyval; data[137] = shiftval;
-      }
-      if (!strcasecmp(key, "3down"))
-      {
-        data[110] = keyval; data[138] = shiftval;
-      }
-      if (!strcasecmp(key, "3sw5"))
-      {
-        data[111] = keyval; data[139] = shiftval;
-      }
-      if (!strcasecmp(key, "3sw2"))
-      {
-        data[112] = keyval; data[140] = shiftval;
-      }
-      if (!strcasecmp(key, "4right"))
-      {
-        data[113] = keyval; data[141] = shiftval;
-      }
-      if (!strcasecmp(key, "3sw4"))
-      {
-        data[114] = keyval; data[142] = shiftval;
-      }
-      if (!strcasecmp(key, "4left"))
-      {
-        data[115] = keyval; data[143] = shiftval;
-      }
-      if (!strcasecmp(key, "3sw6"))
-      {
-        data[116] = keyval; data[144] = shiftval;
-      }
-      if (!strcasecmp(key, "4up"))
-      {
-        data[117] = keyval; data[145] = shiftval;
-      }
-      if (!strcasecmp(key, "4down"))
-      {
-        data[118] = keyval; data[146] = shiftval;
-      }
-      if (!strcasecmp(key, "4sw1"))
-      {
-        data[119] = keyval; data[147] = shiftval;
-      }
-      if (!strcasecmp(key, "3start"))
-      {
-        data[120] = keyval; data[148] = shiftval;
-      }
-      if (!strcasecmp(key, "4sw2"))
-      {
-        data[121] = keyval; data[149] = shiftval;
-      }
-      if (!strcasecmp(key, "4start"))
-      {
-        data[122] = keyval; data[150] = shiftval;
-      }
-      if (!strcasecmp(key, "4sw3"))
-      {
-        data[123] = keyval; data[151] = shiftval;
-      }
-      if (!strcasecmp(key, "3coin"))
-      {
-        data[124] = keyval; data[152] = shiftval;
-      }
-      if (!strcasecmp(key, "4sw4"))
-      {
-        data[125] = keyval; data[153] = shiftval;
-      }
-      if (!strcasecmp(key, "4coin"))
-      {
-        data[126] = keyval; data[154] = shiftval;
-      }
-      if (!strcasecmp(key, "4sw5"))
-      {
-        data[127] = keyval; data[155] = shiftval;
-      }
-      if (!strcasecmp(key, "3sw7"))
-      {
-        data[128] = keyval; data[156] = shiftval;
-      }
-      if (!strcasecmp(key, "4sw6"))
-      {
-        data[129] = keyval; data[157] = shiftval;
-      }
-      if (!strcasecmp(key, "3sw8"))
-      {
-        data[130] = keyval; data[158] = shiftval;
-      }
-      if (!strcasecmp(key, "4sw7"))
-      {
-        data[131] = keyval; data[159] = shiftval;
-      }
-      if (!strcasecmp(key, "4sw8"))
-      {
-        data[132] = keyval; data[160] = shiftval;
-      }
+      data[6] = keyval; data[38] = shiftval;
+    }
+    if (!strcasecmp(key, "1sw1"))
+    {
+      data[7] = keyval; data[39] = shiftval;
+    }
+    if (!strcasecmp(key, "1left"))
+    {
+      data[8] = keyval; data[40] = shiftval;
+    }
+    if (!strcasecmp(key, "1sw3"))
+    {
+      data[9] = keyval; data[41] = shiftval;
+    }
+    if (!strcasecmp(key, "1down"))
+    {
+      data[10] = keyval; data[42] = shiftval;
+    }
+    if (!strcasecmp(key, "1sw5"))
+    {
+      data[11] = keyval; data[43] = shiftval;
+    }
+    if (!strcasecmp(key, "1sw2"))
+    {
+      data[12] = keyval; data[44] = shiftval;
+    }
+    if (!strcasecmp(key, "2right"))
+    {
+      data[13] = keyval; data[45] = shiftval;
+    }
+    if (!strcasecmp(key, "1sw4"))
+    {
+      data[14] = keyval; data[46] = shiftval;
+    }
+    if (!strcasecmp(key, "2left"))
+    {
+      data[15] = keyval; data[47] = shiftval;
+    }
+    if (!strcasecmp(key, "1sw6"))
+    {
+      data[16] = keyval; data[48] = shiftval;
+    }
+    if (!strcasecmp(key, "2up"))
+    {
+      data[17] = keyval; data[49] = shiftval;
+    }
+    if (!strcasecmp(key, "2down"))
+    {
+      data[18] = keyval; data[50] = shiftval;
+    }
+    if (!strcasecmp(key, "2sw1"))
+    {
+      data[19] = keyval; data[51] = shiftval;
+    }
+    if (!strcasecmp(key, "1start"))
+    {
+      data[20] = keyval; data[52] = shiftval;
+    }
+    if (!strcasecmp(key, "2sw2"))
+    {
+      data[21] = keyval; data[53] = shiftval;
+    }
+    if (!strcasecmp(key, "2start"))
+    {
+      data[22] = keyval; data[54] = shiftval;
+    }
+    if (!strcasecmp(key, "2sw3"))
+    {
+      data[23] = keyval; data[55] = shiftval;
+    }
+    if (!strcasecmp(key, "1coin"))
+    {
+      data[24] = keyval; data[56] = shiftval;
+    }
+    if (!strcasecmp(key, "2sw4"))
+    {
+      data[25] = keyval; data[57] = shiftval;
+    }
+    if (!strcasecmp(key, "2coin"))
+    {
+      data[26] = keyval; data[58] = shiftval;
+    }
+    if (!strcasecmp(key, "2sw5"))
+    {
+      data[27] = keyval; data[59] = shiftval;
+    }
+    if (!strcasecmp(key, "1sw7"))
+    {
+      data[28] = keyval; data[60] = shiftval;
+    }
+    if (!strcasecmp(key, "2sw6"))
+    {
+      data[29] = keyval; data[61] = shiftval;
+    }
+    if (!strcasecmp(key, "1sw8"))
+    {
+      data[30] = keyval; data[62] = shiftval;
+    }
+    if (!strcasecmp(key, "2sw7"))
+    {
+      data[31] = keyval; data[63] = shiftval;
+    }
+    if (!strcasecmp(key, "2sw8"))
+    {
+      data[32] = keyval; data[63] = shiftval;
+    }
+    if (!strcasecmp(key, "1a"))
+    {
+      data[33] = keyval; data[64] = shiftval;
+    }
+    if (!strcasecmp(key, "1b"))
+    {
+      data[34] = keyval; data[65] = shiftval;
+    }
+    if (!strcasecmp(key, "2a"))
+    {
+      data[35] = keyval; data[66] = shiftval;
+    }
+    if (!strcasecmp(key, "2b"))
+    {
+      data[36] = keyval; data[67] = shiftval;
     }
   }
 }
