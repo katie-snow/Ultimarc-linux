@@ -38,7 +38,6 @@ struct ipac
   int version;
   bool minipac;
   bool ipac32;
-  bool ipac56;
 };
 
 bool isIPACConfig (const char* prodStr, int version, json_object* jobj);
@@ -55,8 +54,23 @@ bool update2015Board (json_object *jobj);
 
 /**
  * Update data array that will be written out to the board.
+ * This is for the boards prior to 2015.
  */
 void populateIPACData(json_object* jobj, unsigned char* data);
+
+/**
+ * Update the data array that will be written out to
+ * the IPAC2 board.  This is for boards going forward
+ * from 2015.
+ */
+void populateIPAC2Data(json_object* jobj, unsigned char* data);
+
+/**
+ * Update the data array that will be written out to
+ * the MinIPAC board.  This is for boards going forward
+ * from 2015.
+ */
+void populateMinIPACData(json_object* jobj, unsigned char* data);
 
 #ifdef __cplusplus
 }
