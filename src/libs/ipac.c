@@ -153,8 +153,8 @@ bool updatePre2015Board (json_object *jobj)
 
   bool result = true;
 
-  char header[4] = {0x50, 0xdd, 0x00, 0x00};
-  char data[IPAC_SIZE_PRE_2015];
+  unsigned char header[4] = {0x50, 0xdd, 0x00, 0x00};
+  unsigned char data[IPAC_SIZE_PRE_2015];
   unsigned char mesg[IPACSERIES_MESG_LENGTH] = {0x03,0,0,0,0};
 
   handle = openUSB(ctx, IPAC_VENDOR_PRE_2015, IPAC_PRODUCT_PRE_2015, IPAC_INTERFACE, 1);
@@ -172,13 +172,13 @@ bool updatePre2015Board (json_object *jobj)
   memcpy (&data, &header, sizeof(header));
 
   /* Macro data */
-  data[61] = 0x30;
+  data[69] = 0x30;
 
   json_object_object_get_ex(jobj, "1/2 shift key", &shiftKey);
   data[4] = convertIPAC(shiftKey);
 
   json_object_object_get_ex(jobj, "pins", &pins);
-  populateIPACData(pins, data);
+  populateBoardArray(PRE_IPAC2_BOARD, pins, &data[4]);
 
   while (pos < (IPAC_SIZE_PRE_2015))
   {
