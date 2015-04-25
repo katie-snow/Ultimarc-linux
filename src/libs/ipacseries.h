@@ -23,10 +23,19 @@ extern "C" {
 
 typedef struct json_object json_object;
 
+enum ipac_boards_t {NO_IPAC_BOARD = -1, PRE_IPAC2_BOARD = 0, PRE_IPAC4_BOARD,
+                    ULTIMATE_IO_BOARD, IPAC2_BOARD, MINIPAC_BOARD, IPAC_4_BOARD,
+                    JPAC_BOARD, HIDIO_BOARD};
+
 /*
  * Determine if the JSON configuration file is one of the PAC Series (2015 PAC boards)
  */
 bool validateIPACSeriesData(json_object* jobj);
+
+/**
+ * Encapsulating function for the two convert functions.
+ */
+unsigned char convertIPACKey (enum ipac_boards_t bid, json_object* jobj);
 
 /**
  * 2015 board and the pre-2015 Ultimate I/O board.  Key value to hex value.
@@ -39,12 +48,19 @@ unsigned char convertIPACSeries (json_object* jobj);
  * NOTE: The IPAC uses scan codes set 2.
  * http://www.quadibloc.com/comp/scan.htm Has the three sets listed out for reference
  */
-char convertIPAC (json_object* jobj);
+unsigned char convertIPAC (json_object* jobj);
 
 /**
  * Update one of the PAC Series boards.  These boards are the 2015 boards from Ultimarc.
  */
 bool updatePACSeriesBoard(json_object* jobj);
+
+void populateBoardArray (enum ipac_boards_t bid, json_object* jobj, unsigned char* data);
+
+/**
+ * Lookup the Lookup Table Key based on the configuration name
+ */
+int decipherLookupKey (char* key);
 
 #ifdef __cplusplus
 }

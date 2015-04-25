@@ -116,6 +116,24 @@ validateIPACSeriesData(json_object* jobj)
 }
 
 unsigned char
+convertIPACKey (enum ipac_boards_t bid, json_object* jobj)
+{
+  switch (bid)
+  {
+    case PRE_IPAC2_BOARD:
+      return convertIPAC(jobj);
+      break;
+
+    case IPAC2_BOARD:
+      return convertIPACSeries(jobj);
+      break;
+
+    default:
+      return 0x00;
+  }
+}
+
+unsigned char
 convertIPACSeries (json_object* jobj)
 {
   unsigned char retval = 0x00;
@@ -448,10 +466,10 @@ convertIPACSeries (json_object* jobj)
   return retval;
 }
 
-char
+unsigned char
 convertIPAC (json_object *jobj)
 {
-  char retval = 0x00;
+  unsigned char retval = 0x00;
   const char* str = json_object_get_string(jobj);
 
   if (strlen(str) > 0)
@@ -717,4 +735,209 @@ convertIPAC (json_object *jobj)
   }
 
   return retval;
+}
+
+/* Array row order
+1up, 1dn, 1rt, 1lt, 2up, 2dn, 2rt, 2lt, 3up, 3dn, 3rt, 3lt, 4up, 4dn, 4rt, 4lt,
+1s1, 1s2, 1s3, 1s4, 1s5, 1s6, 1s7, 1s8, 2s1, 2s2, 2s3, 2s4, 2s5, 2s6, 2s7, 2s8,
+3s1, 3s2, 3s3, 3s4, 3s5, 3s6, 3s7, 3s8, 4s1, 4s2, 4s3, 4s4, 4s5, 4s6, 4s7, 4s8,
+1start, 1coin, 1a, 1b, 2start, 2coin, 2a, 2b, 3start, 3coin, 4start, 4coin */
+
+/* Normal key press value */
+int keyLookupTable[4][60] = {
+/* Pre2015 IPAC2/MinIPAC */
+{1, 6, 2, 4, 13, 14, 9, 11, -1, -1, -1, -1, -1, -1, -1, -1, 3, 8, 5, 10, 7, 12, 24, 26,
+ 15, 17, 19, 21, 23, 25, 27, 28, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
+ -1, -1, -1, 16, 20, 29, 30, 18, 22, 31, 32, -1, -1, -1, -1},
+
+/* Pre2015 IPAC4 */
+{1, 6, 2, 4, 13, 14, 9, 11, 100, 105, 101, 103, 112, 113, 108, 110, 3, 8, 5, 10, 7, 12,
+ 24, 26, 15, 17, 19, 21, 23, 25, 27, 28, 102, 107, 104, 109, 106, 111, 123, 125, 114,
+ 116, 118, 120, 122, 124, 126, 127, 16, 20, -1, -1, 18, 22, -1, -1, 115, 119, 117, 121},
+
+/* Ultimate I/O */
+{5, 7, 1, 3, 28, 26, 32, 30, 17, 19, 23, 23, 31, 29, 10, 9, 8, 6, 4, 2, 24, 22, 20, 18,
+ 48, 46, 44, 42, 12, 50, 49, 11, 37, 39, 33, 35, -1, -1, -1, -1, 27, 25, 47, 45, -1,
+ -1, -1, -1, 40, 36, 13, 15, 38, 34, 41, 43, -1, -1, -1, -1},
+
+/* 2015 IPAC2 */
+{19, 17, 23, 21, 20, 18, 1, 22, -1, -1, -1, -1, -1, -1, -1, -1, 39, 37, 35, 33, 31, 29, 27, 25,
+ 16, 38, 36, 34, 32, 28, 26, 24, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
+ -1, -1, -1, 47, 45, 43, 41, 46, 44, 42, 40, -1, -1, -1, -1}
+
+// 2015 MinIPAC          {},
+// 2015 IPAC4            {},
+// 2015 JPAC             {},
+// 2015 HIDIO            {}
+};
+
+int shiftAdjTable[] = {32, 28, 50, 49, 49, 49, 49, 49};
+int shiftPosAdjTable[] = {-1, -1, 100, 106, 106, 106, 106, 106};
+
+void populateBoardArray (int bid, json_object* jobj, unsigned char* barray)
+{
+  int idx = -1;
+  int lkey = -1;
+
+  unsigned char keyval;
+  char shiftval;
+
+  json_object *tmp = NULL;
+
+  json_object_object_foreach(jobj, key, pin)
+  {
+    lkey = decipherLookupKey(key);
+
+    if (lkey == -1)
+      continue;
+
+    // access table with lkey and bid to get the location to place data in barray
+    idx = keyLookupTable[bid][lkey];
+
+    if (idx == -1)
+    {
+      log_warn("The key given does not have a position for the given board");
+      continue;
+    }
+
+    /* Populate board array with normal key */
+    json_object_object_get_ex(pin, "key", &tmp);
+    barray[idx] = convertIPACKey(bid, tmp);
+
+    /* Populate board array with shift key */
+    json_object_object_get_ex(pin, "shift", &tmp);
+    debug("key:%s,\tvalue idx: %i, value sft: %i", key, idx, idx + shiftAdjTable[bid]);
+    barray[idx + shiftAdjTable[bid]] = convertIPACKey(bid, tmp);
+  }
+}
+
+int decipherLookupKey (char* key)
+{
+  int lkey = -1;
+
+  if (!strcasecmp(key, "1up"))
+    lkey = 0;
+  if (!strcasecmp(key, "1down"))
+    lkey = 1;
+  if (!strcasecmp(key, "1right"))
+    lkey = 2;
+  if (!strcasecmp(key, "1left"))
+    lkey = 3;
+  if (!strcasecmp(key, "2up"))
+    lkey = 4;
+  if (!strcasecmp(key, "2down"))
+    lkey = 5;
+  if (!strcasecmp(key, "2right"))
+    lkey = 6;
+  if (!strcasecmp(key, "2left"))
+    lkey = 7;
+  if (!strcasecmp(key, "3up"))
+    lkey = 8;
+  if (!strcasecmp(key, "3down"))
+    lkey = 9;
+  if (!strcasecmp(key, "3right"))
+    lkey = 10;
+  if (!strcasecmp(key, "3left"))
+    lkey = 11;
+  if (!strcasecmp(key, "4up"))
+    lkey = 12;
+  if (!strcasecmp(key, "4down"))
+    lkey = 13;
+  if (!strcasecmp(key, "4right"))
+    lkey = 14;
+  if (!strcasecmp(key, "4left"))
+    lkey = 15;
+  if (!strcasecmp(key, "1sw1"))
+    lkey = 16;
+  if (!strcasecmp(key, "1sw2"))
+    lkey = 17;
+  if (!strcasecmp(key, "1sw3"))
+    lkey = 18;
+  if (!strcasecmp(key, "1sw4"))
+    lkey = 19;
+  if (!strcasecmp(key, "1sw5"))
+    lkey = 20;
+  if (!strcasecmp(key, "1sw6"))
+    lkey = 21;
+  if (!strcasecmp(key, "1sw7"))
+    lkey = 22;
+  if (!strcasecmp(key, "1sw8"))
+    lkey = 23;
+  if (!strcasecmp(key, "2sw1"))
+    lkey = 24;
+  if (!strcasecmp(key, "2sw2"))
+    lkey = 25;
+  if (!strcasecmp(key, "2sw3"))
+    lkey = 26;
+  if (!strcasecmp(key, "2sw4"))
+    lkey = 27;
+  if (!strcasecmp(key, "2sw5"))
+    lkey = 28;
+  if (!strcasecmp(key, "2sw6"))
+    lkey = 29;
+  if (!strcasecmp(key, "2sw7"))
+    lkey = 30;
+  if (!strcasecmp(key, "2sw8"))
+    lkey = 31;
+  if (!strcasecmp(key, "3sw1"))
+    lkey = 32;
+  if (!strcasecmp(key, "3sw2"))
+    lkey = 33;
+  if (!strcasecmp(key, "3sw3"))
+    lkey = 34;
+  if (!strcasecmp(key, "3sw4"))
+    lkey = 35;
+  if (!strcasecmp(key, "3sw5"))
+    lkey = 36;
+  if (!strcasecmp(key, "3sw6"))
+    lkey = 37;
+  if (!strcasecmp(key, "3sw7"))
+    lkey = 38;
+  if (!strcasecmp(key, "3sw8"))
+    lkey = 39;
+  if (!strcasecmp(key, "4sw1"))
+    lkey = 40;
+  if (!strcasecmp(key, "4sw2"))
+    lkey = 41;
+  if (!strcasecmp(key, "4sw3"))
+    lkey = 42;
+  if (!strcasecmp(key, "4sw4"))
+    lkey = 43;
+  if (!strcasecmp(key, "4sw5"))
+    lkey = 44;
+  if (!strcasecmp(key, "4sw6"))
+    lkey = 45;
+  if (!strcasecmp(key, "4sw7"))
+    lkey = 46;
+  if (!strcasecmp(key, "4sw8"))
+    lkey = 47;
+  if (!strcasecmp(key, "1start"))
+    lkey = 48;
+  if (!strcasecmp(key, "1coin"))
+    lkey = 49;
+  if (!strcasecmp(key, "1a"))
+    lkey = 50;
+  if (!strcasecmp(key, "1b"))
+    lkey = 51;
+  if (!strcasecmp(key, "2start"))
+    lkey = 52;
+  if (!strcasecmp(key, "2coin"))
+    lkey = 53;
+  if (!strcasecmp(key, "2a"))
+    lkey = 54;
+  if (!strcasecmp(key, "2b"))
+    lkey = 55;
+  if (!strcasecmp(key, "3start"))
+    lkey = 56;
+  if (!strcasecmp(key, "3coin"))
+    lkey = 57;
+  if (!strcasecmp(key, "4start"))
+    lkey = 58;
+  if (!strcasecmp(key, "4coin"))
+    lkey = 59;
+
+  if (lkey == -1)
+    log_warn("unable to decipher pin '%s'.", key);
+
+  return lkey;
 }
