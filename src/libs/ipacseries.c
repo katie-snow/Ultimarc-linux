@@ -761,9 +761,9 @@ int keyLookupTable[4][60] = {
  -1, -1, -1, 40, 36, 13, 15, 38, 34, 41, 43, -1, -1, -1, -1},
 
 /* 2015 IPAC2 */
-{19, 17, 23, 21, 20, 18, 1, 22, -1, -1, -1, -1, -1, -1, -1, -1, 39, 37, 35, 33, 31, 29, 27, 25,
- 16, 38, 36, 34, 32, 28, 26, 24, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
- -1, -1, -1, 47, 45, 43, 41, 46, 44, 42, 40, -1, -1, -1, -1}
+{20, 18, 24, 22, 21, 19, 1, 23, -1, -1, -1, -1, -1, -1, -1, -1, 40, 38, 36, 34, 32, 30, 28, 26,
+ 17, 39, 37, 35, 33, 29, 27, 25, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
+ -1, -1, -1, 48, 46, 44, 42, 47, 45, 43, 41, -1, -1, -1, -1}
 
 // 2015 MinIPAC          {},
 // 2015 IPAC4            {},
@@ -771,8 +771,8 @@ int keyLookupTable[4][60] = {
 // 2015 HIDIO            {}
 };
 
-int shiftAdjTable[] = {32, 28, 50, 49, 49, 49, 49, 49};
-int shiftPosAdjTable[] = {-1, -1, 100, 106, 106, 106, 106, 106};
+int shiftAdjTable[] = {32, 28, 50, 50, 49, 49, 49, 49};
+int shiftPosAdjTable[] = {-1, -1, 100, 100, 106, 107, 10, 106};
 
 void populateBoardArray (int bid, json_object* jobj, unsigned char* barray)
 {
@@ -806,12 +806,13 @@ void populateBoardArray (int bid, json_object* jobj, unsigned char* barray)
 
     /* Populate board array with shift key */
     json_object_object_get_ex(pin, "shift", &tmp);
-    debug("key:%s,\tvalue idx: %i, value sft: %i", key, idx, idx + shiftAdjTable[bid]);
     barray[idx + shiftAdjTable[bid]] = convertIPACKey(bid, tmp);
+
+    debug("key:%s,\tvalue idx: %i, value sft: %i", key, idx, idx + shiftAdjTable[bid]);
   }
 }
 
-int decipherLookupKey (char* key)
+int decipherLookupKey (const char* key)
 {
   int lkey = -1;
 
@@ -937,7 +938,24 @@ int decipherLookupKey (char* key)
     lkey = 59;
 
   if (lkey == -1)
-    log_warn("unable to decipher pin '%s'.", key);
+  {
+    log_info("Unable to decipher pin '%s'.", key);
+  }
 
   return lkey;
+}
+
+void populateShiftPosition (enum ipac_boards_t bid, json_object* key, unsigned char* barray)
+{
+  int idx = -1;
+  int lkey = -1;
+
+  lkey = decipherLookupKey(json_object_get_string(key));
+
+  if (lkey == -1)
+    return;
+
+  // access table with lkey and bid to get the location to place data in barray
+  idx = keyLookupTable[bid][lkey];
+  barray[idx + shiftPosAdjTable[bid]] = 0x41;
 }

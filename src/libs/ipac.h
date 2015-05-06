@@ -17,7 +17,7 @@
 extern "C" {
 #endif
 
-/* Required items in the json file for IPAC cards (IPAC2, IPAC4, MINI-PAC)*/
+/* Required items in the json file for IPAC2 and MINIPAC cards */
 #define IPAC_STR_2 "ipac2"
 #define IPAC_STR_M "mini-pac"
 
@@ -28,7 +28,6 @@ extern "C" {
 #define IPAC_2_PRODUCT        0x0420
 #define IPAC_M_PRODUCT        0x0440
 #define IPAC_SIZE_PRE_2015    100
-#define IPAC_SIZE_2015        260
 #define IPAC_INTERFACE        2
 
 typedef struct json_object json_object;
@@ -38,7 +37,6 @@ struct ipac
   int version;
   bool minipac;
   bool ipac32;
-  bool ipac56;
 };
 
 bool isIPACConfig (const char* prodStr, int version, json_object* jobj);
@@ -52,11 +50,6 @@ bool updateBoardIPAC (json_object *jobj);
 bool updatePre2015Board (json_object *jobj);
 
 bool update2015Board (json_object *jobj);
-
-/**
- * Update data array that will be written out to the board.
- */
-void populateIPACData(json_object* jobj, unsigned char* data);
 
 #ifdef __cplusplus
 }
