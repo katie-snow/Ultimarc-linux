@@ -116,7 +116,14 @@ bool updateBoardIPAC (json_object *jobj)
   switch (pIPAC.version)
   {
   case 1:
-    result = updatePre2015Board (jobj);
+    barray = calloc(IPACSERIES_SIZE, sizeof(unsigned char));
+
+    if (barray != NULL)
+    {
+      updatePre2015Board (jobj, barray);
+      result = writeIPACSeriesUSB(barray, IPAC_SIZE_PRE_2015, IPAC_VENDOR_PRE_2015, IPAC_PRODUCT_PRE_2015, IPAC_INTERFACE, 1, true);
+    }
+
     break;
 
   case 2:
@@ -127,13 +134,13 @@ bool updateBoardIPAC (json_object *jobj)
       if (pIPAC.ipac32)
       {
         update2015IPACBoard(jobj, barray);
-        result = writeIPACSeriesUSB(barray, IPACSERIES_SIZE, IPAC_VENDOR_2015, IPAC_2_PRODUCT, IPACSERIES_INTERFACE, 1, false);
+        result = writeIPACSeriesUSB(barray, IPACSERIES_SIZE, IPAC_VENDOR_2015, IPAC_2_PRODUCT, IPACSERIES_INTERFACE, 1, true);
       }
 
       if (pIPAC.minipac)
       {
         update2015MinIPACBoard(jobj, barray);
-        result = writeIPACSeriesUSB(barray, IPACSERIES_SIZE, IPAC_VENDOR_2015, IPAC_M_PRODUCT, IPACSERIES_INTERFACE, 1, false);
+        result = writeIPACSeriesUSB(barray, IPACSERIES_SIZE, IPAC_VENDOR_2015, IPAC_M_PRODUCT, IPACSERIES_INTERFACE, 1, true);
       }
 
       free(barray);
@@ -144,73 +151,23 @@ bool updateBoardIPAC (json_object *jobj)
   return result;
 }
 
-bool updatePre2015Board (json_object *jobj)
+void updatePre2015Board (json_object *jobj, unsigned char* barray)
 {
-  libusb_context *ctx = NULL;
-  struct libusb_device_handle *handle = NULL;
-
   json_object *shiftKey = NULL;
   json_object *pins = NULL;
 
-  int ipac_idx = 4;
-  int pos = 0;
-  int ret = 0;
-
-  bool result = true;
-
-  unsigned char header[4] = {0x50, 0xdd, 0x00, 0x00};
-  unsigned char data[IPAC_SIZE_PRE_2015];
-  unsigned char mesg[IPACSERIES_MESG_LENGTH] = {0x03,0,0,0,0};
-
-/*
-  handle = openUSB(ctx, IPAC_VENDOR_PRE_2015, IPAC_PRODUCT_PRE_2015, IPAC_INTERFACE, 1);
-
-  if (!handle)
-  {
-    result = false;
-    goto error;
-  }
-*/
-
-  /* Setup data to send to board */
-  memset (&data, 0, sizeof(data));
-
   /* Header data */
-  memcpy (&data, &header, sizeof(header));
+  unsigned char header[4] = {0x50, 0xdd, 0x00, 0x00};
+  memcpy (barray, &header, sizeof(header));
 
   /* Macro data */
-  data[69] = 0x30;
+  barray[69] = 0x30;
 
   json_object_object_get_ex(jobj, "1/2 shift key", &shiftKey);
-  data[4] = convertIPAC(shiftKey);
+  barray[4] = convertIPAC(shiftKey);
 
   json_object_object_get_ex(jobj, "pins", &pins);
-  populateBoardArray(PRE_IPAC2_BOARD, pins, &data[4]);
-
-  while (pos < (IPAC_SIZE_PRE_2015))
-  {
-    memcpy(&mesg[1], &data[pos], 4);
-    pos+=4;
-
-    debug ("Writing out the following data (%i): %x, %x, %x, %x, %x", pos, mesg[0], mesg[1], mesg[2], mesg[3], mesg[4]);
-/*
-    ret = libusb_control_transfer(handle,
-                                  UM_REQUEST_TYPE,
-                                  UM_REQUEST,
-                                  IPACSERIES_VALUE,
-                                  IPAC_INTERFACE,
-                                  mesg,
-                                  IPACSERIES_MESG_LENGTH,
-                                  UM_TIMEOUT);
-    debug ("Write result: %i", ret); */
-  }
-
-exit:
-  //closeUSB(ctx, handle, IPAC_INTERFACE);
-  return result;
-
-error:
-  return result;
+  populateBoardArray(PRE_IPAC2_BOARD, pins, &barray[4]);
 }
 
 void update2015IPACBoard (json_object *jobj, unsigned char* barray)
