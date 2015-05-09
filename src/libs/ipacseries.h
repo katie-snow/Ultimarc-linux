@@ -66,6 +66,11 @@ int decipherLookupKey (const char* key);
 
 void populateShiftPostion (enum ipac_boards_t bid, json_object* key, unsigned char* barray);
 
+/**
+ * IPAC Series generic USB write function
+ */
+bool writeIPACSeriesUSB (unsigned char* barray, int size, uint16_t vendor, uint16_t product, int interface, int autoconnect, bool transfer);
+
 #ifdef __cplusplus
 }
 #endif

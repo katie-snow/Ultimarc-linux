@@ -125,6 +125,7 @@ convertIPACKey (enum ipac_boards_t bid, json_object* jobj)
       break;
 
     case IPAC2_BOARD:
+    case MINIPAC_BOARD:
       return convertIPACSeries(jobj);
       break;
 
@@ -744,7 +745,7 @@ convertIPAC (json_object *jobj)
 1start, 1coin, 1a, 1b, 2start, 2coin, 2a, 2b, 3start, 3coin, 4start, 4coin */
 
 /* Normal key press value */
-int keyLookupTable[4][60] = {
+int keyLookupTable[5][60] = {
 /* Pre2015 IPAC2/MinIPAC */
 {1, 6, 2, 4, 13, 14, 9, 11, -1, -1, -1, -1, -1, -1, -1, -1, 3, 8, 5, 10, 7, 12, 24, 26,
  15, 17, 19, 21, 23, 25, 27, 28, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
@@ -761,18 +762,22 @@ int keyLookupTable[4][60] = {
  -1, -1, -1, 40, 36, 13, 15, 38, 34, 41, 43, -1, -1, -1, -1},
 
 /* 2015 IPAC2 */
-{20, 18, 24, 22, 21, 19, 1, 23, -1, -1, -1, -1, -1, -1, -1, -1, 40, 38, 36, 34, 32, 30, 28, 26,
- 17, 39, 37, 35, 33, 29, 27, 25, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
- -1, -1, -1, 48, 46, 44, 42, 47, 45, 43, 41, -1, -1, -1, -1}
+{20, 18, 24, 22, 21, 19, 1, 23, -1, -1, -1, -1, -1, -1, -1, -1, 40, 38, 36, 34, 32, 30,
+ 28, 26, 17, 39, 37, 35, 33, 29, 27, 25, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
+ -1, -1, -1, -1, 48, 46, 44, 42, 47, 45, 43, 41, -1, -1, -1, -1},
 
-// 2015 MinIPAC          {},
+/* 2015 MinIPAC */
+{11, 9, 15, 13, 19, 17, 23, 21, -1, -1, -1, -1, -1, -1, -1, -1, 10, 12, 14, 16, 31, 29,
+ 27, 25, 18, 20, 22, 24, 2, 4, 6, 8, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
+ -1, -1, -1, 26, 30, 7, 5, 28, 32, 3, 1, -1, -1, -1, -1}
+
 // 2015 IPAC4            {},
 // 2015 JPAC             {},
 // 2015 HIDIO            {}
 };
 
-int shiftAdjTable[] = {32, 28, 50, 50, 49, 49, 49, 49};
-int shiftPosAdjTable[] = {-1, -1, 100, 100, 106, 107, 10, 106};
+int shiftAdjTable[] = {32, 28, 50, 50, 50, 49, 49, 49};
+int shiftPosAdjTable[] = {-1, -1, 100, 100, 100, 107, 10, 106};
 
 void populateBoardArray (int bid, json_object* jobj, unsigned char* barray)
 {
@@ -958,4 +963,57 @@ void populateShiftPosition (enum ipac_boards_t bid, json_object* key, unsigned c
   // access table with lkey and bid to get the location to place data in barray
   idx = keyLookupTable[bid][lkey];
   barray[idx + shiftPosAdjTable[bid]] = 0x41;
+}
+
+bool writeIPACSeriesUSB (unsigned char* barray, int size, uint16_t vendor, uint16_t product, int interface, int autoconnect, bool transfer)
+{
+  libusb_context *ctx = NULL;
+  struct libusb_device_handle *handle = NULL;
+  unsigned char mesg[IPACSERIES_MESG_LENGTH] = {0x03,0,0,0,0};
+
+  bool result = true;
+
+  int pos = 0;
+  int ret = 0;
+
+  if (transfer)
+  {
+    handle = openUSB(ctx, vendor, product, interface, autoconnect);
+
+    if (handle)
+    {
+      result = false;
+      goto error;
+    }
+  }
+
+  while (pos < size)
+  {
+    memcpy(&mesg[1], &barray[pos], 4);
+
+    debug ("Writing (%i): %x, %x, %x, %x", pos, mesg[1], mesg[2], mesg[3], mesg[4]);
+    if (transfer)
+    {
+      ret = libusb_control_transfer(handle,
+                                    UM_REQUEST_TYPE,
+                                    UM_REQUEST,
+                                    IPACSERIES_VALUE,
+                                    interface,
+                                    mesg,
+                                    IPACSERIES_MESG_LENGTH,
+                                    UM_TIMEOUT);
+      debug ("Write result: %i", ret);
+    }
+    pos+=4;
+  }
+
+exit:
+  if (transfer)
+  {
+    closeUSB(ctx, handle, interface);
+  }
+  return result;
+
+error:
+  return result;
 }

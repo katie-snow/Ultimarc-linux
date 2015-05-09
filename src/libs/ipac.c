@@ -10,6 +10,7 @@
 
 /* C */
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 
 /* Unix */
@@ -110,6 +111,7 @@ bool validateIPacData(json_object* jobj)
 bool updateBoardIPAC (json_object *jobj)
 {
   bool result = false;
+  unsigned char* barray = NULL;
 
   switch (pIPAC.version)
   {
@@ -118,9 +120,27 @@ bool updateBoardIPAC (json_object *jobj)
     break;
 
   case 2:
-    result = update2015Board(jobj);
+    barray = calloc(IPACSERIES_SIZE, sizeof(unsigned char));
+
+    if (barray != NULL)
+    {
+      if (pIPAC.ipac32)
+      {
+        update2015IPACBoard(jobj, barray);
+        result = writeIPACSeriesUSB(barray, IPACSERIES_SIZE, IPAC_VENDOR_2015, IPAC_2_PRODUCT, IPACSERIES_INTERFACE, 1, false);
+      }
+
+      if (pIPAC.minipac)
+      {
+        update2015MinIPACBoard(jobj, barray);
+        result = writeIPACSeriesUSB(barray, IPACSERIES_SIZE, IPAC_VENDOR_2015, IPAC_M_PRODUCT, IPACSERIES_INTERFACE, 1, false);
+      }
+
+      free(barray);
+    }
     break;
   }
+
   return result;
 }
 
@@ -142,6 +162,7 @@ bool updatePre2015Board (json_object *jobj)
   unsigned char data[IPAC_SIZE_PRE_2015];
   unsigned char mesg[IPACSERIES_MESG_LENGTH] = {0x03,0,0,0,0};
 
+/*
   handle = openUSB(ctx, IPAC_VENDOR_PRE_2015, IPAC_PRODUCT_PRE_2015, IPAC_INTERFACE, 1);
 
   if (!handle)
@@ -149,6 +170,7 @@ bool updatePre2015Board (json_object *jobj)
     result = false;
     goto error;
   }
+*/
 
   /* Setup data to send to board */
   memset (&data, 0, sizeof(data));
@@ -171,6 +193,7 @@ bool updatePre2015Board (json_object *jobj)
     pos+=4;
 
     debug ("Writing out the following data (%i): %x, %x, %x, %x, %x", pos, mesg[0], mesg[1], mesg[2], mesg[3], mesg[4]);
+/*
     ret = libusb_control_transfer(handle,
                                   UM_REQUEST_TYPE,
                                   UM_REQUEST,
@@ -179,87 +202,60 @@ bool updatePre2015Board (json_object *jobj)
                                   mesg,
                                   IPACSERIES_MESG_LENGTH,
                                   UM_TIMEOUT);
-    debug ("Write result: %i", ret);
+    debug ("Write result: %i", ret); */
   }
 
 exit:
-  closeUSB(ctx, handle, IPAC_INTERFACE);
+  //closeUSB(ctx, handle, IPAC_INTERFACE);
   return result;
 
 error:
   return result;
 }
 
-bool update2015Board (json_object *jobj)
+void update2015IPACBoard (json_object *jobj, unsigned char* barray)
 {
-  libusb_context *ctx = NULL;
-  struct libusb_device_handle *handle = NULL;
-
   json_object *shiftKey = NULL;
   json_object *pins = NULL;
 
-  int ipac_idx = 4;
-  int pos = 0;
-  int ret = 0;
-  int shiftPos = 0;
-
-  uint16_t product;
-
-  bool result = true;
-
+  /* Header data */
   char header[4] = {0x50, 0xdd, 0x0f, 0x00};
-  char data[IPACSERIES_SIZE];
-  unsigned char mesg[IPACSERIES_MESG_LENGTH] = {0x03,0,0,0,0};
-
-  handle = openUSB(ctx, IPAC_VENDOR_2015, IPAC_2_PRODUCT, IPACSERIES_INTERFACE, 1);
-
-  if (!handle)
-  {
-    result = false;
-    goto error;
-  }
+  memcpy (barray, &header, sizeof(header));
 
   /* Setup data to send to board */
-  memset (&data, 0, sizeof(data));
-  memset (&data, 0xff, 55);
-  memset (&data[104], 1, 1);
-  memset (&data[120], 1, 14);
-  memset (&data[135], 1, 13);
-  memset (&data[150], 1, 1);
-  memset (&data[151], 0x41, 1);
-  memset (&data[159], 0x7f, 8);
-
-  /* Header data */
-  memcpy (&data, &header, sizeof(header));
+  memset (&barray[4], 0xff, 51);
+  memset (&barray[104], 1, 1);
+  memset (&barray[120], 1, 14);
+  memset (&barray[135], 1, 13);
+  memset (&barray[150], 1, 1);
+  memset (&barray[151], 0x41, 1);
+  memset (&barray[159], 0x7f, 8);
 
   json_object_object_get_ex(jobj, "1/2 shift key", &shiftKey);
-  populateShiftPosition(IPAC2_BOARD, shiftKey, &data[3]);
+  populateShiftPosition(IPAC2_BOARD, shiftKey, &barray[3]);
 
   json_object_object_get_ex(jobj, "pins", &pins);
-  populateBoardArray(IPAC2_BOARD, pins, &data[3]);
+  populateBoardArray(IPAC2_BOARD, pins, &barray[3]);
+}
 
-  while (pos < (IPACSERIES_SIZE))
-  {
-    memcpy(&mesg[1], &data[pos], 4);
+void update2015MinIPACBoard (json_object *jobj, unsigned char* barray)
+{
+  json_object *shiftKey = NULL;
+  json_object *pins = NULL;
 
-    debug ("Writing out the following data (%i): %x, %x, %x, %x", pos, mesg[1], mesg[2], mesg[3], mesg[4]);
-    ret = libusb_control_transfer(handle,
-                                  UM_REQUEST_TYPE,
-                                  UM_REQUEST,
-                                  IPACSERIES_VALUE,
-                                  IPACSERIES_INTERFACE,
-                                  mesg,
-                                  IPACSERIES_MESG_LENGTH,
-                                  UM_TIMEOUT);
-    debug ("Write result: %i", ret);
+  /* Header data */
+  char header[4] = {0x50, 0xdd, 0x0f, 0x00};
+  memcpy (barray, &header, sizeof(header));
 
-    pos+=4;
-  }
+  /* Setup data to send to board */
+  memset (&barray[54], 0xff, 32);
+  memset (&barray[104], 1, 32);
+  memset (&barray[154], 0x7f, 8);
+  memset (&barray[162], 0x10, 8);
 
-exit:
-  closeUSB(ctx, handle, IPAC_INTERFACE);
-  return result;
+  json_object_object_get_ex(jobj, "1/2 shift key", &shiftKey);
+  populateShiftPosition(MINIPAC_BOARD, shiftKey, &barray[3]);
 
-error:
-  return result;
+  json_object_object_get_ex(jobj, "pins", &pins);
+  populateBoardArray(MINIPAC_BOARD, pins, &barray[3]);
 }

@@ -19,7 +19,7 @@ extern "C" {
 
 /* Required items in the json file for IPAC2 and MINIPAC cards */
 #define IPAC_STR_2 "ipac2"
-#define IPAC_STR_M "mini-pac"
+#define IPAC_STR_M "minipac"
 
 /* Required items for writing out through the USB port */
 #define IPAC_VENDOR_PRE_2015  0xD208
@@ -49,7 +49,9 @@ bool updateBoardIPAC (json_object *jobj);
 
 bool updatePre2015Board (json_object *jobj);
 
-bool update2015Board (json_object *jobj);
+void update2015IPACBoard (json_object *jobj, unsigned char* barray);
+
+void update2015MinIPACBoard (json_object *jobj, unsigned char* barray);
 
 #ifdef __cplusplus
 }
