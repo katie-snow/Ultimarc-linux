@@ -111,6 +111,7 @@ bool validateIPacData(json_object* jobj)
 bool updateBoardIPAC (json_object *jobj)
 {
   bool result = false;
+  int bprod = 0;
   unsigned char* barray = NULL;
 
   switch (pIPAC.version)
@@ -133,14 +134,19 @@ bool updateBoardIPAC (json_object *jobj)
     {
       if (pIPAC.ipac32)
       {
+        bprod = IPAC_2_PRODUCT;
         update2015IPACBoard(jobj, barray);
-        result = writeIPACSeriesUSB(barray, IPACSERIES_SIZE, IPAC_VENDOR_2015, IPAC_2_PRODUCT, IPACSERIES_INTERFACE, 1, true);
       }
 
       if (pIPAC.minipac)
       {
+        bprod = IPAC_M_PRODUCT;
         update2015MinIPACBoard(jobj, barray);
-        result = writeIPACSeriesUSB(barray, IPACSERIES_SIZE, IPAC_VENDOR_2015, IPAC_M_PRODUCT, IPACSERIES_INTERFACE, 1, true);
+      }
+
+      if (bprod != 0)
+      {
+        result = writeIPACSeriesUSB(barray, IPACSERIES_SIZE, IPAC_VENDOR_2015, bprod, IPACSERIES_INTERFACE, 1, false);
       }
 
       free(barray);
