@@ -980,7 +980,7 @@ bool writeIPACSeriesUSB (unsigned char* barray, int size, uint16_t vendor, uint1
   {
     handle = openUSB(ctx, vendor, product, interface, autoconnect);
 
-    if (handle)
+    if (!handle)
     {
       result = false;
       goto error;
