@@ -117,11 +117,11 @@ bool updateBoardIPAC (json_object *jobj)
   switch (pIPAC.version)
   {
   case 1:
-    barray = calloc(IPACSERIES_SIZE, sizeof(unsigned char));
+    barray = calloc(IPAC_SIZE_PRE_2015, sizeof(unsigned char));
 
     if (barray != NULL)
     {
-      updatePre2015Board (jobj, barray);
+      updatePre2015IPACBoard (jobj, barray);
       result = writeIPACSeriesUSB(barray, IPAC_SIZE_PRE_2015, IPAC_VENDOR_PRE_2015, IPAC_PRODUCT_PRE_2015, IPAC_INTERFACE, 1, true);
     }
 
@@ -135,7 +135,7 @@ bool updateBoardIPAC (json_object *jobj)
       if (pIPAC.ipac32)
       {
         bprod = IPAC_2_PRODUCT;
-        update2015IPACBoard(jobj, barray);
+        update2015IPAC2Board(jobj, barray);
       }
 
       if (pIPAC.minipac)
@@ -146,7 +146,8 @@ bool updateBoardIPAC (json_object *jobj)
 
       if (bprod != 0)
       {
-        result = writeIPACSeriesUSB(barray, IPACSERIES_SIZE, IPAC_VENDOR_2015, bprod, IPACSERIES_INTERFACE, 1, false);
+        result = writeIPACSeriesUSB(barray, IPACSERIES_SIZE, IPAC_VENDOR_2015,
+                                    bprod, IPACSERIES_INTERFACE, 1, true);
       }
 
       free(barray);
@@ -157,7 +158,7 @@ bool updateBoardIPAC (json_object *jobj)
   return result;
 }
 
-void updatePre2015Board (json_object *jobj, unsigned char* barray)
+void updatePre2015IPACBoard (json_object *jobj, unsigned char* barray)
 {
   json_object *shiftKey = NULL;
   json_object *pins = NULL;
@@ -176,7 +177,7 @@ void updatePre2015Board (json_object *jobj, unsigned char* barray)
   populateBoardArray(PRE_IPAC2_BOARD, pins, &barray[4]);
 }
 
-void update2015IPACBoard (json_object *jobj, unsigned char* barray)
+void update2015IPAC2Board (json_object *jobj, unsigned char* barray)
 {
   json_object *shiftKey = NULL;
   json_object *pins = NULL;
@@ -211,10 +212,11 @@ void update2015MinIPACBoard (json_object *jobj, unsigned char* barray)
   memcpy (barray, &header, sizeof(header));
 
   /* Setup data to send to board */
-  memset (&barray[54], 0xff, 32);
-  memset (&barray[104], 1, 32);
-  memset (&barray[154], 0x7f, 8);
-  memset (&barray[162], 0x10, 8);
+  memset (&barray[4], 0xff, 32);
+  memset (&barray[40], 0xff, 28);
+  memset (&barray[104], 1, 52);
+  memset (&barray[158], 0x7f, 8);
+  memset (&barray[166], 0x10, 8);
 
   json_object_object_get_ex(jobj, "1/2 shift key", &shiftKey);
   populateShiftPosition(MINIPAC_BOARD, shiftKey, &barray[3]);

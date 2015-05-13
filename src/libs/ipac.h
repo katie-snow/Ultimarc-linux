@@ -47,9 +47,9 @@ bool validateIPacData(json_object* jobj);
  */
 bool updateBoardIPAC (json_object *jobj);
 
-void updatePre2015Board (json_object *jobj, unsigned char* barray);
+void updatePre2015IPACBoard (json_object *jobj, unsigned char* barray);
 
-void update2015IPACBoard (json_object *jobj, unsigned char* barray);
+void update2015IPAC2Board (json_object *jobj, unsigned char* barray);
 
 void update2015MinIPACBoard (json_object *jobj, unsigned char* barray);
 
