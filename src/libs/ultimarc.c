@@ -18,7 +18,6 @@
 
 #include "ultimarc.h"
 #include "ipac.h"
-#include "ipac4.h"
 #include "pacLED.h"
 #include "ultistik.h"
 #include "pacdrive.h"
@@ -97,13 +96,7 @@ bool updateUltimarcBoard (json_object* jobj)
 
       if (isIPACConfig(prodstr, version, jobj))
       {
-        log_info ("Updating IPAC2/MinIPAC board...");
         ret = updateBoardIPAC(jobj);
-      }
-      else if (isIPAC4Config(prodstr, version, jobj))
-      {
-        log_info ("Updating IPAC4 board...");
-        ret = updateBoardIPAC4(jobj);
       }
       else if (isIPACUltimateConfig(prodstr, version, jobj))
       {
