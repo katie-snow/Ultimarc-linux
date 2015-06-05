@@ -27,6 +27,7 @@ extern "C" {
 #define IPAC_VENDOR_2015      0xD209
 #define IPAC_PRODUCT_PRE_2015 0x0310
 #define IPAC_2_PRODUCT        0x0420
+#define IPAC_4_PRODUCT        0x0430
 #define IPAC_M_PRODUCT        0x0440
 #define IPAC_SIZE_PRE_2015    100
 #define IPAC_INTERFACE        2
@@ -57,6 +58,8 @@ void updatePre2015IPAC4Board (json_object *jobj, unsigned char* barray);
 void update2015IPAC2Board (json_object *jobj, unsigned char* barray);
 
 void update2015MinIPACBoard (json_object *jobj, unsigned char* barray);
+
+void update2015IPAC4Board (json_object *jobj, unsigned char* barray);
 
 #ifdef __cplusplus
 }

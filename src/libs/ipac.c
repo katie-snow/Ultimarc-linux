@@ -38,8 +38,7 @@ bool isIPACConfig (const char* prodStr, int version, json_object* jobj)
   {
     isBoardCfg = validateIPACData(jobj);
   }
-
-  if (pIPAC.ipac4)
+  else if (pIPAC.ipac4)
   {
     isBoardCfg = validateIPAC4Data(jobj);
   }
@@ -215,7 +214,7 @@ bool updateBoardIPAC (json_object *jobj)
         updatePre2015IPACBoard (jobj, barray);
         result = writeIPACSeriesUSB(barray, IPAC_SIZE_PRE_2015,
                                     IPAC_VENDOR_PRE_2015, IPAC_PRODUCT_PRE_2015,
-                                    IPAC_INTERFACE, 1, false);
+                                    IPAC_INTERFACE, 1, true);
         free(barray);
       }
     }
@@ -231,7 +230,7 @@ bool updateBoardIPAC (json_object *jobj)
         log_info ("%i", barray[5]);
         result = writeIPACSeriesUSB(barray, (IPAC_SIZE_PRE_2015 * 2),
                                     IPAC_VENDOR_PRE_2015, IPAC_PRODUCT_PRE_2015,
-                                    IPAC_INTERFACE, 1, false);
+                                    IPAC_INTERFACE, 1, true);
 
         free(barray);
       }
@@ -245,14 +244,23 @@ bool updateBoardIPAC (json_object *jobj)
     {
       if (pIPAC.ipac2)
       {
+        log_info ("Updating IPAC2 board...");
         bprod = IPAC_2_PRODUCT;
         update2015IPAC2Board(jobj, barray);
       }
 
-      if (pIPAC.minipac)
+      else if (pIPAC.minipac)
       {
+        log_info ("Updating MinIPAC board...");
         bprod = IPAC_M_PRODUCT;
         update2015MinIPACBoard(jobj, barray);
+      }
+
+      else if (pIPAC.ipac4)
+      {
+        log_info ("Updating IPAC4 board...");
+        bprod = IPAC_4_PRODUCT;
+        update2015IPAC4Board(jobj, barray);
       }
 
       if (bprod != 0)
@@ -359,4 +367,29 @@ void update2015MinIPACBoard (json_object *jobj, unsigned char* barray)
 
   json_object_object_get_ex(jobj, "pins", &pins);
   populateBoardArray(MINIPAC_BOARD, pins, &barray[3]);
+}
+
+void update2015IPAC4Board (json_object *jobj, unsigned char* barray)
+{
+  json_object *shiftKey = NULL;
+  json_object *pins = NULL;
+
+  /* Header data */
+  char header[4] = {0x50, 0xdd, 0x0f, 0x00};
+  memcpy (barray, &header, sizeof(header));
+
+  /* Setup data to send to board */
+  memset (&barray[132], 1, 24);
+  memset (&barray[158], 1, 14);
+  memset (&barray[176], 1, 1);
+  memset (&barray[178], 1, 18);
+
+  json_object_object_get_ex(jobj, "1/2 shift key", &shiftKey);
+  populateShiftPosition(IPAC4_BOARD, shiftKey, &barray[3]);
+
+  json_object_object_get_ex(jobj, "3/4 shift key", &shiftKey);
+  populateShiftPosition(IPAC4_BOARD, shiftKey, &barray[3]);
+
+  json_object_object_get_ex(jobj, "pins", &pins);
+  populateBoardArray(IPAC4_BOARD, pins, &barray[3]);
 }
