@@ -21,100 +21,6 @@
 #include "dbg.h"
 #include "ipacseries.h"
 
-bool
-validateIPACSeriesData(json_object* jobj)
-{
-  bool valid = true;
-
-  json_object* cfg = NULL;
-  json_object* pins = NULL;
-  json_object* pin = NULL;
-  json_object* tmp = NULL;
-  char* key = NULL;
-
-  if (json_object_object_get_ex(jobj, "Config", &cfg))
-  {
-    if (json_object_object_get_ex(cfg, "pins", &pins))
-    {
-      json_object_object_foreach(pins, key, pin)
-      {
-        if (strcmp(key, "Height") == 0 || strcmp(key, "Width") == 0)
-        {
-          continue;
-        }
-
-        if (json_object_object_get_ex(pin, "Title", &tmp))
-        {
-          if (!json_object_is_type(tmp, json_type_string))
-          {
-            valid = false;
-            log_err ("%s 'Title' is not defined as a string", key);
-          }
-        }
-        else
-        {
-          valid = false;
-          log_err ("%s 'Title' is not defined in the configuration file", key);
-        }
-
-        if (json_object_object_get_ex(pin, "Options", &tmp))
-        {
-          if (!json_object_is_type(tmp, json_type_int))
-          {
-            valid = false;
-            log_err ("%s 'Options' is not defined as an integer", key);
-          }
-        }
-        else
-        {
-          valid = false;
-          log_err ("%s 'Options' is not defined in the configuration file", key);
-        }
-
-        if (json_object_object_get_ex(pin, "Sequence", &tmp))
-        {
-          if (!json_object_is_type(tmp, json_type_int))
-          {
-            valid = false;
-            log_err ("%s 'Sequence' is not defined as a integer", key);
-          }
-        }
-        else
-        {
-          valid = false;
-          log_err ("%s 'Sequence' is not defined in the configuration file", key);
-        }
-
-        if (json_object_object_get_ex(pin, "QuadPartner", &tmp))
-        {
-          if (!json_object_is_type(tmp, json_type_int))
-          {
-            valid = false;
-            log_err ("%s 'QuadPartner' is not defined as a integer", key);
-          }
-        }
-        else
-        {
-          valid = false;
-          log_err ("%s 'QuadPartner' is not defined in the configuration file", key);
-        }
-      }
-    }
-    else
-    {
-      valid = false;
-      log_err ("'pins' is not defined in the configuration file");
-    }
-  }
-  else
-  {
-    valid = false;
-    log_err ("'Config' is not defined in the configuration file");
-  }
-
-  return valid;
-}
-
 unsigned char
 convertIPACKey (enum ipac_boards_t bid, json_object* jobj)
 {
@@ -785,12 +691,11 @@ int keyLookupTable[7][62] = {
 {25, 29, 37, 33, 27, 31, 39, 35, -1, -1, -1, -1, -1, -1, -1, -1, 17, 21, 1, 5, 20, 18,
  40, 38, 19, 23, 3, 7, 32, 30, 34, 36, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
  -1, -1, -1, -1, 45, 41, -1, -1, 47, 43, -1, -1, -1, -1, -1, -1, 13, 15},
-// 2015 HIDIO
-// {}
+/* 2015 HIDIO {} */
 };
 
-int shiftAdjTable[] = {32, 28, 50, 50, 50, 64, 50, 49};
-int shiftPosAdjTable[] = {-1, -1, 100, 100, 100, 128, 100, 106};
+int shiftAdjTable[] = {32, 28, 50, 50, 50, 64, 50, -1};
+int shiftPosAdjTable[] = {-1, -1, 100, 100, 100, 128, 100, -1};
 
 void populateBoardArray (int bid, json_object* jobj, unsigned char* barray)
 {

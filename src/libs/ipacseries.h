@@ -29,11 +29,6 @@ enum ipac_boards_t {NO_IPAC_BOARD = -1, PRE_IPAC2_BOARD = 0, PRE_IPAC4_BOARD,
                     ULTIMATE_IO_BOARD, IPAC2_BOARD, MINIPAC_BOARD, IPAC4_BOARD,
                     JPAC_BOARD, HIDIO_BOARD};
 
-/*
- * Determine if the JSON configuration file is one of the PAC Series (2015 PAC boards)
- */
-bool validateIPACSeriesData(json_object* jobj);
-
 /**
  * Encapsulating function for the two convert functions.
  */
