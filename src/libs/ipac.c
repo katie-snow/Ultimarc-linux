@@ -33,20 +33,25 @@ bool isIPACConfig (const char* prodStr, int version, json_object* jobj)
   pIPAC.ipac2 = (strcmp(prodStr, IPAC_STR_2) == 0);
   pIPAC.minipac = (strcmp(prodStr, IPAC_STR_M) == 0);
   pIPAC.ipac4 = (strcmp(prodStr, IPAC_STR_4) == 0);
+  pIPAC.jpac = (strcmp(prodStr, JPAC_STR) == 0);
 
   if (pIPAC.ipac2 || pIPAC.minipac)
   {
-    isBoardCfg = validateIPACData(jobj);
+    isBoardCfg = validateIPACData(jobj, 32);
   }
   else if (pIPAC.ipac4)
   {
     isBoardCfg = validateIPAC4Data(jobj);
   }
+  else if (pIPAC.jpac)
+  {
+    isBoardCfg = validateIPACData(jobj, 30);
+  }
 
   return isBoardCfg;
 }
 
-bool validateIPACData(json_object* jobj)
+bool validateIPACData(json_object* jobj, int size)
 {
   bool valid = true;
   json_object* tmp = NULL;
@@ -102,9 +107,9 @@ bool validateIPACData(json_object* jobj)
         }
       }
 
-      if (pinCount != 32)
+      if (pinCount != size)
       {
-        log_err("Incorrect number of pin objects.  Needs to be 32 entries.");
+        log_err("Incorrect number of pin objects.  Needs to be %i entries.", size);
         valid = false;
       }
     }
@@ -262,6 +267,12 @@ bool updateBoardIPAC (json_object *jobj)
         bprod = IPAC_4_PRODUCT;
         update2015IPAC4Board(jobj, barray);
       }
+      else if (pIPAC.jpac)
+      {
+        log_info ("Updating JPAC board...");
+        bprod = JPAC_PRODUCT;
+        update2015JPACBoard(jobj, barray);
+      }
 
       if (bprod != 0)
       {
@@ -392,4 +403,41 @@ void update2015IPAC4Board (json_object *jobj, unsigned char* barray)
 
   json_object_object_get_ex(jobj, "pins", &pins);
   populateBoardArray(IPAC4_BOARD, pins, &barray[3]);
+}
+
+void update2015JPACBoard (json_object *jobj, unsigned char* barray)
+{
+  json_object *shiftKey = NULL;
+  json_object *pins = NULL;
+
+  /* Header data */
+  char header[4] = {0x50, 0xdd, 0x0f, 0x00};
+  memcpy (barray, &header, sizeof(header));
+
+  /* Setup data to send to board */
+  memset (&barray[4], 0xff, 50);
+  memset (&barray[14], 0, 1);
+  memset (&barray[104], 1, 1);
+  memset (&barray[106], 1, 1);
+  memset (&barray[108], 1, 1);
+  memset (&barray[110], 1, 1);
+  memset (&barray[116], 1, 1);
+  memset (&barray[118], 1, 1);
+  memset (&barray[120], 1, 5);
+  memset (&barray[128], 1, 1);
+  memset (&barray[130], 1, 1);
+  memset (&barray[132], 1, 13);
+  memset (&barray[146], 1, 1);
+  memset (&barray[148], 1, 1);
+  memset (&barray[150], 1, 1);
+  memset (&barray[154], 0x0a, 1);
+  memset (&barray[155], 0x80, 7);
+  memset (&barray[162], 0x0a, 1);
+  memset (&barray[163], 0x10, 7);
+
+  json_object_object_get_ex(jobj, "1/2 shift key", &shiftKey);
+  populateShiftPosition(JPAC_BOARD, shiftKey, &barray[3]);
+
+  json_object_object_get_ex(jobj, "pins", &pins);
+  populateBoardArray(JPAC_BOARD, pins, &barray[3]);
 }

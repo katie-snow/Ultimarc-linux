@@ -17,10 +17,11 @@
 extern "C" {
 #endif
 
-/* Required items in the json file for IPAC2, MINIPAC and IPAC4 cards */
+/* Required items in the json file for IPAC2, MINIPAC, IPAC4 and JPAC cards */
 #define IPAC_STR_2 "ipac2"
 #define IPAC_STR_M "minipac"
 #define IPAC_STR_4 "ipac4"
+#define JPAC_STR   "jpac"
 
 /* Required items for writing out through the USB port */
 #define IPAC_VENDOR_PRE_2015  0xD208
@@ -29,6 +30,7 @@ extern "C" {
 #define IPAC_2_PRODUCT        0x0420
 #define IPAC_4_PRODUCT        0x0430
 #define IPAC_M_PRODUCT        0x0440
+#define JPAC_PRODUCT          0x0450
 #define IPAC_SIZE_PRE_2015    100
 #define IPAC_INTERFACE        2
 
@@ -40,10 +42,11 @@ struct ipac
   bool minipac;
   bool ipac2;
   bool ipac4;
+  bool jpac;
 };
 
 bool isIPACConfig (const char* prodStr, int version, json_object* jobj);
-bool validateIPACData(json_object* jobj);
+bool validateIPACData(json_object* jobj, int size);
 bool validateIPAC4Data(json_object* jobj);
 
 /*
@@ -60,6 +63,8 @@ void update2015IPAC2Board (json_object *jobj, unsigned char* barray);
 void update2015MinIPACBoard (json_object *jobj, unsigned char* barray);
 
 void update2015IPAC4Board (json_object *jobj, unsigned char* barray);
+
+void update2015JPACBoard (json_object *jobj, unsigned char* barray);
 
 #ifdef __cplusplus
 }
