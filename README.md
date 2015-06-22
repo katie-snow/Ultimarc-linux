@@ -4,7 +4,7 @@ Ultimarc-linux
 Library and command line utility
 
 #### Introduction:
-This utility will configure the following Ultimarc boards; PACDrive, IPAC Ultimate, I-Pac 2, I-Pac 4, Mini-Pac, UltraStik 360 and PacLED64.  It uses json configuration files to configure the different boards.  It also supports the ability to change the device ID of the UltraStik 360 boards.  Allowing for the configuring of four different boards at once.
+This utility will configure the following Ultimarc boards; PACDrive, IPAC Ultimate, I-Pac 2, I-Pac 4, Mini-Pac, JPAC, UltraStik 360 and PacLED64.  There is support for the PAC 2015 boards and the previous generation of the PAC boards.  It uses json configuration files to configure the different boards.  It also supports the ability to change the device ID of the UltraStik 360 boards.  Allowing for the configuring of four different boards at once.
 
 #### Required Libraries
 To build this tool the following libraries need to be install on your system.  
@@ -25,13 +25,10 @@ If you need extra debug statements for the IPac boards then run the following
 * make
 
 The executable will be in src/umtool directory and named umtool.out.
+* ./umtool.out ipac2.json
 
 #### Project TODO's:
-* Support the JPAC board (2015 board)
-* The following boards have had firmware upgrades as of 2015 and are configured differently.  
-  * IPAC2
-  * IPAC4
-  * Mini-PAC.
+* 2015 U-HID board support
 * MACRO support for boards that use MACRO's.
 * Flash rate for PACLED64 board.
 
