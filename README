@@ -1,7 +1,7 @@
 Library and command line utility
 
 Introduction:
-This utility will configure the following Ultimarc boards; I-Pac 2, I-Pac 4, Mini-Pac, UltraStik 360, PACDrive, PacLED64 and IPAC Ultimate.  It uses JSON configuration files to configure the different boards.  It also supports the ability to change the device ID of the UltraStik 360 boards.  Allowing for the configuring of four different boards at once.
+This utility will configure the following Ultimarc boards; I-Pac 2, I-Pac 4, Mini-Pac, JPac, UltraStik 360, PACDrive, PacLED64 and IPAC Ultimate.  It uses JSON configuration files to configure the different boards.  It also supports the ability to change the device ID of the UltraStik 360 boards.  Allowing for the configuring of four different boards at once.
 
 Required Libraries
 To build this tool the following libraries need to be install on your system.  
@@ -17,16 +17,17 @@ To build this project, at the base directory run the following commands
 ./configure
 make
 The executable will be in src/umtool directory and named umtool.out.
+./umtool.out ipac2.json
 
 Configuration Files:
 There are example configuration files for each of the boards in the src/umtool directory.  The following is information about each configuration file.
 
-I-Pac/Mini-Pac:
-version: This should be set to 1 always.  This is used for version control of the configuration file in the future
-product: This is either 'ipac2', 'ipac4', or 'mini-pac' depending on what board you are configuring
+PAC boards:
+version: This should be set to 1 or 2.  This is used for determining which version of the board to configure
+product: This is either 'ipac2', 'ipac4', 'minipac', 'jpac',  depending on what board you are configuring
 1/2 shift key: Key that will be used as the shift key for player 1 and 2
 3/4 shift key: Key that will be used as the shift key for player 3 and 4
-pins: list of all the pins(keys) that are on the board.  There are 32 entries for the IPAC2 and MINI-IPAC, 56 for IPAC4
+pins: list of all the pins(keys) that are on the board.  Please modify the example configuration files.
 
 
 UltiStik 360:
@@ -76,7 +77,7 @@ led: an array that is variable size.  It states which leds will be turned on.  V
 
 IPAC Ultimate:
 version: This should be set to 1 always.  This is used for version control of the configuration file in the future
-product: The PACDrive product number in string format “1500”
+product: The IPAC Ultimate product number in string format “0410”
 board id: This number is 1-4.  This states which board this configuration is for
 pins: The array size is 48 and each entry is a object (key, value).  The value is an array with the format string, string, boolean.  The key value matches or closely matches the names printed on the board.
 x threshold: An integer between 0 and 127 inclusive.  This is a required entry when pins array is defined

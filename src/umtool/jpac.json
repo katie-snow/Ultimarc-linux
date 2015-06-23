@@ -1,0 +1,127 @@
+{
+  "version" : 2,
+  "product" : "jpac",
+  "1/2 shift key" : "1sw8",
+  "pins": {
+    "1right": {
+      "key": "right",
+      "shift": "x"
+    },
+    "1up": {
+      "key": "up",
+      "shift": "v"
+    },
+    "1down": {
+      "key": "down",
+      "shift": "w"
+    },
+    "1left": {
+      "key": "left",
+      "shift": "y"
+    },
+    "1sw1": {
+      "key": "l",
+      "shift": "z"
+    },
+    "1sw2": {
+      "key": "t",
+      "shift": "d"
+    },
+    "1sw3": {
+      "key": "a",
+      "shift": "w"
+    },
+    "1sw4": {
+      "key": "s",
+      "shift": "4"
+    },
+    "1sw5": {
+      "key": "z",
+      "shift": "w"
+    },
+    "1sw6": {
+      "key": "x",
+      "shift": "g"
+    },
+    "1sw7": {
+      "key": "c",
+      "shift": "k"
+    },
+    "1sw8": {
+      "key": "v",
+      "shift": "e"
+    },
+    "1start": {
+      "key": "1",
+      "shift": "p"
+    },
+    "1coin": {
+      "key": "5",
+      "shift": "f"
+    },
+    "1test": {
+      "key": "r",
+      "shift": "s"
+    },
+    "2right": {
+      "key": "g",
+      "shift": "b"
+    },
+    "2up": {
+      "key": "r",
+      "shift": "o"
+    },
+    "2down": {
+      "key": "f",
+      "shift": "8"
+    },
+    "2left": {
+      "key": "d",
+      "shift": "1"
+    },
+    "2sw1": {
+      "key": "a",
+      "shift": "9"
+    },
+    "2sw2": {
+      "key": "s",
+      "shift": "3"
+    },
+    "2sw3": {
+      "key": "q",
+      "shift": "6"
+    },
+    "2sw4": {
+      "key": "w",
+      "shift": "7"
+    },
+    "2sw5": {
+      "key": "i",
+      "shift": "v"
+    },
+    "2sw6": {
+      "key": "k",
+      "shift": "h"
+    },
+    "2sw7": {
+      "key": "j",
+      "shift": "c"
+    },
+    "2sw8": {
+      "key": "r",
+      "shift": "2"
+    },
+    "2start": {
+      "key": "2",
+      "shift": "t"
+    },
+    "2coin": {
+      "key": "6",
+      "shift": "i"
+    },
+    "2test": {
+      "key": "7",
+      "shift": "r"
+    },
+  }
+}

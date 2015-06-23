@@ -20,13 +20,19 @@ extern "C" {
 #define IPACSERIES_VERSION     2
 #define IPACSERIES_VALUE       0x0203
 #define IPACSERIES_MESG_LENGTH 5
+#define IPACSERIES_INTERFACE   3
+#define IPACSERIES_SIZE        260
 
 typedef struct json_object json_object;
 
-/*
- * Determine if the JSON configuration file is one of the PAC Series (2015 PAC boards)
+enum ipac_boards_t {NO_IPAC_BOARD = -1, PRE_IPAC2_BOARD = 0, PRE_IPAC4_BOARD,
+                    ULTIMATE_IO_BOARD, IPAC2_BOARD, MINIPAC_BOARD, IPAC4_BOARD,
+                    JPAC_BOARD, HIDIO_BOARD};
+
+/**
+ * Encapsulating function for the two convert functions.
  */
-bool validateIPACSeriesData(json_object* jobj);
+unsigned char convertIPACKey (enum ipac_boards_t bid, json_object* jobj);
 
 /**
  * 2015 board and the pre-2015 Ultimate I/O board.  Key value to hex value.
@@ -39,12 +45,26 @@ unsigned char convertIPACSeries (json_object* jobj);
  * NOTE: The IPAC uses scan codes set 2.
  * http://www.quadibloc.com/comp/scan.htm Has the three sets listed out for reference
  */
-char convertIPAC (json_object* jobj);
+unsigned char convertIPAC (json_object* jobj);
 
 /**
  * Update one of the PAC Series boards.  These boards are the 2015 boards from Ultimarc.
  */
 bool updatePACSeriesBoard(json_object* jobj);
+
+void populateBoardArray (enum ipac_boards_t bid, json_object* jobj, unsigned char* barray);
+
+/**
+ * Lookup the Lookup Table Key based on the configuration name
+ */
+int decipherLookupKey (const char* key);
+
+void populateShiftPostion (enum ipac_boards_t bid, json_object* key, unsigned char* barray);
+
+/**
+ * IPAC Series generic USB write function
+ */
+bool writeIPACSeriesUSB (unsigned char* barray, int size, uint16_t vendor, uint16_t product, int interface, int autoconnect, bool transfer);
 
 #ifdef __cplusplus
 }

@@ -17,18 +17,21 @@
 extern "C" {
 #endif
 
-/* Required items in the json file for IPAC cards (IPAC2, IPAC4, MINI-PAC)*/
+/* Required items in the json file for IPAC2, MINIPAC, IPAC4 and JPAC cards */
 #define IPAC_STR_2 "ipac2"
-#define IPAC_STR_M "mini-pac"
+#define IPAC_STR_M "minipac"
+#define IPAC_STR_4 "ipac4"
+#define JPAC_STR   "jpac"
 
 /* Required items for writing out through the USB port */
 #define IPAC_VENDOR_PRE_2015  0xD208
 #define IPAC_VENDOR_2015      0xD209
 #define IPAC_PRODUCT_PRE_2015 0x0310
 #define IPAC_2_PRODUCT        0x0420
+#define IPAC_4_PRODUCT        0x0430
 #define IPAC_M_PRODUCT        0x0440
+#define JPAC_PRODUCT          0x0450
 #define IPAC_SIZE_PRE_2015    100
-#define IPAC_SIZE_2015        260
 #define IPAC_INTERFACE        2
 
 typedef struct json_object json_object;
@@ -37,26 +40,31 @@ struct ipac
 {
   int version;
   bool minipac;
-  bool ipac32;
+  bool ipac2;
+  bool ipac4;
+  bool jpac;
 };
 
 bool isIPACConfig (const char* prodStr, int version, json_object* jobj);
-bool validateIPacData(json_object* jobj);
+bool validateIPACData(json_object* jobj, int size);
+bool validateIPAC4Data(json_object* jobj);
 
 /*
  * Writes the data out to the board.
  */
 bool updateBoardIPAC (json_object *jobj);
 
-bool updatePre2015Board (json_object *jobj);
+void updatePre2015IPACBoard (json_object *jobj, unsigned char* barray);
 
-bool update2015Board (json_object *jobj);
+void updatePre2015IPAC4Board (json_object *jobj, unsigned char* barray);
 
-/**
- * Update data array that will be written out to the board.
- * This is for the boards prior to 2015.
- */
-void populateIPACData(json_object* jobj, unsigned char* data);
+void update2015IPAC2Board (json_object *jobj, unsigned char* barray);
+
+void update2015MinIPACBoard (json_object *jobj, unsigned char* barray);
+
+void update2015IPAC4Board (json_object *jobj, unsigned char* barray);
+
+void update2015JPACBoard (json_object *jobj, unsigned char* barray);
 
 /**
  * Update the data array that will be written out to

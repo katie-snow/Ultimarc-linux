@@ -10,6 +10,7 @@
 
 /* C */
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 
 /* Unix */
@@ -29,33 +30,28 @@ bool isIPACConfig (const char* prodStr, int version, json_object* jobj)
   bool isBoardCfg = false;
 
   pIPAC.version = version;
-  pIPAC.ipac32 = (strcmp(prodStr, IPAC_STR_2) == 0);
+  pIPAC.ipac2 = (strcmp(prodStr, IPAC_STR_2) == 0);
   pIPAC.minipac = (strcmp(prodStr, IPAC_STR_M) == 0);
+  pIPAC.ipac4 = (strcmp(prodStr, IPAC_STR_4) == 0);
+  pIPAC.jpac = (strcmp(prodStr, JPAC_STR) == 0);
 
-  if (pIPAC.ipac32 || pIPAC.minipac)
+  if (pIPAC.ipac2 || pIPAC.minipac)
   {
-    isBoardCfg = validateIPacData(jobj);
-  /*
-    switch (version)
-    {
-    case 1:
-      isBoardCfg = validateIPacData(jobj);
-      break;
-
-    case 2:
-      isBoardCfg = validateIPACSeriesData(jobj);
-      break;
-
-    default:
-      log_info ("Configuration file version '%i' incorrect", version);
-    }
-    */
+    isBoardCfg = validateIPACData(jobj, 32);
+  }
+  else if (pIPAC.ipac4)
+  {
+    isBoardCfg = validateIPAC4Data(jobj);
+  }
+  else if (pIPAC.jpac)
+  {
+    isBoardCfg = validateIPACData(jobj, 30);
   }
 
   return isBoardCfg;
 }
 
-bool validateIPacData(json_object* jobj)
+bool validateIPACData(json_object* jobj, int size)
 {
   bool valid = true;
   json_object* tmp = NULL;
@@ -111,9 +107,91 @@ bool validateIPacData(json_object* jobj)
         }
       }
 
-      if (pinCount != 32)
+      if (pinCount != size)
       {
-        log_err("Incorrect number of pin objects.  Needs to be 32 entries.");
+        log_err("Incorrect number of pin objects.  Needs to be %i entries.", size);
+        valid = false;
+      }
+    }
+  }
+
+  return valid;
+}
+
+bool validateIPAC4Data (json_object* jobj)
+{
+  bool valid = true;
+
+  json_object* tmp = NULL;
+  json_object* pin = NULL;
+  json_object* pins = NULL;
+
+  int pinCount = 0;
+  int tmpCount = 0;
+  char* key = NULL;
+  char* tmpKey = NULL;
+
+  /* Required */
+  if (json_object_object_get_ex(jobj, "1/2 shift key", &tmp))
+  {
+    if (!json_object_is_type(tmp, json_type_string))
+    {
+      log_err ("1/2 shift key needs to be of type string");
+      valid = false;
+    }
+  }
+  else
+  {
+    log_err ("'1/2 shift key' is not defined in the configuration");
+    valid = false;
+  }
+
+  if (json_object_object_get_ex(jobj, "3/4 shift key", &tmp))
+  {
+    if (!json_object_is_type(tmp, json_type_string))
+    {
+      log_err ("3/4 shift key needs to be of type string");
+      valid = false;
+    }
+  }
+  else
+  {
+    log_err ("'3/4 shift key' is not defined in the configuration");
+    valid = false;
+  }
+
+  /* Required */
+  if (json_object_object_get_ex(jobj, "pins", &pins))
+  {
+    if (json_object_is_type(pins, json_type_object))
+    {
+      json_object_object_foreach(pins, key, pin)
+      {
+        pinCount++;
+
+        tmpCount = 0;
+        if (json_object_is_type(pin, json_type_object))
+        {
+          json_object_object_foreach(pin, tmpKey, tmp)
+          {
+            tmpCount++;
+            if (!json_object_is_type(tmp, json_type_string))
+            {
+              valid = false;
+            }
+          }
+
+          if (tmpCount != 2)
+          {
+            log_err("pin '%s' has to many children entities.", key);
+            valid = false;
+          }
+        }
+      }
+
+      if (pinCount != 56)
+      {
+        log_err("Incorrect number of pin objects.  Needs to be 56 entries.");
         valid = false;
       }
     }
@@ -125,320 +203,243 @@ bool validateIPacData(json_object* jobj)
 bool updateBoardIPAC (json_object *jobj)
 {
   bool result = false;
+  int bprod = 0;
+  unsigned char* barray = NULL;
 
   switch (pIPAC.version)
   {
   case 1:
-    result = updatePre2015Board (jobj);
+    if (pIPAC.ipac2 || pIPAC.minipac)
+    {
+      log_info ("Updating IPAC2/MinIPAC board...");
+      barray = calloc(IPAC_SIZE_PRE_2015, sizeof(unsigned char));
+
+      if (barray != NULL)
+      {
+        updatePre2015IPACBoard (jobj, barray);
+        result = writeIPACSeriesUSB(barray, IPAC_SIZE_PRE_2015,
+                                    IPAC_VENDOR_PRE_2015, IPAC_PRODUCT_PRE_2015,
+                                    IPAC_INTERFACE, 1, true);
+        free(barray);
+      }
+    }
+
+    if (pIPAC.ipac4)
+    {
+      log_info ("Updating IPAC4 board...");
+      barray = calloc((IPAC_SIZE_PRE_2015 * 2), sizeof(unsigned char));
+
+      if (barray != NULL)
+      {
+        updatePre2015IPAC4Board(jobj, barray);
+        log_info ("%i", barray[5]);
+        result = writeIPACSeriesUSB(barray, (IPAC_SIZE_PRE_2015 * 2),
+                                    IPAC_VENDOR_PRE_2015, IPAC_PRODUCT_PRE_2015,
+                                    IPAC_INTERFACE, 1, true);
+
+        free(barray);
+      }
+    }
     break;
 
   case 2:
-    result = update2015Board(jobj);
+    barray = calloc(IPACSERIES_SIZE, sizeof(unsigned char));
+
+    if (barray != NULL)
+    {
+      if (pIPAC.ipac2)
+      {
+        log_info ("Updating IPAC2 board...");
+        bprod = IPAC_2_PRODUCT;
+        update2015IPAC2Board(jobj, barray);
+      }
+
+      else if (pIPAC.minipac)
+      {
+        log_info ("Updating MinIPAC board...");
+        bprod = IPAC_M_PRODUCT;
+        update2015MinIPACBoard(jobj, barray);
+      }
+
+      else if (pIPAC.ipac4)
+      {
+        log_info ("Updating IPAC4 board...");
+        bprod = IPAC_4_PRODUCT;
+        update2015IPAC4Board(jobj, barray);
+      }
+      else if (pIPAC.jpac)
+      {
+        log_info ("Updating JPAC board...");
+        bprod = JPAC_PRODUCT;
+        update2015JPACBoard(jobj, barray);
+      }
+
+      if (bprod != 0)
+      {
+        result = writeIPACSeriesUSB(barray, IPACSERIES_SIZE, IPAC_VENDOR_2015,
+                                    bprod, IPACSERIES_INTERFACE, 1, true);
+      }
+
+      free(barray);
+    }
     break;
   }
+
   return result;
 }
 
-bool updatePre2015Board (json_object *jobj)
+void updatePre2015IPACBoard (json_object *jobj, unsigned char* barray)
 {
-  libusb_context *ctx = NULL;
-  struct libusb_device_handle *handle = NULL;
-
   json_object *shiftKey = NULL;
   json_object *pins = NULL;
 
-  int ipac_idx = 4;
-  int pos = 0;
-  int ret = 0;
-
-  bool result = true;
-
-  char header[4] = {0x50, 0xdd, 0x00, 0x00};
-  char data[IPAC_SIZE_PRE_2015];
-  unsigned char mesg[IPACSERIES_MESG_LENGTH] = {0x03,0,0,0,0};
-
-  handle = openUSB(ctx, IPAC_VENDOR_PRE_2015, IPAC_PRODUCT_PRE_2015, IPAC_INTERFACE, 1);
-
-  if (!handle)
-  {
-    result = false;
-    goto error;
-  }
-
-  /* Setup data to send to board */
-  memset (&data, 0, sizeof(data));
-
   /* Header data */
-  memcpy (&data, &header, sizeof(header));
+  unsigned char header[4] = {0x50, 0xdd, 0x00, 0x00};
+  memcpy (barray, &header, sizeof(header));
 
   /* Macro data */
-  data[61] = 0x30;
+  barray[69] = 0x30;
 
   json_object_object_get_ex(jobj, "1/2 shift key", &shiftKey);
-  data[4] = convertIPAC(shiftKey);
+  barray[4] = convertIPAC(shiftKey);
 
   json_object_object_get_ex(jobj, "pins", &pins);
-  populateIPACData(pins, data);
-
-  while (pos < IPAC_SIZE_PRE_2015)
-  {
-    memcpy(&mesg[1], &data[pos], 4);
-    pos+=4;
-
-    debug ("Writing out the following data (%i): %x, %x, %x, %x, %x", pos, mesg[0], mesg[1], mesg[2], mesg[3], mesg[4]);
-    ret = libusb_control_transfer(handle,
-                                  UM_REQUEST_TYPE,
-                                  UM_REQUEST,
-                                  IPACSERIES_VALUE,
-                                  IPAC_INTERFACE,
-                                  mesg,
-                                  IPACSERIES_MESG_LENGTH,
-                                  UM_TIMEOUT);
-    debug ("Write result: %i", ret);
-  }
-
-exit:
-  closeUSB(ctx, handle, IPAC_INTERFACE);
-  return result;
-
-error:
-  return result;
+  populateBoardArray(PRE_IPAC2_BOARD, pins, &barray[4]);
 }
 
-bool update2015Board (json_object *jobj)
+void updatePre2015IPAC4Board (json_object *jobj, unsigned char* barray)
 {
-  libusb_context *ctx = NULL;
-  struct libusb_device_handle *handle = NULL;
-
   json_object *shiftKey = NULL;
   json_object *pins = NULL;
 
-  int ipac_idx = 4;
-  int pos = 0;
-  int ret = 0;
-
-  uint16_t product = 0;
-
-  bool result = true;
-
-  char header[4] = {0x50, 0xdd, 0x0f, 0x00};
-  char data[IPAC_SIZE_2015];
-  unsigned char mesg[IPACSERIES_MESG_LENGTH] = {0x03,0,0,0,0};
-
-  if (pIPAC.ipac32)
-  {
-    product = IPAC_2_PRODUCT;
-  }
-  if (pIPAC.ipac32)
-  {
-    product = IPAC_M_PRODUCT;
-  }
-
-/*
-  handle = openUSB(ctx, IPAC_VENDOR_2015, product, IPAC_INTERFACE, 1);
-
-  if (!handle)
-  {
-    result = false;
-    goto error;
-  }
-*/
-
-  /* Setup data to send to board */
-  memset (&data, 0, sizeof(data));
-
   /* Header data */
-  memcpy (&data, &header, sizeof(header));
+  unsigned char header[4] = {0x50, 0xdd, 0x00, 0x00};
+  memcpy (barray, &header, sizeof(header));
+  memcpy (&barray[100], &header, sizeof(header));
 
-  /* Shift key data */
-  memset (&data[107], 1, 47);
+  /* Macro data */
+  barray[61] = 0x30;
+  barray[161] = 0xFB;
+  barray[162] = 0x01;
+
+  json_object_object_get_ex(jobj, "1/2 shift key", &shiftKey);
+  barray[4] = convertIPAC(shiftKey);
+
+  json_object_object_get_ex(jobj, "3/4 shift key", &shiftKey);
+  barray[104] = convertIPAC(shiftKey);
 
   json_object_object_get_ex(jobj, "pins", &pins);
-  if (pIPAC.ipac32)
-  {
-    populateIPAC2Data(pins, &data[3]);
-  }
-  if (pIPAC.minipac)
-  {
-    populateMinIPACData(pins, data);
-  }
-
-  while (pos < IPAC_SIZE_2015)
-  {
-    memcpy(&mesg[1], &data[pos], 4);
-    pos+=4;
-
-    debug ("Writing out the following data (%i): %x, %x, %x, %x, %x", pos, mesg[0], mesg[1], mesg[2], mesg[3], mesg[4]);
-    /*
-    ret = libusb_control_transfer(handle,
-                                  UM_REQUEST_TYPE,
-                                  UM_REQUEST,
-                                  IPACSERIES_VALUE,
-                                  IPAC_INTERFACE,
-                                  mesg,
-                                  IPACSERIES_MESG_LENGTH,
-                                  UM_TIMEOUT);
-    debug ("Write result: %i", ret);
-    */
-  }
-
-exit:
-  closeUSB(ctx, handle, IPAC_INTERFACE);
-  return result;
-
-error:
-  return result;
+  populateBoardArray(PRE_IPAC4_BOARD, pins, &barray[4]);
 }
 
-void populateIPACData(json_object* jobj, unsigned char* data)
+void update2015IPAC2Board (json_object *jobj, unsigned char* barray)
 {
-  int keypos = 0;
-  int shiftpos = 0;
+  json_object *shiftKey = NULL;
+  json_object *pins = NULL;
 
-  unsigned char keyval;
-  char shiftval;
+  /* Header data */
+  char header[4] = {0x50, 0xdd, 0x0f, 0x00};
+  memcpy (barray, &header, sizeof(header));
 
-  json_object *tmp = NULL;
+  /* Setup data to send to board */
+  memset (&barray[4], 0xff, 51);
+  memset (&barray[104], 1, 1);
+  memset (&barray[120], 1, 14);
+  memset (&barray[135], 1, 13);
+  memset (&barray[150], 1, 1);
+  memset (&barray[151], 0x41, 1);
+  memset (&barray[159], 0x7f, 8);
 
-  json_object_object_foreach(jobj, key, pin)
-  {
-    /* Key value */
-    json_object_object_get_ex(pin, "key", &tmp);
-    keyval = convertIPAC(tmp);
+  json_object_object_get_ex(jobj, "1/2 shift key", &shiftKey);
+  populateShiftPosition(IPAC2_BOARD, shiftKey, &barray[3]);
 
-    /* Shift key value */
-    json_object_object_get_ex(pin, "shift", &tmp);
-    shiftval = convertIPAC(tmp);
+  json_object_object_get_ex(jobj, "pins", &pins);
+  populateBoardArray(IPAC2_BOARD, pins, &barray[3]);
+}
 
-    if (!strcasecmp(key, "1up"))
-    {
-      data[5] = keyval; data[37] = shiftval;
-    }
-    if (!strcasecmp(key, "1right"))
-    {
-      data[6] = keyval; data[38] = shiftval;
-    }
-    if (!strcasecmp(key, "1sw1"))
-    {
-      data[7] = keyval; data[39] = shiftval;
-    }
-    if (!strcasecmp(key, "1left"))
-    {
-      data[8] = keyval; data[40] = shiftval;
-    }
-    if (!strcasecmp(key, "1sw3"))
-    {
-      data[9] = keyval; data[41] = shiftval;
-    }
-    if (!strcasecmp(key, "1down"))
-    {
-      data[10] = keyval; data[42] = shiftval;
-    }
-    if (!strcasecmp(key, "1sw5"))
-    {
-      data[11] = keyval; data[43] = shiftval;
-    }
-    if (!strcasecmp(key, "1sw2"))
-    {
-      data[12] = keyval; data[44] = shiftval;
-    }
-    if (!strcasecmp(key, "2right"))
-    {
-      data[13] = keyval; data[45] = shiftval;
-    }
-    if (!strcasecmp(key, "1sw4"))
-    {
-      data[14] = keyval; data[46] = shiftval;
-    }
-    if (!strcasecmp(key, "2left"))
-    {
-      data[15] = keyval; data[47] = shiftval;
-    }
-    if (!strcasecmp(key, "1sw6"))
-    {
-      data[16] = keyval; data[48] = shiftval;
-    }
-    if (!strcasecmp(key, "2up"))
-    {
-      data[17] = keyval; data[49] = shiftval;
-    }
-    if (!strcasecmp(key, "2down"))
-    {
-      data[18] = keyval; data[50] = shiftval;
-    }
-    if (!strcasecmp(key, "2sw1"))
-    {
-      data[19] = keyval; data[51] = shiftval;
-    }
-    if (!strcasecmp(key, "1start"))
-    {
-      data[20] = keyval; data[52] = shiftval;
-    }
-    if (!strcasecmp(key, "2sw2"))
-    {
-      data[21] = keyval; data[53] = shiftval;
-    }
-    if (!strcasecmp(key, "2start"))
-    {
-      data[22] = keyval; data[54] = shiftval;
-    }
-    if (!strcasecmp(key, "2sw3"))
-    {
-      data[23] = keyval; data[55] = shiftval;
-    }
-    if (!strcasecmp(key, "1coin"))
-    {
-      data[24] = keyval; data[56] = shiftval;
-    }
-    if (!strcasecmp(key, "2sw4"))
-    {
-      data[25] = keyval; data[57] = shiftval;
-    }
-    if (!strcasecmp(key, "2coin"))
-    {
-      data[26] = keyval; data[58] = shiftval;
-    }
-    if (!strcasecmp(key, "2sw5"))
-    {
-      data[27] = keyval; data[59] = shiftval;
-    }
-    if (!strcasecmp(key, "1sw7"))
-    {
-      data[28] = keyval; data[60] = shiftval;
-    }
-    if (!strcasecmp(key, "2sw6"))
-    {
-      data[29] = keyval; data[61] = shiftval;
-    }
-    if (!strcasecmp(key, "1sw8"))
-    {
-      data[30] = keyval; data[62] = shiftval;
-    }
-    if (!strcasecmp(key, "2sw7"))
-    {
-      data[31] = keyval; data[63] = shiftval;
-    }
-    if (!strcasecmp(key, "2sw8"))
-    {
-      data[32] = keyval; data[63] = shiftval;
-    }
-    if (!strcasecmp(key, "1a"))
-    {
-      data[33] = keyval; data[64] = shiftval;
-    }
-    if (!strcasecmp(key, "1b"))
-    {
-      data[34] = keyval; data[65] = shiftval;
-    }
-    if (!strcasecmp(key, "2a"))
-    {
-      data[35] = keyval; data[66] = shiftval;
-    }
-    if (!strcasecmp(key, "2b"))
-    {
-      data[36] = keyval; data[67] = shiftval;
-    }
-  }
+void update2015MinIPACBoard (json_object *jobj, unsigned char* barray)
+{
+  json_object *shiftKey = NULL;
+  json_object *pins = NULL;
+
+  /* Header data */
+  char header[4] = {0x50, 0xdd, 0x0f, 0x00};
+  memcpy (barray, &header, sizeof(header));
+
+  /* Setup data to send to board */
+  memset (&barray[4], 0xff, 32);
+  memset (&barray[40], 0xff, 28);
+  memset (&barray[104], 1, 52);
+  memset (&barray[158], 0x7f, 8);
+  memset (&barray[166], 0x10, 8);
+
+  json_object_object_get_ex(jobj, "1/2 shift key", &shiftKey);
+  populateShiftPosition(MINIPAC_BOARD, shiftKey, &barray[3]);
+
+  json_object_object_get_ex(jobj, "pins", &pins);
+  populateBoardArray(MINIPAC_BOARD, pins, &barray[3]);
+}
+
+void update2015IPAC4Board (json_object *jobj, unsigned char* barray)
+{
+  json_object *shiftKey = NULL;
+  json_object *pins = NULL;
+
+  /* Header data */
+  char header[4] = {0x50, 0xdd, 0x0f, 0x00};
+  memcpy (barray, &header, sizeof(header));
+
+  /* Setup data to send to board */
+  memset (&barray[132], 1, 24);
+  memset (&barray[158], 1, 14);
+  memset (&barray[176], 1, 1);
+  memset (&barray[178], 1, 18);
+
+  json_object_object_get_ex(jobj, "1/2 shift key", &shiftKey);
+  populateShiftPosition(IPAC4_BOARD, shiftKey, &barray[3]);
+
+  json_object_object_get_ex(jobj, "3/4 shift key", &shiftKey);
+  populateShiftPosition(IPAC4_BOARD, shiftKey, &barray[3]);
+
+  json_object_object_get_ex(jobj, "pins", &pins);
+  populateBoardArray(IPAC4_BOARD, pins, &barray[3]);
+}
+
+void update2015JPACBoard (json_object *jobj, unsigned char* barray)
+{
+  json_object *shiftKey = NULL;
+  json_object *pins = NULL;
+
+  /* Header data */
+  char header[4] = {0x50, 0xdd, 0x0f, 0x00};
+  memcpy (barray, &header, sizeof(header));
+
+  /* Setup data to send to board */
+  memset (&barray[4], 0xff, 50);
+  memset (&barray[14], 0, 1);
+  memset (&barray[104], 1, 1);
+  memset (&barray[106], 1, 1);
+  memset (&barray[108], 1, 1);
+  memset (&barray[110], 1, 1);
+  memset (&barray[116], 1, 1);
+  memset (&barray[118], 1, 1);
+  memset (&barray[120], 1, 5);
+  memset (&barray[128], 1, 1);
+  memset (&barray[130], 1, 1);
+  memset (&barray[132], 1, 13);
+  memset (&barray[146], 1, 1);
+  memset (&barray[148], 1, 1);
+  memset (&barray[150], 1, 1);
+  memset (&barray[154], 0x0a, 1);
+  memset (&barray[155], 0x80, 7);
+  memset (&barray[162], 0x0a, 1);
+  memset (&barray[163], 0x10, 7);
+
+  json_object_object_get_ex(jobj, "1/2 shift key", &shiftKey);
+  populateShiftPosition(JPAC_BOARD, shiftKey, &barray[3]);
+
+  json_object_object_get_ex(jobj, "pins", &pins);
+  populateBoardArray(JPAC_BOARD, pins, &barray[3]);
 }
 
 void populateIPAC2Data(json_object* jobj, unsigned char* data)

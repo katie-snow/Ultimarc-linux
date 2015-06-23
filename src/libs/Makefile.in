@@ -125,8 +125,7 @@ am__installdirs = "$(DESTDIR)$(libdir)" "$(DESTDIR)$(otherincludedir)"
 LTLIBRARIES = $(lib_LTLIBRARIES)
 libultimarc_0_1_la_LIBADD =
 am_libultimarc_0_1_la_OBJECTS = ultimarc.lo ipac.lo ultistik.lo \
-	pacLED.lo common.lo pacdrive.lo ipacultimate.lo ipacseries.lo \
-	ipac4.lo
+	pacLED.lo common.lo pacdrive.lo ipacultimate.lo ipacseries.lo
 libultimarc_0_1_la_OBJECTS = $(am_libultimarc_0_1_la_OBJECTS)
 AM_V_lt = $(am__v_lt_@AM_V@)
 am__v_lt_ = $(am__v_lt_@AM_DEFAULT_V@)
@@ -319,9 +318,9 @@ top_srcdir = @top_srcdir@
 AM_CFLAGS = $(JSON_CFLAGS) $(LIBUSB_CFLAGS)
 AM_LDFLAGS = $(JSON_LIBS) $(LIBUSB_LIBS)
 lib_LTLIBRARIES = libultimarc-0.1.la
-libultimarc_0_1_la_SOURCES = ultimarc.c ipac.c ultistik.c pacLED.c common.c pacdrive.c ipacultimate.c ipacseries.c ipac4.c
+libultimarc_0_1_la_SOURCES = ultimarc.c ipac.c ultistik.c pacLED.c common.c pacdrive.c ipacultimate.c ipacseries.c
 otherincludedir = $(includedir)/ultimarc
-otherinclude_HEADERS = ultimarc.h ipac.h ultistik.h pacLED.h common.h pacdrive.h ipacultimate.h dbg.h ipacseries.h ipac4.h
+otherinclude_HEADERS = ultimarc.h ipac.h ultistik.h pacLED.h common.h pacdrive.h ipacultimate.h dbg.h ipacseries.h
 all: all-am
 
 .SUFFIXES:
@@ -403,7 +402,6 @@ distclean-compile:
 
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/common.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ipac.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ipac4.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ipacseries.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ipacultimate.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/pacLED.Plo@am__quote@
