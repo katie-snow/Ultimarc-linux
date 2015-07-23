@@ -24,33 +24,29 @@ extern "C" {
 #define USTIK_STR "ULTISTIK"
 
 /* Required items for writing out through the USB port */
-#define USTIK_VENDOR       0xD209
-#define USTIK_PRODUCT      0x0501
-#define USTIK_DATA_SIZE    96
-#define USTIK_CONFIG_DATA_SIZE 32
-#define USTIK_REQUEST_TYPE_1 0x43
-#define USTIK_REQUEST_TYPE_2 0xC3
-#define USTIK_REQUEST_1    0xE9
-#define USTIK_REQUEST_2    0xEB
-#define USTIK_REQUEST_3    0xEA
-#define USTIK_MESG_LENGTH  32
-#define USTIK_INTERFACE    0
-#define USTIK_CONFIG_BASE  0x51
+#define USTIK_VENDOR            0xD209
+#define USTIK_PRODUCT_PRE_2015  0x0501
+#define USTIK_DATA_SIZE         96
+#define USTIK_CONFIG_DATA_SIZE  32
+#define USTIK_REQUEST_TYPE_1    0x43
+#define USTIK_REQUEST_TYPE_2    0xC3
+#define USTIK_REQUEST_1         0xE9
+#define USTIK_REQUEST_2         0xEB
+#define USTIK_REQUEST_3         0xEA
+#define USTIK_MESG_LENGTH       32
+#define USTIK_INTERFACE         0
+#define USTIK_CONFIG_BASE       0x51
 
 typedef struct json_object json_object;
 
 struct Ultistik
 {
+  int version;
   bool controllerIDUpdate;
 };
 
 bool isUltistikConfig (const char* prodStr, int version, json_object* jobj);
 
-/*
- * Determine if the json file is an ULTISTIK configuration
- */
-const char* getUltistikProductStr ();
-int getUltistikVersion();
 bool validateUltistikData(json_object* jobj);
 
 /*
