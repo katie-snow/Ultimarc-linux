@@ -27,30 +27,15 @@ bool isUltistikConfig (const char* prodStr, int version, json_object* jobj)
 {
   bool isBoardCfg = false;
 
+  ustik.version = version;
+
   if (strcmp(prodStr, USTIK_PRODUCT_STR) == 0 ||
       strcmp(prodStr, USTIK_STR) == 0)
   {
-    if (version == USTIK_VERSION)
-    {
-      isBoardCfg = validateUltistikData(jobj);
-    }
-    else
-    {
-      log_info ("Configuration file version '%i' incorrect", version);
-    }
+    isBoardCfg = validateUltistikData(jobj);
   }
 
   return isBoardCfg;
-}
-
-const char* getUltistikProductStr ()
-{
-  return USTIK_PRODUCT_STR;
-}
-
-int getUltistikVersion()
-{
-  return USTIK_VERSION;
 }
 
 bool validateUltistikData(json_object* jobj)
@@ -68,9 +53,10 @@ bool validateUltistikData(json_object* jobj)
 
   if (checkBoardID(jobj, "controller id"))
   {
-    // Must have a valid controller id in the configuration file to even attempt to say
-    // the configuration is valid.  Do Not place valid = true in any
-    // of the other checks
+    /* Must have a valid controller id in the configuration file to even attempt to say
+     * the configuration is valid.  Do Not place valid = true in any
+     * of the other checks
+     */
     valid = true;
 
     if (json_object_object_get_ex(jobj, "map", &tmp))
@@ -245,9 +231,10 @@ bool updateBoardULTISTIK (json_object* jobj)
   int idx     = 0;
   int itemidx = 0;
   int ret     = false;
-  int controller = 0;
+  int controlCur = 0;
+  int controlNew = 0;
 
-  uint16_t product = USTIK_PRODUCT;
+  uint16_t product = -1;
 
   bool result = true;
 
@@ -259,35 +246,35 @@ bool updateBoardULTISTIK (json_object* jobj)
   json_object *innerobj  = NULL;
   json_object *item = NULL;
 
+  memset(data, 0, sizeof(data));
+
   if (ustik.controllerIDUpdate == false)
   {
-    json_object_object_get_ex(jobj, "controller id", &innerobj);
-    controller = json_object_get_int(innerobj);
-    product += (controller - 1);
-
-    handle = openUSB(ctx, USTIK_VENDOR, product, USTIK_INTERFACE, 1);
-
-    if (!handle)
-    {
-      result = false;
-      goto error;
-    }
-
-    memset(data, 0, sizeof(data));
     data[0] = 0x50;
 
     json_object_object_get_ex(jobj, "map size", &innerobj);
     data[1] = json_object_get_int (innerobj);
 
-    // Restrictor: false off(0x10), true on(0x09)
+    /* Restrictor: false off(0x10), true on(0x09) */
     json_object_object_get_ex(jobj, "restrictor", &innerobj);
     data[2] = (json_object_get_boolean(innerobj)? 0x09 : 0x10);
 
-    // Flash: false RAM(0xFF), true FLASH(0x00)  (Support in Firmware 2.2)
+    /* Flash: false RAM(0xFF), true FLASH(0x00) */
     json_object_object_get_ex(jobj, "flash", &innerobj);
-    data[95] = (json_object_get_boolean(innerobj)? 0x00 : 0xFF);
+    switch (ustik.version)
+    {
+      case 1:
+        data[95] = (json_object_get_boolean(innerobj)? 0x00 : 0xFF);
+      break;
 
-    // Borders 3 - 10
+      case 2:
+        /* 2015 and newer boards this value is zero */
+        data[95] = 0;
+      break;
+    }
+
+
+    /* Borders 3 - 10 */
     itemidx = 3;
     json_object_object_get_ex(jobj, "borders", &innerobj);
     for (idx = 0; idx < json_object_array_length(innerobj); ++ idx)
@@ -297,7 +284,7 @@ bool updateBoardULTISTIK (json_object* jobj)
       ++itemidx;
     }
 
-    // Map
+    /* Map */
     itemidx = 11;
     json_object_object_get_ex(jobj, "map", &innerobj);
     for (idx = 0; idx < json_object_array_length(innerobj); ++ idx)
@@ -307,108 +294,198 @@ bool updateBoardULTISTIK (json_object* jobj)
       ++itemidx;
     }
 
-    ret = libusb_control_transfer(handle,
-                                  USTIK_REQUEST_TYPE_1,
-                                  USTIK_REQUEST_1,
-                                  1,
-                                  0,
-                                  NULL,
-                                  0,
-                                  UM_TIMEOUT);
+    json_object_object_get_ex(jobj, "controller id", &innerobj);
+    controlCur = json_object_get_int(innerobj);
 
-    for (idx = 0; idx < 3; ++ idx)
+    switch (ustik.version)
     {
+      case 1:
+        product = USTIK_PRODUCT_PRE_2015;
+        product += (controlCur - 1);
+
+        handle = openUSB(ctx, USTIK_VENDOR, product, USTIK_INTERFACE_PRE_2015, 1);
+
+        if (!handle)
+        {
+          result = false;
+          goto error;
+        }
+
+        ret = libusb_control_transfer(handle,
+                                      USTIK_REQUEST_TYPE_1,
+                                      USTIK_REQUEST_1,
+                                      1,
+                                      0,
+                                      NULL,
+                                      0,
+                                      UM_TIMEOUT);
+
+        for (idx = 0; idx < 3; ++ idx)
+        {
+          ret = libusb_control_transfer(handle,
+                                        USTIK_REQUEST_TYPE_1,
+                                        USTIK_REQUEST_2,
+                                        0,
+                                        0,
+                                        data + (USTIK_MESG_PRE_2015*idx),
+                                        USTIK_MESG_PRE_2015,
+                                        UM_TIMEOUT);
+
+          ret = libusb_control_transfer(handle,
+                                        USTIK_REQUEST_TYPE_2,
+                                        USTIK_REQUEST_3,
+                                        0,
+                                        0,
+                                        NULL,
+                                        0,
+                                        UM_TIMEOUT);
+        }
+
+        ret = libusb_control_transfer(handle,
+                                      USTIK_REQUEST_TYPE_1,
+                                      USTIK_REQUEST_1,
+                                      0,
+                                      0,
+                                      NULL,
+                                      0,
+                                      UM_TIMEOUT);
+
+
+        closeUSB(ctx, handle, USTIK_INTERFACE_PRE_2015);
+      break;
+
+      case 2:
+        product = USTIK_PRODUCT;
+        product += (controlCur - 1);
+
+        handle = openUSB(ctx, USTIK_VENDOR, product, USTIK_INTERFACE, 1);
+
+        if (!handle)
+        {
+          result = false;
+          goto error;
+        }
+
+        idx = 0;
+        while (idx < USTIK_DATA_SIZE)
+        {
+          debug ("Writing (%i): %x, %x, %x, %x", idx, data[idx],
+              data[idx+1], data[idx+2], data[idx+3]);
+          ret = libusb_control_transfer(handle,
+                                        UM_REQUEST_TYPE,
+                                        UM_REQUEST,
+                                        USTIK_VALUE,
+                                        USTIK_INTERFACE,
+                                        data + idx,
+                                        USTIK_MESG_LENGTH,
+                                        UM_TIMEOUT);
+          debug ("Write result: %i", ret);
+
+          idx+=4;
+        }
+
+        closeUSB(ctx, handle, USTIK_INTERFACE);
+      break;
+    }
+  }
+  else  // Changing controller ID
+  {
+    json_object_object_get_ex(jobj, "new controller id", &innerobj);
+    controlNew = json_object_get_int(innerobj);
+    data[0] = USTIK_CONFIG_BASE + (controlNew - 1);
+
+    json_object_object_get_ex(jobj, "current controller id", &innerobj);
+    controlCur = json_object_get_int(innerobj);
+
+    switch (ustik.version)
+    {
+      case 1:
+        product = USTIK_PRODUCT_PRE_2015;
+        product += (controlCur - 1);
+
+        handle = openUSB(ctx, USTIK_VENDOR, product, USTIK_INTERFACE_PRE_2015, 0);
+
+        if (!handle)
+        {
+          result = false;
+          goto error;
+        }
+
+        ret = libusb_control_transfer(handle,
+                                      USTIK_REQUEST_TYPE_1,
+                                      USTIK_REQUEST_1,
+                                      1,
+                                      0,
+                                      NULL,
+                                      0,
+                                      UM_TIMEOUT);
+
+        ret = libusb_control_transfer(handle,
+                                      USTIK_REQUEST_TYPE_1,
+                                      USTIK_REQUEST_2,
+                                      0,
+                                      0,
+                                      data,
+                                      USTIK_MESG_PRE_2015,
+                                      UM_TIMEOUT);
+
+        ret = libusb_control_transfer(handle,
+                                      USTIK_REQUEST_TYPE_2,
+                                      USTIK_REQUEST_3,
+                                      0,
+                                      0,
+                                      NULL,
+                                      0,
+                                      UM_TIMEOUT);
+
+        ret = libusb_control_transfer(handle,
+                                      USTIK_REQUEST_TYPE_1,
+                                      USTIK_REQUEST_1,
+                                      0,
+                                      0,
+                                      NULL,
+                                      0,
+                                      UM_TIMEOUT);
+
+        closeUSB(ctx, handle, USTIK_INTERFACE_PRE_2015);
+      break;
+
+    case 2:
+      product = USTIK_PRODUCT;
+      product += (controlCur - 1);
+
+      handle = openUSB(ctx, USTIK_VENDOR, product, USTIK_INTERFACE, 1);
+
+      if (!handle)
+      {
+        result = false;
+        goto error;
+      }
+
+      debug ("Writing (%i): %x, %x, %x, %x", 0, data[0],
+          data[1], data[2], data[3]);
       ret = libusb_control_transfer(handle,
-                                    USTIK_REQUEST_TYPE_1,
-                                    USTIK_REQUEST_2,
-                                    0,
-                                    0,
-                                    data + (32*idx),
+                                    UM_REQUEST_TYPE,
+                                    UM_REQUEST,
+                                    USTIK_VALUE,
+                                    USTIK_INTERFACE,
+                                    data,
                                     USTIK_MESG_LENGTH,
                                     UM_TIMEOUT);
+      debug ("Write result: %i", ret);
 
-      ret = libusb_control_transfer(handle,
-                                    USTIK_REQUEST_TYPE_2,
-                                    USTIK_REQUEST_3,
-                                    0,
-                                    0,
-                                    NULL,
-                                    0,
-                                    UM_TIMEOUT);
+      closeUSB(ctx, handle, USTIK_INTERFACE);
+    break;
     }
 
-    ret = libusb_control_transfer(handle,
-                                  USTIK_REQUEST_TYPE_1,
-                                  USTIK_REQUEST_1,
-                                  0,
-                                  0,
-                                  NULL,
-                                  0,
-                                  UM_TIMEOUT);
-  }
-  else
-  {
-    json_object_object_get_ex(jobj, "current controller id", &innerobj);
-    controller = json_object_get_int(innerobj);
-    product += (controller - 1);
-
-    handle = openUSB(ctx, USTIK_VENDOR, product, USTIK_INTERFACE, 0);
-
-    if (!handle)
-    {
-      result = false;
-      goto error;
-    }
-
-    memset(data, 0, sizeof(data));
-    data[0] = USTIK_CONFIG_BASE;
-
-    json_object_object_get_ex(jobj, "new controller id", &innerobj);
-    controller = json_object_get_int(innerobj);
-    data[0] += (controller - 1);
-
-    ret = libusb_control_transfer(handle,
-                                  USTIK_REQUEST_TYPE_1,
-                                  USTIK_REQUEST_1,
-                                  1,
-                                  0,
-                                  NULL,
-                                  0,
-                                  UM_TIMEOUT);
-
-    ret = libusb_control_transfer(handle,
-                                  USTIK_REQUEST_TYPE_1,
-                                  USTIK_REQUEST_2,
-                                  0,
-                                  0,
-                                  data,
-                                  USTIK_MESG_LENGTH,
-                                  UM_TIMEOUT);
-
-    ret = libusb_control_transfer(handle,
-                                  USTIK_REQUEST_TYPE_2,
-                                  USTIK_REQUEST_3,
-                                  0,
-                                  0,
-                                  NULL,
-                                  0,
-                                  UM_TIMEOUT);
-
-    ret = libusb_control_transfer(handle,
-                                  USTIK_REQUEST_TYPE_1,
-                                  USTIK_REQUEST_1,
-                                  0,
-                                  0,
-                                  NULL,
-                                  0,
-                                  UM_TIMEOUT);
-
-    log_info ("Ultistik #%i needs to be physically disconnected and reconnected before use.", controller);
+    log_info ("Ultistik #%i needs to be physically disconnected and reconnected before use.", controlNew);
   }
 
+/* I know these have the same statement currently, but leaving
+ * exit in for the just-in-case moment down the line.
+ */
   exit:
-  closeUSB(ctx, handle, USTIK_INTERFACE);
-  return result;
+    return result;
 
   error:
     return result;
