@@ -23,7 +23,7 @@ Configuration Files:
 There are example configuration files for each of the boards in the src/umtool directory.  The following is information about each configuration file.
 
 PAC boards:
-version: This should be set to 1 or 2.  This is used for determining which version of the board to configure
+version: This should be set to 1(pre 2015 board) or 2(2015 and newer).  This is used for determining which version of the board to configure
 product: This is either 'ipac2', 'ipac4', 'minipac', 'jpac',  depending on what board you are configuring
 1/2 shift key: Key that will be used as the shift key for player 1 and 2
 3/4 shift key: Key that will be used as the shift key for player 3 and 4
@@ -31,9 +31,10 @@ pins: list of all the pins(keys) that are on the board.  Please modify the examp
 
 
 UltiStik 360:
-version: This should be set to 1 for updating the joystick mapping or 2 for device ID changes.
-Product: The UltiStik 360 product number in string format “0501”
-The following commands are available when the version number is 1
+version: This should be set to 1(pre 2015 board) or 2(2015 and newer).  This is used for determining which version of the board to configure
+Product: The UltiStik 360 product format “ultistik"
+
+The following entries are available when configuring the joystick
 controller id: This number is 1-4.  This states which joystick this configuration is for.
 map size: Always set to 9
 restrictor: true or false.  If you have the restrictor plate installed then this should be true
@@ -51,7 +52,8 @@ map: An array with 81 elements for each square of the joystick.  The following s
   “W”: West command
   “NW”: North West command
   “*”: Sticky command
-The following commands are available when the version number is 2
+
+The following entries are available when changing the board ID
 current controller id: integer number 1-4 of what the controllers ID is currently
 new controller id: integer number 1-4 of what you want the controller id to become
 
