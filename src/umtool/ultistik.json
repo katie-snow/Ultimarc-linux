@@ -1,6 +1,6 @@
 {
-	"version" : 1,
-	"product" : "0501",
+	"version" : 2,
+	"product" : "ultistik",
 	"controller id" : 2,
 	"map size" : 9,
 	"restrictor" : false,
