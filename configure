@@ -635,6 +635,8 @@ LIBOBJS
 ULTIMARC_LIB_VERSION
 LIBUSB_LIBS
 LIBUSB_CFLAGS
+AX_PACKAGE_REQUIRES_PRIVATE
+AX_PACKAGE_REQUIRES
 JSON_LIBS
 JSON_CFLAGS
 PKG_CONFIG_LIBDIR
@@ -2815,8 +2817,6 @@ END
     as_fn_error $? "Your 'rm' program is bad, sorry." "$LINENO" 5
   fi
 fi
-
-#AC_CONFIG_HEADERS([src/libs/libultimarc.h])
 
 ac_ext=c
 ac_cpp='$CPP $CPPFLAGS'
@@ -11523,6 +11523,13 @@ $as_echo "no" >&6; }
 	fi
 fi
 
+
+
+
+    AX_PACKAGE_REQUIRES="$AX_PACKAGE_REQUIRES "
+    AX_PACKAGE_REQUIRES_PRIVATE="$AX_PACKAGE_REQUIRES_PRIVATE json-c >= 0.11"
+
+
 pkg_failed=no
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for JSON" >&5
 $as_echo_n "checking for JSON... " >&6; }
@@ -11531,12 +11538,12 @@ if test -n "$JSON_CFLAGS"; then
     pkg_cv_JSON_CFLAGS="$JSON_CFLAGS"
  elif test -n "$PKG_CONFIG"; then
     if test -n "$PKG_CONFIG" && \
-    { { $as_echo "$as_me:${as_lineno-$LINENO}: \$PKG_CONFIG --exists --print-errors \"json-c >= 0.11\""; } >&5
-  ($PKG_CONFIG --exists --print-errors "json-c >= 0.11") 2>&5
+    { { $as_echo "$as_me:${as_lineno-$LINENO}: \$PKG_CONFIG --exists --print-errors \" json-c >= 0.11\""; } >&5
+  ($PKG_CONFIG --exists --print-errors " json-c >= 0.11") 2>&5
   ac_status=$?
   $as_echo "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
   test $ac_status = 0; }; then
-  pkg_cv_JSON_CFLAGS=`$PKG_CONFIG --cflags "json-c >= 0.11" 2>/dev/null`
+  pkg_cv_JSON_CFLAGS=`$PKG_CONFIG --cflags " json-c >= 0.11" 2>/dev/null`
 		      test "x$?" != "x0" && pkg_failed=yes
 else
   pkg_failed=yes
@@ -11548,12 +11555,12 @@ if test -n "$JSON_LIBS"; then
     pkg_cv_JSON_LIBS="$JSON_LIBS"
  elif test -n "$PKG_CONFIG"; then
     if test -n "$PKG_CONFIG" && \
-    { { $as_echo "$as_me:${as_lineno-$LINENO}: \$PKG_CONFIG --exists --print-errors \"json-c >= 0.11\""; } >&5
-  ($PKG_CONFIG --exists --print-errors "json-c >= 0.11") 2>&5
+    { { $as_echo "$as_me:${as_lineno-$LINENO}: \$PKG_CONFIG --exists --print-errors \" json-c >= 0.11\""; } >&5
+  ($PKG_CONFIG --exists --print-errors " json-c >= 0.11") 2>&5
   ac_status=$?
   $as_echo "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
   test $ac_status = 0; }; then
-  pkg_cv_JSON_LIBS=`$PKG_CONFIG --libs "json-c >= 0.11" 2>/dev/null`
+  pkg_cv_JSON_LIBS=`$PKG_CONFIG --libs " json-c >= 0.11" 2>/dev/null`
 		      test "x$?" != "x0" && pkg_failed=yes
 else
   pkg_failed=yes
@@ -11574,14 +11581,14 @@ else
         _pkg_short_errors_supported=no
 fi
         if test $_pkg_short_errors_supported = yes; then
-	        JSON_PKG_ERRORS=`$PKG_CONFIG --short-errors --print-errors --cflags --libs "json-c >= 0.11" 2>&1`
+	        JSON_PKG_ERRORS=`$PKG_CONFIG --short-errors --print-errors --cflags --libs " json-c >= 0.11" 2>&1`
         else
-	        JSON_PKG_ERRORS=`$PKG_CONFIG --print-errors --cflags --libs "json-c >= 0.11" 2>&1`
+	        JSON_PKG_ERRORS=`$PKG_CONFIG --print-errors --cflags --libs " json-c >= 0.11" 2>&1`
         fi
 	# Put the nasty error message in config.log where it belongs
 	echo "$JSON_PKG_ERRORS" >&5
 
-	as_fn_error $? "Package requirements (json-c >= 0.11) were not met:
+	as_fn_error $? "Package requirements ( json-c >= 0.11) were not met:
 
 $JSON_PKG_ERRORS
 
@@ -11614,6 +11621,18 @@ $as_echo "yes" >&6; }
 
 fi
 
+    # Substitute output.
+
+
+
+
+
+
+
+    AX_PACKAGE_REQUIRES="$AX_PACKAGE_REQUIRES "
+    AX_PACKAGE_REQUIRES_PRIVATE="$AX_PACKAGE_REQUIRES_PRIVATE libusb-1.0 >= 1.0.18"
+
+
 pkg_failed=no
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for LIBUSB" >&5
 $as_echo_n "checking for LIBUSB... " >&6; }
@@ -11622,12 +11641,12 @@ if test -n "$LIBUSB_CFLAGS"; then
     pkg_cv_LIBUSB_CFLAGS="$LIBUSB_CFLAGS"
  elif test -n "$PKG_CONFIG"; then
     if test -n "$PKG_CONFIG" && \
-    { { $as_echo "$as_me:${as_lineno-$LINENO}: \$PKG_CONFIG --exists --print-errors \"libusb-1.0 >= 1.0.18\""; } >&5
-  ($PKG_CONFIG --exists --print-errors "libusb-1.0 >= 1.0.18") 2>&5
+    { { $as_echo "$as_me:${as_lineno-$LINENO}: \$PKG_CONFIG --exists --print-errors \" libusb-1.0 >= 1.0.18\""; } >&5
+  ($PKG_CONFIG --exists --print-errors " libusb-1.0 >= 1.0.18") 2>&5
   ac_status=$?
   $as_echo "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
   test $ac_status = 0; }; then
-  pkg_cv_LIBUSB_CFLAGS=`$PKG_CONFIG --cflags "libusb-1.0 >= 1.0.18" 2>/dev/null`
+  pkg_cv_LIBUSB_CFLAGS=`$PKG_CONFIG --cflags " libusb-1.0 >= 1.0.18" 2>/dev/null`
 		      test "x$?" != "x0" && pkg_failed=yes
 else
   pkg_failed=yes
@@ -11639,12 +11658,12 @@ if test -n "$LIBUSB_LIBS"; then
     pkg_cv_LIBUSB_LIBS="$LIBUSB_LIBS"
  elif test -n "$PKG_CONFIG"; then
     if test -n "$PKG_CONFIG" && \
-    { { $as_echo "$as_me:${as_lineno-$LINENO}: \$PKG_CONFIG --exists --print-errors \"libusb-1.0 >= 1.0.18\""; } >&5
-  ($PKG_CONFIG --exists --print-errors "libusb-1.0 >= 1.0.18") 2>&5
+    { { $as_echo "$as_me:${as_lineno-$LINENO}: \$PKG_CONFIG --exists --print-errors \" libusb-1.0 >= 1.0.18\""; } >&5
+  ($PKG_CONFIG --exists --print-errors " libusb-1.0 >= 1.0.18") 2>&5
   ac_status=$?
   $as_echo "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
   test $ac_status = 0; }; then
-  pkg_cv_LIBUSB_LIBS=`$PKG_CONFIG --libs "libusb-1.0 >= 1.0.18" 2>/dev/null`
+  pkg_cv_LIBUSB_LIBS=`$PKG_CONFIG --libs " libusb-1.0 >= 1.0.18" 2>/dev/null`
 		      test "x$?" != "x0" && pkg_failed=yes
 else
   pkg_failed=yes
@@ -11665,14 +11684,14 @@ else
         _pkg_short_errors_supported=no
 fi
         if test $_pkg_short_errors_supported = yes; then
-	        LIBUSB_PKG_ERRORS=`$PKG_CONFIG --short-errors --print-errors --cflags --libs "libusb-1.0 >= 1.0.18" 2>&1`
+	        LIBUSB_PKG_ERRORS=`$PKG_CONFIG --short-errors --print-errors --cflags --libs " libusb-1.0 >= 1.0.18" 2>&1`
         else
-	        LIBUSB_PKG_ERRORS=`$PKG_CONFIG --print-errors --cflags --libs "libusb-1.0 >= 1.0.18" 2>&1`
+	        LIBUSB_PKG_ERRORS=`$PKG_CONFIG --print-errors --cflags --libs " libusb-1.0 >= 1.0.18" 2>&1`
         fi
 	# Put the nasty error message in config.log where it belongs
 	echo "$LIBUSB_PKG_ERRORS" >&5
 
-	as_fn_error $? "Package requirements (libusb-1.0 >= 1.0.18) were not met:
+	as_fn_error $? "Package requirements ( libusb-1.0 >= 1.0.18) were not met:
 
 $LIBUSB_PKG_ERRORS
 
@@ -11705,10 +11724,14 @@ $as_echo "yes" >&6; }
 
 fi
 
+    # Substitute output.
+
+
+
+
 ULTIMARC_LIB_VERSION=0.1
 
 
-#AC_CONFIG_FILES(Makefile src/libs/Makefile)
 ac_config_files="$ac_config_files Makefile src/libs/Makefile src/umtool/Makefile ultimarc-${ULTIMARC_LIB_VERSION}.pc:ultimarc.pc.in"
 
 cat >confcache <<\_ACEOF
