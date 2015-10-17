@@ -4,8 +4,8 @@ libdir=@libdir@
 includedir=@includedir@
 
 Name: @PACKAGE_NAME@
-Description: Ultimarc C library.
+Description: Ultimarc Linux C library.
 Version: @PACKAGE_VERSION@
-URL: @PACKAGE_URL@
 Libs: -L${libdir} -lultimarc-@ULTIMARC_LIB_VERSION@
-Cflags: -I${includedir}/example-@ULTIMARC_LIB_VERSION@ -I${libdir}/example-@ULTIMARC_LIB_VERSION@/include
+Cflags: -I${includedir}/ultimarc
+Requires.private: @AX_PACKAGE_REQUIRES_PRIVATE@

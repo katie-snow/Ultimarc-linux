@@ -24,8 +24,8 @@ AC_ARG_WITH(kernel-headers,
 
 CPPFLAGS="-I$KERNEL_HEADERS_DIR/include"
 
-PKG_CHECK_MODULES([JSON], [json-c >= 0.11])
-PKG_CHECK_MODULES([LIBUSB], [libusb-1.0 >= 1.0.18])
+AX_PKG_CHECK_MODULES([JSON], [], [json-c >= 0.11])
+AX_PKG_CHECK_MODULES([LIBUSB], [], [libusb-1.0 >= 1.0.18])
 
 AC_SUBST([ULTIMARC_LIB_VERSION], [0.1])
 
