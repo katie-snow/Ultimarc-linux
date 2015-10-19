@@ -35,6 +35,9 @@ bool isIPACConfig (const char* prodStr, int version, json_object* jobj)
   pIPAC.ipac4 = (strcmp(prodStr, IPAC_STR_4) == 0);
   pIPAC.jpac = (strcmp(prodStr, JPAC_STR) == 0);
 
+/* TODO #7 split if statement for minipac and ipac2
+ * size is 28 for IPAC2, size 32 for Minipac
+ */
   if (pIPAC.ipac2 || pIPAC.minipac)
   {
     isBoardCfg = validateIPACData(jobj, 32);
@@ -209,6 +212,7 @@ bool updateBoardIPAC (json_object *jobj)
   switch (pIPAC.version)
   {
   case 1:
+    /* TODO #7 split if statement.  Duplicate internal if code */
     if (pIPAC.ipac2 || pIPAC.minipac)
     {
       log_info ("Updating IPAC2/MinIPAC board...");
@@ -216,6 +220,7 @@ bool updateBoardIPAC (json_object *jobj)
 
       if (barray != NULL)
       {
+      /* TODO #7 Update function name and create new function for the split*/
         updatePre2015IPACBoard (jobj, barray);
         result = writeIPACSeriesUSB(barray, IPAC_SIZE_PRE_2015,
                                     IPAC_VENDOR_PRE_2015, IPAC_PRODUCT_PRE_2015,
@@ -288,6 +293,7 @@ bool updateBoardIPAC (json_object *jobj)
   return result;
 }
 
+/* TODO #7 Update function name */
 void updatePre2015IPACBoard (json_object *jobj, unsigned char* barray)
 {
   json_object *shiftKey = NULL;
@@ -306,6 +312,8 @@ void updatePre2015IPACBoard (json_object *jobj, unsigned char* barray)
   json_object_object_get_ex(jobj, "pins", &pins);
   populateBoardArray(PRE_IPAC2_BOARD, pins, &barray[4]);
 }
+
+/* TODO #7 Create new function for MinIPAC enumeration */
 
 void updatePre2015IPAC4Board (json_object *jobj, unsigned char* barray)
 {
@@ -452,6 +460,8 @@ void populateIPAC2Data(json_object* jobj, unsigned char* data)
 
   json_object *tmp = NULL;
 
+
+/* TODO #7 remove commented code. */
 /*
   json_object_object_get_ex(jobj, "1/2 shift key", &tmp);
   shiftval = json_object_get_string(tmp);
@@ -722,6 +732,7 @@ void populateIPAC2Data(json_object* jobj, unsigned char* data)
   }
 }
 
+/* TODO #7 Remove unused function */
 void populateMinIPACData(json_object* jobj, unsigned char* data)
 {
 

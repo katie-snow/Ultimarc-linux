@@ -25,6 +25,7 @@ extern "C" {
 
 typedef struct json_object json_object;
 
+/* TODO #7 Add enumeration value for PRE_MINIPAC_BOARD.  Make sure this and the array positions match */
 enum ipac_boards_t {NO_IPAC_BOARD = -1, PRE_IPAC2_BOARD = 0, PRE_IPAC4_BOARD,
                     ULTIMATE_IO_BOARD, IPAC2_BOARD, MINIPAC_BOARD, IPAC4_BOARD,
                     JPAC_BOARD, HIDIO_BOARD};

@@ -656,6 +656,7 @@ convertIPAC (json_object *jobj)
 
 /* Normal key press value */
 int keyLookupTable[7][62] = {
+/* TODO #7 Split out IPAC2 and MiniIPAC array.  MiniIPAC supports 32 shift keys, IPAC does not*/
 /* Pre2015 IPAC2/MinIPAC */
 {1, 6, 2, 4, 13, 14, 9, 11, -1, -1, -1, -1, -1, -1, -1, -1, 3, 8, 5, 10, 7, 12, 24, 26,
  15, 17, 19, 21, 23, 25, 27, 28, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
@@ -694,6 +695,7 @@ int keyLookupTable[7][62] = {
 /* 2015 HIDIO {} */
 };
 
+/* TODO #7 IPAC2 shift starts at 28, shift pos adj is -1 */
 int shiftAdjTable[] = {32, 28, 50, 50, 50, 64, 50, -1};
 int shiftPosAdjTable[] = {-1, -1, 100, 100, 100, 128, 100, -1};
 

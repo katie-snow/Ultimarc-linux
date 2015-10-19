@@ -54,6 +54,7 @@ bool validateIPAC4Data(json_object* jobj);
  */
 bool updateBoardIPAC (json_object *jobj);
 
+/* TODO #7 create new function for the minipac */
 void updatePre2015IPACBoard (json_object *jobj, unsigned char* barray);
 
 void updatePre2015IPAC4Board (json_object *jobj, unsigned char* barray);
@@ -73,6 +74,7 @@ void update2015JPACBoard (json_object *jobj, unsigned char* barray);
  */
 void populateIPAC2Data(json_object* jobj, unsigned char* data);
 
+/* TODO #7 Remove unused function */
 /**
  * Update the data array that will be written out to
  * the MinIPAC board.  This is for boards going forward
