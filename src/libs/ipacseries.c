@@ -26,6 +26,7 @@ convertIPACKey (enum ipac_boards_t bid, json_object* jobj)
 {
   switch (bid)
   {
+  /* TODO #7 Add case to switch statement here for MinIPAC */
     case PRE_IPAC2_BOARD:
     case PRE_IPAC4_BOARD:
       return convertIPAC(jobj);
@@ -695,7 +696,7 @@ int keyLookupTable[7][62] = {
 /* 2015 HIDIO {} */
 };
 
-/* TODO #7 IPAC2 shift starts at 28, shift pos adj is -1 */
+/* TODO #7 IPAC2 shift starts at 28, shift pos adj is -1  */
 int shiftAdjTable[] = {32, 28, 50, 50, 50, 64, 50, -1};
 int shiftPosAdjTable[] = {-1, -1, 100, 100, 100, 128, 100, -1};
 

@@ -74,7 +74,7 @@ void update2015JPACBoard (json_object *jobj, unsigned char* barray);
  */
 void populateIPAC2Data(json_object* jobj, unsigned char* data);
 
-/* TODO #7 Remove unused function */
+/* TODO #7 Remove unused function  */
 /**
  * Update the data array that will be written out to
  * the MinIPAC board.  This is for boards going forward

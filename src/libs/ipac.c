@@ -732,7 +732,7 @@ void populateIPAC2Data(json_object* jobj, unsigned char* data)
   }
 }
 
-/* TODO #7 Remove unused function */
+/* TODO #7 Remove unused function  */
 void populateMinIPACData(json_object* jobj, unsigned char* data)
 {
 
