@@ -29,6 +29,7 @@ convertIPACKey (enum ipac_boards_t bid, json_object* jobj)
   /* TODO #7 Add case to switch statement here for MinIPAC */
     case PRE_IPAC2_BOARD:
     case PRE_IPAC4_BOARD:
+    case PRE_MINIPAC_BOARD:
       return convertIPAC(jobj);
       break;
 
@@ -656,12 +657,12 @@ convertIPAC (json_object *jobj)
 1test, 2test */
 
 /* Normal key press value */
-int keyLookupTable[7][62] = {
+int keyLookupTable[8][62] = {
 /* TODO #7 Split out IPAC2 and MiniIPAC array.  MiniIPAC supports 32 shift keys, IPAC does not*/
-/* Pre2015 IPAC2/MinIPAC */
+/* Pre2015 IPAC2 */
 {1, 6, 2, 4, 13, 14, 9, 11, -1, -1, -1, -1, -1, -1, -1, -1, 3, 8, 5, 10, 7, 12, 24, 26,
  15, 17, 19, 21, 23, 25, 27, 28, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
- -1, -1, -1, 16, 20, 29, 30, 18, 22, 31, 32, -1, -1, -1, -1, -1, -1},
+ -1, -1, -1, 16, 20, -1, -1, 18, 22, -1, -1, -1, -1, -1, -1, -1, -1},
 
 /* Pre2015 IPAC4 */
 {1, 6, 2, 4, 13, 14, 9, 11, 101, 106, 102, 104, 113, 114, 109, 111, 3, 8, 5, 10, 7, 12,
@@ -693,12 +694,18 @@ int keyLookupTable[7][62] = {
 {25, 29, 37, 33, 27, 31, 39, 35, -1, -1, -1, -1, -1, -1, -1, -1, 17, 21, 1, 5, 20, 18,
  40, 38, 19, 23, 3, 7, 32, 30, 34, 36, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
  -1, -1, -1, -1, 45, 41, -1, -1, 47, 43, -1, -1, -1, -1, -1, -1, 13, 15},
+
+ /* Pre2015 MINIPAC */
+{1, 6, 2, 4, 13, 14, 9, 11, -1, -1, -1, -1, -1, -1, -1, -1, 3, 8, 5, 10, 7, 12, 24, 26,
+ 15, 17, 19, 21, 23, 25, 27, 28, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
+ -1, -1, -1, 16, 20, 29, 30, 18, 22, 31, 32, -1, -1, -1, -1, -1, -1},
+
 /* 2015 HIDIO {} */
 };
 
 /* TODO #7 IPAC2 shift starts at 28, shift pos adj is -1  */
-int shiftAdjTable[] = {32, 28, 50, 50, 50, 64, 50, -1};
-int shiftPosAdjTable[] = {-1, -1, 100, 100, 100, 128, 100, -1};
+int shiftAdjTable[] = {28, 28, 50, 50, 50, 64, 50, 32, -1};
+int shiftPosAdjTable[] = {-1, -1, 100, 100, 100, 128, 100, -1, -1};
 
 void populateBoardArray (int bid, json_object* jobj, unsigned char* barray)
 {

@@ -1,6 +1,6 @@
 {
   "version" : 1,
-  "product" : "ipac2",
+  "product" : "minipac",
   "1/2 shift key" : "1start",
   "pins": {
     "1right": {
@@ -59,6 +59,14 @@
       "key": "5",
       "shift": ""
     },
+    "1a": {
+      "key": "",
+      "shift": ""
+    },
+    "1b": {
+      "key": "",
+      "shift": ""
+    },
     "2right": {
       "key": "g",
       "shift": ""
@@ -113,6 +121,14 @@
     },
     "2coin": {
       "key": "6",
+      "shift": ""
+    },
+    "2a": {
+      "key": "",
+      "shift": ""
+    },
+    "2b": {
+      "key": "",
       "shift": ""
     }
   }
