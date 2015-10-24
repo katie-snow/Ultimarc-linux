@@ -35,9 +35,6 @@ bool isIPACConfig (const char* prodStr, int version, json_object* jobj)
   pIPAC.ipac4 = (strcmp(prodStr, IPAC_STR_4) == 0);
   pIPAC.jpac = (strcmp(prodStr, JPAC_STR) == 0);
 
-/* TODO #7 split if statement for minipac and ipac2
- * size is 28 for IPAC2, size 32 for Minipac
- */
   if (pIPAC.ipac2)
   {
     isBoardCfg = validateIPACData(jobj, 28);
@@ -216,7 +213,6 @@ bool updateBoardIPAC (json_object *jobj)
   switch (pIPAC.version)
   {
   case 1:
-    /* TODO #7 split if statement.  Duplicate internal if code */
     if (pIPAC.ipac2)
     {
       log_info ("Updating IPAC2 board...");
@@ -224,7 +220,6 @@ bool updateBoardIPAC (json_object *jobj)
 
       if (barray != NULL)
       {
-      /* TODO #7 Update function name and create new function for the split*/
         updatePre2015IPAC2Board (jobj, barray);
         result = writeIPACSeriesUSB(barray, IPAC_SIZE_PRE_2015,
                                     IPAC_VENDOR_PRE_2015, IPAC_PRODUCT_PRE_2015,
@@ -240,7 +235,6 @@ bool updateBoardIPAC (json_object *jobj)
 
       if (barray != NULL)
       {
-      /* TODO #7 Update function name and create new function for the split*/
         updatePre2015MINIPACBoard (jobj, barray);
         result = writeIPACSeriesUSB(barray, IPAC_SIZE_PRE_2015,
                                     IPAC_VENDOR_PRE_2015, IPAC_PRODUCT_PRE_2015,
@@ -313,7 +307,6 @@ bool updateBoardIPAC (json_object *jobj)
   return result;
 }
 
-/* TODO #7 Update function name */
 void updatePre2015IPAC2Board (json_object *jobj, unsigned char* barray)
 {
   json_object *shiftKey = NULL;
@@ -323,7 +316,6 @@ void updatePre2015IPAC2Board (json_object *jobj, unsigned char* barray)
   unsigned char header[4] = {0x50, 0xdd, 0x00, 0x00};
   memcpy (barray, &header, sizeof(header));
 
-  /* TODO #7 verify position is correct based on issue #7 pictures */
   /* Macro data */
   barray[65] = 0x29;
 
@@ -333,8 +325,6 @@ void updatePre2015IPAC2Board (json_object *jobj, unsigned char* barray)
   json_object_object_get_ex(jobj, "pins", &pins);
   populateBoardArray(PRE_IPAC2_BOARD, pins, &barray[4]);
 }
-
-/* TODO #7 Create new function for MinIPAC enumeration */
 
 void updatePre2015IPAC4Board (json_object *jobj, unsigned char* barray)
 {
