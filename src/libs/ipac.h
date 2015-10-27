@@ -54,9 +54,11 @@ bool validateIPAC4Data(json_object* jobj);
  */
 bool updateBoardIPAC (json_object *jobj);
 
-void updatePre2015IPACBoard (json_object *jobj, unsigned char* barray);
+void updatePre2015IPAC2Board (json_object *jobj, unsigned char* barray);
 
 void updatePre2015IPAC4Board (json_object *jobj, unsigned char* barray);
+
+void updatePre2015MINIPACBoard (json_object *jobj, unsigned char* barray);
 
 void update2015IPAC2Board (json_object *jobj, unsigned char* barray);
 
@@ -65,20 +67,6 @@ void update2015MinIPACBoard (json_object *jobj, unsigned char* barray);
 void update2015IPAC4Board (json_object *jobj, unsigned char* barray);
 
 void update2015JPACBoard (json_object *jobj, unsigned char* barray);
-
-/**
- * Update the data array that will be written out to
- * the IPAC2 board.  This is for boards going forward
- * from 2015.
- */
-void populateIPAC2Data(json_object* jobj, unsigned char* data);
-
-/**
- * Update the data array that will be written out to
- * the MinIPAC board.  This is for boards going forward
- * from 2015.
- */
-void populateMinIPACData(json_object* jobj, unsigned char* data);
 
 #ifdef __cplusplus
 }
