@@ -660,7 +660,7 @@ int keyLookupTable[8][62] = {
 /* Pre2015 IPAC2 */
 {1, 6, 2, 4, 13, 14, 9, 11, -1, -1, -1, -1, -1, -1, -1, -1, 3, 8, 5, 10, 7, 12, 24, 26,
  15, 17, 19, 21, 23, 25, 27, 28, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
- -1, -1, -1, 16, 20, -1, -1, 18, 22, -1, -1, -1, -1, -1, -1, -1, -1},
+ -1, -1, -1, 16, 20, 29, 30, 18, 22, 31, 32, -1, -1, -1, -1, -1, -1},
 
 /* Pre2015 IPAC4 */
 {1, 6, 2, 4, 13, 14, 9, 11, 101, 106, 102, 104, 113, 114, 109, 111, 3, 8, 5, 10, 7, 12,
@@ -701,7 +701,7 @@ int keyLookupTable[8][62] = {
 /* 2015 HIDIO {} */
 };
 
-int shiftAdjTable[] = {28, 28, 50, 50, 50, 64, 50, 32, -1};
+int shiftAdjTable[] = {32, 28, 50, 50, 50, 64, 50, 32, -1};
 int shiftPosAdjTable[] = {-1, -1, 100, 100, 100, 128, 100, -1, -1};
 
 void populateBoardArray (int bid, json_object* jobj, unsigned char* barray)
@@ -734,11 +734,31 @@ void populateBoardArray (int bid, json_object* jobj, unsigned char* barray)
     json_object_object_get_ex(pin, "key", &tmp);
     barray[idx] = convertIPACKey(bid, tmp);
 
-    /* Populate board array with shift key */
-    json_object_object_get_ex(pin, "shift", &tmp);
-    barray[idx + shiftAdjTable[bid]] = convertIPACKey(bid, tmp);
-
-    debug("key:%s,\tvalue idx: %i, value sft: %i", key, idx, idx + shiftAdjTable[bid]);
+    /* Case for IPAC2 pre 2015 boards.  The a1, a2, b1, b2 keys do not have a shift key value */
+    if (bid == PRE_IPAC2_BOARD)
+    {
+      if (strcasecmp(key, "1a") != 0 &&
+          strcasecmp(key, "1b") != 0 &&
+          strcasecmp(key, "2a") != 0 &&
+          strcasecmp(key, "2b") != 0)
+      {
+        /* Populate board array with shift key */
+        json_object_object_get_ex(pin, "shift", &tmp);
+        barray[idx + shiftAdjTable[bid]] = convertIPACKey(bid, tmp);
+        debug("key:%s,\tvalue idx: %i, value sft: %i", key, idx, idx + shiftAdjTable[bid]);
+      }
+      else
+      {
+        debug("key:%s,\tvalue idx: %i", key, idx);
+      }
+    }
+    else
+    {
+      /* Populate board array with shift key */
+      json_object_object_get_ex(pin, "shift", &tmp);
+      barray[idx + shiftAdjTable[bid]] = convertIPACKey(bid, tmp);
+      debug("key:%s,\tvalue idx: %i, value sft: %i", key, idx, idx + shiftAdjTable[bid]);
+    }
   }
 }
 

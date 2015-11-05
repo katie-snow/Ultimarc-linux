@@ -37,7 +37,7 @@ bool isIPACConfig (const char* prodStr, int version, json_object* jobj)
 
   if (pIPAC.ipac2)
   {
-    isBoardCfg = validateIPACData(jobj, 28);
+    isBoardCfg = validateIPACData(jobj, 32);
   }
   else if (pIPAC.ipac4)
   {
@@ -105,7 +105,7 @@ bool validateIPACData(json_object* jobj, int size)
 
           if (tmpCount != 2)
           {
-            log_err("pin '%s' has to many children entities.", key);
+            log_err("pin '%s' has the incorrect number of children entities.", key);
             valid = false;
           }
         }
