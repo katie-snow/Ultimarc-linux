@@ -5,23 +5,23 @@
   "pins": {
     "1right": {
       "key": "right",
-      "shift": "x"
+      "shift": "tab"
     },
     "1up": {
       "key": "up",
-      "shift": "v"
+      "shift": "`"
     },
     "1down": {
       "key": "down",
-      "shift": "w"
+      "shift": "p"
     },
     "1left": {
       "key": "left",
-      "shift": "y"
+      "shift": "enter"
     },
     "1sw1": {
       "key": "ctrl l",
-      "shift": "z"
+      "shift": "5"
     },
     "1sw2": {
       "key": "alt l",
@@ -105,7 +105,7 @@
     },
     "2sw8": {
       "key": "l",
-      "shift": "2"
+      "shift": ""
     },
     "2start": {
       "key": "2",
@@ -116,19 +116,19 @@
       "shift": ""
     },
     "1a": {
-      "key": "2",
+      "key": "p",
       "shift": ""
     },
     "2a": {
-      "key": "2",
+      "key": "tab",
       "shift": ""
     },
     "1b": {
-      "key": "2",
+      "key": "enter",
       "shift": ""
     },
     "2b": {
-      "key": "2",
+      "key": "esc",
       "shift": ""
     }
   }
