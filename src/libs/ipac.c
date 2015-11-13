@@ -316,6 +316,8 @@ void updatePre2015IPAC2Board (json_object *jobj, unsigned char* barray)
   unsigned char header[4] = {0x50, 0xdd, 0x00, 0x00};
   memcpy (barray, &header, sizeof(header));
 
+  /* TODO: See if "write to ram" is in the configuration */
+  /* if so then if true = set [65] to 2d else stay with 29 */
   /* Macro data */
   barray[65] = 0x29;
 
