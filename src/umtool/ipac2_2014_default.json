@@ -2,6 +2,7 @@
   "version" : 1,
   "product" : "ipac2",
   "1/2 shift key" : "1start",
+  "write to ram" : false,
   "pins": {
     "1right": {
       "key": "right",
