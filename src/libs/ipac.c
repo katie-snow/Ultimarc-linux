@@ -314,13 +314,14 @@ void updatePre2015IPAC2Board (json_object *jobj, unsigned char* barray)
   json_object *writeRam = NULL;
 
   /*Default write to flash */
-  unsigned char writeToRamVal = 0x29;
+  unsigned char writeToRamBit = (1 << 2);
 
   /* Header data */
   unsigned char header[4] = {0x50, 0xdd, 0x00, 0x00};
   memcpy (barray, &header, sizeof(header));
 
   /* Control data */
+  barray[65] = 0x29;
   if (json_object_object_get_ex(jobj, "write to ram", &writeRam))
   {
     if (json_object_get_type(writeRam) == json_type_boolean)
@@ -328,12 +329,11 @@ void updatePre2015IPAC2Board (json_object *jobj, unsigned char* barray)
       if (json_object_get_boolean(writeRam))
       {
         /* Write to RAM */
-        writeToRamVal = 0x2d;
+        barray[65] |= writeToRamBit;
       }
     }
   }
-  barray[65] = writeToRamVal;
-
+  
   json_object_object_get_ex(jobj, "1/2 shift key", &shiftKey);
   barray[4] = convertIPAC(shiftKey);
 
