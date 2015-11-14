@@ -313,9 +313,6 @@ void updatePre2015IPAC2Board (json_object *jobj, unsigned char* barray)
   json_object *pins = NULL;
   json_object *writeRam = NULL;
 
-  /*Default write to flash */
-  unsigned char writeToRamBit = (1 << 2);
-
   /* Header data */
   unsigned char header[4] = {0x50, 0xdd, 0x00, 0x00};
   memcpy (barray, &header, sizeof(header));
