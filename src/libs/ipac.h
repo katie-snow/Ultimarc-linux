@@ -34,6 +34,10 @@ extern "C" {
 #define IPAC_SIZE_PRE_2015    100
 #define IPAC_INTERFACE        2
 
+/* Control byte */
+#define factoryDefaultBit     (1 << 1)
+#define writeToRamBit         (1 << 2)
+
 typedef struct json_object json_object;
 
 struct ipac
