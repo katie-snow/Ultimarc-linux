@@ -6,6 +6,8 @@ Library and command line utility
 #### Introduction:
 This utility will configure the following Ultimarc boards; PACDrive, IPAC Ultimate, I-Pac 2, I-Pac 4, Mini-Pac, JPAC, UltraStik 360 and PacLED64.  There is support for the PAC 2015 boards, Ultistik 2015 board and the previous generation of the PAC boards.  It uses json configuration files to configure the different boards.  It also supports the ability to change the device ID of the UltiStik 360 boards.  Allowing for the configuring of four different boards at once.
 
+This library and command line utility support 2012 through 2015 boards.  If you need support for older Ultimarc boards, please look at the following utility developed by Travis, <a href='http://www.zumbrovalley.net/articles.php?catid=3'>Ipacutil</a> or use the Windows WinIpac v1 from <a href='http://www.ultimarc.com'>Ultimarc</a>
+
 #### Required Libraries
 To build this tool the following libraries need to be install on your system.  
 * json-c (0.11),
