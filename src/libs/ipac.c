@@ -119,6 +119,8 @@ bool validateIPACData(json_object* jobj, int size)
     }
   }
 
+  valid = validateIPACMacros(jobj, valid);
+
   return valid;
 }
 
@@ -196,6 +198,73 @@ bool validateIPAC4Data (json_object* jobj)
       if (pinCount != 56)
       {
         log_err("Incorrect number of pin objects.  Needs to be 56 entries.");
+        valid = false;
+      }
+    }
+  }
+
+  valid = validateIPACMacros(jobj, valid);
+
+  return valid;
+}
+
+bool validateIPACMacros(json_object* jobj, bool validState)
+{
+  bool valid = validState;
+
+  int macroCount = 0;
+  static const int maxMacroCount = 4;
+
+  int keyCount = 0;
+  static const int maxKeyCount = 4;
+
+  json_object* macros = NULL;
+  json_object* key    = NULL;
+
+  if (json_object_object_get_ex(jobj, "macros", &macros))
+  {
+    if (!json_object_is_type(macros, json_type_object))
+    {
+      log_err ("'macros' is not of type object");
+      valid = false;
+    }
+    else
+    {
+      json_object_object_foreach(macros, name, macro)
+      {
+        macroCount++;
+        keyCount = 0;
+
+        if (!json_object_is_type(macro, json_type_array))
+        {
+          log_err ("'%s' is not of type array", name);
+          valid = false;
+        }
+        else
+        {
+          if (json_object_array_length(macro) != maxKeyCount)
+          {
+            log_err ("'%s' array size should be 4", name);
+            valid = false;
+          }
+          else
+          {
+            for (; keyCount < maxKeyCount; ++keyCount)
+            {
+              key = json_object_array_get_idx(macro, keyCount);
+              if (!json_object_is_type(key, json_type_string))
+              {
+                log_err ("Key entry in '%s' needs to be of type string", name);
+                valid = false;
+              }
+            }
+          }
+        }
+      }
+
+      if (macroCount != maxMacroCount)
+      {
+        log_err("Incorrect number of macro arrays.  Needs to be 4 entries.");
         valid = false;
       }
     }
