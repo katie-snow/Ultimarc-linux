@@ -2,6 +2,12 @@
   "version" : 1,
   "product" : "minipac",
   "1/2 shift key" : "1start",
+  "macros" : {
+    "macro 1" : ["", "", "", ""],
+    "macro 2" : ["", "", "", ""],
+    "macro 3" : ["", "", "", ""],
+    "macro 4" : ["", "", "", ""]
+  },
   "pins": {
     "1right": {
       "key": "right",

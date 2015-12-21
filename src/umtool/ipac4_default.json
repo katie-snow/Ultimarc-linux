@@ -3,6 +3,12 @@
   "product" : "ipac4",
   "1/2 shift key" : "1start",
   "3/4 shift key" : "3start",
+  "macros" : {
+    "macro 1" : ["", "", "", ""],
+    "macro 2" : ["", "", "", ""],
+    "macro 3" : ["", "", "", ""],
+    "macro 4" : ["", "", "", ""]
+  },
   "pins": {
     "1right": {
       "key": "right",
