@@ -380,6 +380,7 @@ void updatePre2015IPAC2Board (json_object *jobj, unsigned char* barray)
 {
   json_object *shiftKey = NULL;
   json_object *pins = NULL;
+  json_object *macros = NULL;
 
   /* Header data */
   unsigned char header[4] = {0x50, 0xdd, 0x00, 0x00};
@@ -393,6 +394,10 @@ void updatePre2015IPAC2Board (json_object *jobj, unsigned char* barray)
 
   json_object_object_get_ex(jobj, "pins", &pins);
   populateBoardArray(PRE_IPAC2_BOARD, pins, &barray[4]);
+
+  /* Macro data */
+  json_object_object_get_ex(jobj, "macros", &macros);
+  populateMacrosPosition(PRE_IPAC2_BOARD, macros, &barray[4]);
 }
 
 void updatePre2015IPAC4Board (json_object *jobj, unsigned char* barray)
