@@ -424,19 +424,23 @@ void updatePre2015MINIPACBoard (json_object *jobj, unsigned char* barray)
 {
   json_object *shiftKey = NULL;
   json_object *pins = NULL;
+  json_object *macros = NULL;
 
   /* Header data */
   unsigned char header[4] = {0x50, 0xdd, 0x00, 0x00};
   memcpy (barray, &header, sizeof(header));
 
-  /* Macro data */
-  barray[69] = 0x30;
-
+  /* Shift key data */
   json_object_object_get_ex(jobj, "1/2 shift key", &shiftKey);
   barray[4] = convertIPAC(shiftKey);
 
+  /* Key data */
   json_object_object_get_ex(jobj, "pins", &pins);
   populateBoardArray(PRE_MINIPAC_BOARD, pins, &barray[4]);
+
+  /* Macro data */
+  json_object_object_get_ex(jobj, "macros", &macros);
+  populateMacrosPosition(PRE_MINIPAC_BOARD, macros, &barray[4]);
 }
 
 void update2015IPAC2Board (json_object *jobj, unsigned char* barray)

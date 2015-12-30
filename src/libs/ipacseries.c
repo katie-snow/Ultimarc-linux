@@ -643,6 +643,14 @@ convertIPAC (json_object *jobj)
       retval = 0x1F;
     if (!strcasecmp(str, "2b"))
       retval = 0x20;
+    if (!strcasecmp(str, "m1"))
+      retval = 0xe0;
+    if (!strcasecmp(str, "m2"))
+      retval = 0xe1;
+    if (!strcasecmp(str, "m3"))
+      retval = 0xe2;
+    if (!strcasecmp(str, "m4"))
+      retval = 0xe3;
   }
 
   return retval;
@@ -704,6 +712,34 @@ int keyLookupTable[8][62] = {
 int shiftAdjTable[] = {32, 28, 50, 50, 50, 64, 50, 32, -1};
 int shiftPosAdjTable[] = {-1, -1, 100, 100, 100, 128, 100, -1, -1};
 
+int macroLookupTable[8][4] = {
+/* Pre2015 IPAC2 */
+{-1, -1, -1, -1},
+
+/* Pre2015 IPAC4 */
+{-1, -1, -1, -1},
+
+/* Ultimate I/O */
+{-1, -1, -1, -1},
+
+/* 2015 IPAC2 */
+{-1, -1, -1, -1},
+
+/* 2015 MinIPAC */
+{-1, -1, -1, -1},
+
+/* 2015 IPAC4 */
+{-1, -1, -1, -1},
+
+/* 2015 JPAC */
+{-1, -1, -1, -1},
+
+ /* Pre2015 MINIPAC */
+{63, 67, 71, 75}
+
+/* 2015 HIDIO {} */
+};
+
 void populateBoardArray (int bid, json_object* jobj, unsigned char* barray)
 {
   int idx = -1;
@@ -734,8 +770,9 @@ void populateBoardArray (int bid, json_object* jobj, unsigned char* barray)
     json_object_object_get_ex(pin, "key", &tmp);
     barray[idx] = convertIPACKey(bid, tmp);
 
-    /* Case for IPAC2 pre 2015 boards.  The a1, a2, b1, b2 keys do not have a shift key value */
-    if (bid == PRE_IPAC2_BOARD)
+    /* Case for IPAC2 and MINIPAC pre 2015 boards.  The a1, a2, b1, b2 keys do not have a shift key value */
+    if (bid == PRE_IPAC2_BOARD ||
+        bid == PRE_MINIPAC_BOARD)
     {
       if (strcasecmp(key, "1a") != 0 &&
           strcasecmp(key, "1b") != 0 &&
@@ -899,6 +936,26 @@ int decipherLookupKey (const char* key)
   return lkey;
 }
 
+int decipherLookupMacroKey (const char* key)
+{
+  int lkey = -1;
+
+  if (!strcasecmp(key, "m1"))
+    lkey = 0;
+  if (!strcasecmp(key, "m2"))
+    lkey = 1;
+  if (!strcasecmp(key, "m3"))
+    lkey = 2;
+  if (!strcasecmp(key, "m4"))
+    lkey = 3;
+
+  if (lkey == -1)
+  {
+    log_info("Unable to decipher macro '%s'.", key);
+  }
+  return lkey;
+}
+
 void populateShiftPosition (enum ipac_boards_t bid, json_object* key, unsigned char* barray)
 {
   int idx = -1;
@@ -912,6 +969,40 @@ void populateShiftPosition (enum ipac_boards_t bid, json_object* key, unsigned c
   // access table with lkey and bid to get the location to place data in barray
   idx = keyLookupTable[bid][lkey];
   barray[idx + shiftPosAdjTable[bid]] = 0x41;
+}
+
+void populateMacrosPosition (enum ipac_boards_t bid, json_object* macros, unsigned char* barray)
+{
+  int lkey = -1;
+  int idx = -1;
+  int pos = -1;
+
+  json_object *tmp = NULL;
+
+  json_object_object_foreach(macros, key, macro)
+  {
+    lkey = decipherLookupMacroKey(key);
+
+    if (lkey == -1)
+      continue;
+
+    // access table with lkey and bid to get the location to place data in barray
+    idx = macroLookupTable[bid][lkey];
+
+    if (idx == -1)
+    {
+      log_warn("The macro given does not have a position for the given board");
+      continue;
+    }
+
+    debug("macro:%s,\tvalue idx: %i", key, idx);
+    /* Populate board array with macros */
+    for (pos = 0; pos < json_object_array_length(macro); pos++)
+    {
+      tmp = json_object_array_get_idx(macro, pos);
+      barray[idx + pos] = convertIPACKey(bid, tmp);
+    }
+  }
 }
 
 bool writeIPACSeriesUSB (unsigned char* barray, int size, uint16_t vendor, uint16_t product, int interface, int autoconnect, bool transfer)

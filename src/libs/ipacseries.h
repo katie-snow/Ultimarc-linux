@@ -59,7 +59,17 @@ void populateBoardArray (enum ipac_boards_t bid, json_object* jobj, unsigned cha
  */
 int decipherLookupKey (const char* key);
 
+/**
+ * Lookup the Macro Table key
+ */
+int decipherLookupMacroKey (const char* key);
+
 void populateShiftPostion (enum ipac_boards_t bid, json_object* key, unsigned char* barray);
+
+/**
+ * Update the macros data in the array
+ */
+void populateMacrosPosition (enum ipac_boards_t bid, json_object* macros, unsigned char* barray);
 
 /**
  * IPAC Series generic USB write function
