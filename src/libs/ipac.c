@@ -320,7 +320,6 @@ bool updateBoardIPAC (json_object *jobj)
       if (barray != NULL)
       {
         updatePre2015IPAC4Board(jobj, barray);
-        log_info ("%i", barray[5]);
         result = writeIPACSeriesUSB(barray, (IPAC_SIZE_PRE_2015 * 2),
                                     IPAC_VENDOR_PRE_2015, IPAC_PRODUCT_PRE_2015,
                                     IPAC_INTERFACE, 1, true);
@@ -386,7 +385,7 @@ void updatePre2015IPAC2Board (json_object *jobj, unsigned char* barray)
   unsigned char header[4] = {0x50, 0xdd, 0x00, 0x00};
   memcpy (barray, &header, sizeof(header));
 
-  /* Macro data */
+  /* Control data */
   barray[65] = 0x29;
 
   json_object_object_get_ex(jobj, "1/2 shift key", &shiftKey);
@@ -404,14 +403,15 @@ void updatePre2015IPAC4Board (json_object *jobj, unsigned char* barray)
 {
   json_object *shiftKey = NULL;
   json_object *pins = NULL;
+  json_object *macros = NULL;
 
   /* Header data */
   unsigned char header[4] = {0x50, 0xdd, 0x00, 0x00};
   memcpy (barray, &header, sizeof(header));
   memcpy (&barray[100], &header, sizeof(header));
 
-  /* Macro data */
-  barray[61] = 0x30;
+  /* Control data */
+  barray[61] = 0xa6;
   barray[161] = 0xFB;
   barray[162] = 0x01;
 
@@ -423,6 +423,11 @@ void updatePre2015IPAC4Board (json_object *jobj, unsigned char* barray)
 
   json_object_object_get_ex(jobj, "pins", &pins);
   populateBoardArray(PRE_IPAC4_BOARD, pins, &barray[4]);
+
+  /* Macro data */
+  json_object_object_get_ex(jobj, "macros", &macros);
+  populateMacrosPosition(PRE_IPAC4_BOARD, macros, &barray[4]);
+  populateMacrosPosition(PRE_IPAC4_BOARD, macros, &barray[104]);
 }
 
 void updatePre2015MINIPACBoard (json_object *jobj, unsigned char* barray)
