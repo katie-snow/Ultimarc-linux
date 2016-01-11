@@ -2,6 +2,12 @@
   "version" : 1,
   "product" : "minipac",
   "1/2 shift key" : "1start",
+  "macros" : {
+    "m1" : ["", "", "", ""],
+    "m2" : ["", "", "", ""],
+    "m3" : ["", "", "", ""],
+    "m4" : ["", "", "", ""]
+  },
   "pins": {
     "1right": {
       "key": "right",

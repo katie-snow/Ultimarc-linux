@@ -119,6 +119,8 @@ bool validateIPACData(json_object* jobj, int size)
     }
   }
 
+  valid = validateIPACMacros(jobj, valid);
+
   return valid;
 }
 
@@ -201,6 +203,114 @@ bool validateIPAC4Data (json_object* jobj)
     }
   }
 
+  valid = validateIPACMacros(jobj, valid);
+
+  return valid;
+}
+
+bool validateIPACMacros(json_object* jobj, bool validState)
+{
+  bool valid = validState;
+
+  /* Pre2015 board variables */
+  int macroCount = 0;
+  static const int maxMacroCount = 4;
+
+  int keyCount = 0;
+  static const int maxKeyCount = 4;
+
+  /* 2015 board variables */
+  int macroEntries = 0;
+  static const int maxMacroEntries = 85;
+
+  int macroCount2015 = 0;
+  static const int maxMacroCount2015 = 30;
+
+  /* General variables */
+  json_object* macros = NULL;
+  json_object* key    = NULL;
+
+  if (json_object_object_get_ex(jobj, "macros", &macros))
+  {
+    if (!json_object_is_type(macros, json_type_object))
+    {
+      log_err ("'macros' is not of type object");
+      valid = false;
+    }
+    else
+    {
+      json_object_object_foreach(macros, name, macro)
+      {
+        macroCount++;
+        macroEntries++;
+        macroCount2015++;
+        keyCount = 0;
+
+        if (!json_object_is_type(macro, json_type_array))
+        {
+          log_err ("'%s' is not of type array", name);
+          valid = false;
+        }
+        else
+        {
+          if (pIPAC.version == 1)
+          {
+            if (json_object_array_length(macro) != maxKeyCount)
+            {
+              log_err ("'%s' array size should be 4", name);
+              valid = false;
+            }
+            else
+            {
+              for (; keyCount < maxKeyCount; ++keyCount)
+              {
+                key = json_object_array_get_idx(macro, keyCount);
+                if (!json_object_is_type(key, json_type_string))
+                {
+                  log_err ("Key entry in '%s' needs to be of type string", name);
+                  valid = false;
+                }
+              }
+            }
+          }
+          else
+          {
+            macroEntries += json_object_array_length(macro);
+            for (; keyCount < json_object_array_length(macro); ++keyCount)
+            {
+              key = json_object_array_get_idx(macro, keyCount);
+              if (!json_object_is_type(key, json_type_string))
+              {
+                log_err ("Key entry in '%s' needs to be of type string", name);
+                valid = false;
+              }
+            }
+          }
+        }
+      }
+
+      if ((pIPAC.version == 1) && (macroCount > maxMacroCount))
+      {
+        log_err("The number of macros defined is '%i'.  4 macro entries are allowed.", macroCount);
+        valid = false;
+      }
+      else if (pIPAC.version == 2)
+      {
+        if (macroCount2015 > maxMacroCount2015)
+        {
+          log_err("The number of macros defined is '%i'. 30 macro entries are allowed.", macroCount2015);
+          valid = false;
+        }
+
+        if (macroEntries > maxMacroEntries)
+        {
+          log_err("The total size of the macros plus control characters is '%i'.  Needs to be a total size of 85 or less.", macroEntries);
+          valid = false;
+        }
+      }
+    }
+  }
+
   return valid;
 }
 
@@ -251,7 +361,6 @@ bool updateBoardIPAC (json_object *jobj)
       if (barray != NULL)
       {
         updatePre2015IPAC4Board(jobj, barray);
-        log_info ("%i", barray[5]);
         result = writeIPACSeriesUSB(barray, (IPAC_SIZE_PRE_2015 * 2),
                                     IPAC_VENDOR_PRE_2015, IPAC_PRODUCT_PRE_2015,
                                     IPAC_INTERFACE, 1, true);
@@ -311,12 +420,13 @@ void updatePre2015IPAC2Board (json_object *jobj, unsigned char* barray)
 {
   json_object *shiftKey = NULL;
   json_object *pins = NULL;
+  json_object *macros = NULL;
 
   /* Header data */
   unsigned char header[4] = {0x50, 0xdd, 0x00, 0x00};
   memcpy (barray, &header, sizeof(header));
 
-  /* Macro data */
+  /* Control data */
   barray[65] = 0x29;
 
   json_object_object_get_ex(jobj, "1/2 shift key", &shiftKey);
@@ -324,20 +434,25 @@ void updatePre2015IPAC2Board (json_object *jobj, unsigned char* barray)
 
   json_object_object_get_ex(jobj, "pins", &pins);
   populateBoardArray(PRE_IPAC2_BOARD, pins, &barray[4]);
+
+  /* Macro data */
+  json_object_object_get_ex(jobj, "macros", &macros);
+  populateMacrosPosition(PRE_IPAC2_BOARD, macros, &barray[4]);
 }
 
 void updatePre2015IPAC4Board (json_object *jobj, unsigned char* barray)
 {
   json_object *shiftKey = NULL;
   json_object *pins = NULL;
+  json_object *macros = NULL;
 
   /* Header data */
   unsigned char header[4] = {0x50, 0xdd, 0x00, 0x00};
   memcpy (barray, &header, sizeof(header));
   memcpy (&barray[100], &header, sizeof(header));
 
-  /* Macro data */
-  barray[61] = 0x30;
+  /* Control data */
+  barray[61] = 0xa6;
   barray[161] = 0xFB;
   barray[162] = 0x01;
 
@@ -349,31 +464,41 @@ void updatePre2015IPAC4Board (json_object *jobj, unsigned char* barray)
 
   json_object_object_get_ex(jobj, "pins", &pins);
   populateBoardArray(PRE_IPAC4_BOARD, pins, &barray[4]);
+
+  /* Macro data */
+  json_object_object_get_ex(jobj, "macros", &macros);
+  populateMacrosPosition(PRE_IPAC4_BOARD, macros, &barray[4]);
+  populateMacrosPosition(PRE_IPAC4_BOARD, macros, &barray[104]);
 }
 
 void updatePre2015MINIPACBoard (json_object *jobj, unsigned char* barray)
 {
   json_object *shiftKey = NULL;
   json_object *pins = NULL;
+  json_object *macros = NULL;
 
   /* Header data */
   unsigned char header[4] = {0x50, 0xdd, 0x00, 0x00};
   memcpy (barray, &header, sizeof(header));
 
-  /* Macro data */
-  barray[69] = 0x30;
-
+  /* Shift key data */
   json_object_object_get_ex(jobj, "1/2 shift key", &shiftKey);
   barray[4] = convertIPAC(shiftKey);
 
+  /* Key data */
   json_object_object_get_ex(jobj, "pins", &pins);
   populateBoardArray(PRE_MINIPAC_BOARD, pins, &barray[4]);
+
+  /* Macro data */
+  json_object_object_get_ex(jobj, "macros", &macros);
+  populateMacrosPosition(PRE_MINIPAC_BOARD, macros, &barray[4]);
 }
 
 void update2015IPAC2Board (json_object *jobj, unsigned char* barray)
 {
   json_object *shiftKey = NULL;
   json_object *pins = NULL;
+  json_object *macros = NULL;
 
   /* Header data */
   char header[4] = {0x50, 0xdd, 0x0f, 0x00};
@@ -393,12 +518,17 @@ void update2015IPAC2Board (json_object *jobj, unsigned char* barray)
 
   json_object_object_get_ex(jobj, "pins", &pins);
   populateBoardArray(IPAC2_BOARD, pins, &barray[3]);
+
+  /* Macro data */
+  json_object_object_get_ex(jobj, "macros", &macros);
+  populateMacrosPosition(IPAC2_BOARD, macros, &barray[3]);
 }
 
 void update2015MinIPACBoard (json_object *jobj, unsigned char* barray)
 {
   json_object *shiftKey = NULL;
   json_object *pins = NULL;
+  json_object *macros = NULL;
 
   /* Header data */
   char header[4] = {0x50, 0xdd, 0x0f, 0x00};
@@ -416,12 +546,17 @@ void update2015MinIPACBoard (json_object *jobj, unsigned char* barray)
 
   json_object_object_get_ex(jobj, "pins", &pins);
   populateBoardArray(MINIPAC_BOARD, pins, &barray[3]);
+
+  /* Macro data */
+  json_object_object_get_ex(jobj, "macros", &macros);
+  populateMacrosPosition(MINIPAC_BOARD, macros, &barray[3]);
 }
 
 void update2015IPAC4Board (json_object *jobj, unsigned char* barray)
 {
   json_object *shiftKey = NULL;
   json_object *pins = NULL;
+  json_object *macros = NULL;
 
   /* Header data */
   char header[4] = {0x50, 0xdd, 0x0f, 0x00};
@@ -441,12 +576,17 @@ void update2015IPAC4Board (json_object *jobj, unsigned char* barray)
 
   json_object_object_get_ex(jobj, "pins", &pins);
   populateBoardArray(IPAC4_BOARD, pins, &barray[3]);
+
+  /* Macro data */
+  json_object_object_get_ex(jobj, "macros", &macros);
+  populateMacrosPosition(IPAC4_BOARD, macros, &barray[3]);
 }
 
 void update2015JPACBoard (json_object *jobj, unsigned char* barray)
 {
   json_object *shiftKey = NULL;
   json_object *pins = NULL;
+  json_object *macros = NULL;
 
   /* Header data */
   char header[4] = {0x50, 0xdd, 0x0f, 0x00};
@@ -478,4 +618,8 @@ void update2015JPACBoard (json_object *jobj, unsigned char* barray)
 
   json_object_object_get_ex(jobj, "pins", &pins);
   populateBoardArray(JPAC_BOARD, pins, &barray[3]);
+
+  /* Macro data */
+  json_object_object_get_ex(jobj, "macros", &macros);
+  populateMacrosPosition(JPAC_BOARD, macros, &barray[3]);
 }

@@ -50,6 +50,18 @@ bool validateIPACData(json_object* jobj, int size);
 bool validateIPAC4Data(json_object* jobj);
 
 /*
+ * macros are optional.
+ * Validation will be the following:
+ *  4 macro entries (pre2015 board)
+ *  each macro entry is an array (all boards)
+ *  4 key entries per macro array (pre2015 board)
+ *  each key entry is type string (all boards)
+ *  limit of 85 bytes for the complete macro group (2015 boards)
+ *
+ */
+bool validateIPACMacros(json_object* jobj, bool valid);
+
+/*
  * Writes the data out to the board.
  */
 bool updateBoardIPAC (json_object *jobj);

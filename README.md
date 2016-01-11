@@ -29,10 +29,5 @@ If you need extra debug statements for the IPac boards then run the following
 The executable will be in src/umtool directory and named umtool.out.
 * ./umtool.out ipac2.json
 
-#### Project TODO's:
-* 2015 U-HID board support
-* MACRO support for boards that use MACRO's.
-* Flash rate for PACLED64 board.
-
 #### Donations:
 <a href='https://pledgie.com/campaigns/26846'><img alt='Click here to lend your support to: Ultimarc-Linux and make a donation at pledgie.com !' src='https://pledgie.com/campaigns/26846.png?skin_name=chrome' border='0' ></a>
