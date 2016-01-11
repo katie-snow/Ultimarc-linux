@@ -29,8 +29,9 @@ version: This should be set to 1(pre 2015 board) or 2(2015 and newer).  This is 
 product: This is either 'ipac2', 'ipac4', 'minipac', 'jpac',  depending on what board you are configuring
 1/2 shift key: Key that will be used as the shift key for player 1 and 2
 3/4 shift key: Key that will be used as the shift key for player 3 and 4
-pins: list of all the pins(keys) that are on the board.  Please modify the example configuration files.
-
+pins: List of all the pins(keys) that are on the board.  Please modify the example configuration files.
+macros: List of individual macros.  Each macro is an ordered list.  The pre2015 boards only support 4 macros with 4 entries each.  The 2015 boards support 30 macros with a limit of 85 entries for all macros.
+ "m1" : ["", "", "", ""]
 
 UltiStik 360:
 version: This should be set to 1(pre 2015 board) or 2(2015 and newer).  This is used for determining which version of the board to configure

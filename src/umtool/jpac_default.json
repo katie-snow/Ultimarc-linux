@@ -2,6 +2,8 @@
   "version" : 2,
   "product" : "jpac",
   "1/2 shift key" : "1start",
+  "macros": {
+  },
   "pins": {
     "1right": {
       "key": "right",
