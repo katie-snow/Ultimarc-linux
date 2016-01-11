@@ -372,6 +372,68 @@ convertIPACSeries (json_object* jobj)
       retval = 0xC2;
     if (!strcasecmp(str, "TRACKBALL Z"))
       retval = 0xC4;
+    if (!strcasecmp(str, "m1"))
+      retval = 0xe0;
+    if (!strcasecmp(str, "m2"))
+      retval = 0xe1;
+    if (!strcasecmp(str, "m3"))
+      retval = 0xe2;
+    if (!strcasecmp(str, "m4"))
+      retval = 0xe3;
+    if (!strcasecmp(str, "m5"))
+      retval = 0xe4;
+    if (!strcasecmp(str, "m6"))
+      retval = 0xe5;
+    if (!strcasecmp(str, "m7"))
+      retval = 0xe6;
+    if (!strcasecmp(str, "m8"))
+      retval = 0xe7;
+    if (!strcasecmp(str, "m9"))
+      retval = 0xe8;
+    if (!strcasecmp(str, "m10"))
+      retval = 0xe9;
+    if (!strcasecmp(str, "m11"))
+      retval = 0xea;
+    if (!strcasecmp(str, "m12"))
+      retval = 0xeb;
+    if (!strcasecmp(str, "m13"))
+      retval = 0xec;
+    if (!strcasecmp(str, "m14"))
+      retval = 0xed;
+    if (!strcasecmp(str, "m15"))
+      retval = 0xee;
+    if (!strcasecmp(str, "m16"))
+      retval = 0xef;
+    if (!strcasecmp(str, "m17"))
+      retval = 0xf0;
+    if (!strcasecmp(str, "m18"))
+      retval = 0xf1;
+    if (!strcasecmp(str, "m19"))
+      retval = 0xf2;
+    if (!strcasecmp(str, "m20"))
+      retval = 0xf3;
+    if (!strcasecmp(str, "m21"))
+      retval = 0xf4;
+    if (!strcasecmp(str, "m22"))
+      retval = 0xf5;
+    if (!strcasecmp(str, "m23"))
+      retval = 0xf6;
+    if (!strcasecmp(str, "m24"))
+      retval = 0xf7;
+    if (!strcasecmp(str, "m25"))
+      retval = 0xf8;
+    if (!strcasecmp(str, "m26"))
+      retval = 0xf9;
+    if (!strcasecmp(str, "m27"))
+      retval = 0xfa;
+    if (!strcasecmp(str, "m28"))
+      retval = 0xfb;
+    if (!strcasecmp(str, "m29"))
+      retval = 0xfc;
+    if (!strcasecmp(str, "m30"))
+      retval = 0xfd;
+    if (!strcasecmp(str, "m31"))
+      retval = 0xfe;
   }
 
   return retval;
@@ -712,6 +774,8 @@ int keyLookupTable[8][62] = {
 int shiftAdjTable[] = {32, 28, 50, 50, 50, 64, 50, 32, -1};
 int shiftPosAdjTable[] = {-1, -1, 100, 100, 100, 128, 100, -1, -1};
 
+
+/* Only the pre2015 boards will use this lookup array */
 int macroLookupTable[8][4] = {
 /* Pre2015 IPAC2 */
 {63, 67, 71, 75},
@@ -976,31 +1040,59 @@ void populateMacrosPosition (enum ipac_boards_t bid, json_object* macros, unsign
   int lkey = -1;
   int idx = -1;
   int pos = -1;
+  int idx2015 = 168;
 
   json_object *tmp = NULL;
 
   json_object_object_foreach(macros, key, macro)
   {
-    lkey = decipherLookupMacroKey(key);
-
-    if (lkey == -1)
-      continue;
-
-    // access table with lkey and bid to get the location to place data in barray
-    idx = macroLookupTable[bid][lkey];
-
-    if (idx == -1)
+    switch (bid)
     {
-      log_warn("The macro given does not have a position for the given board");
-      continue;
-    }
+      case PRE_IPAC2_BOARD:
+      case PRE_IPAC4_BOARD:
+      case PRE_MINIPAC_BOARD:
+        lkey = decipherLookupMacroKey(key);
 
-    debug("macro:%s,\tvalue idx: %i", key, idx);
-    /* Populate board array with macros */
-    for (pos = 0; pos < json_object_array_length(macro); pos++)
-    {
-      tmp = json_object_array_get_idx(macro, pos);
-      barray[idx + pos] = convertIPACKey(bid, tmp);
+        if (lkey == -1)
+          continue;
+
+        // access table with lkey and bid to get the location to place data in barray
+        idx = macroLookupTable[bid][lkey];
+
+        if (idx == -1)
+        {
+          log_warn("The macro given does not have a position for the given board");
+          continue;
+        }
+
+        debug("macro:%s,\tvalue idx: %i", key, idx);
+        /* Populate board array with macros */
+        for (pos = 0; pos < json_object_array_length(macro); pos++)
+        {
+          tmp = json_object_array_get_idx(macro, pos);
+          barray[idx + pos] = convertIPACKey(bid, tmp);
+        }
+       break;
+
+       case IPAC2_BOARD:
+       case IPAC4_BOARD:
+       case JPAC_BOARD:
+       case MINIPAC_BOARD:
+         /* Insert E0 through FE into the barray */
+         barray[idx2015] = convertIPACKey(bid, json_object_new_string(key));
+         debug("macro:%s,\tvalue idx: %i", key, idx2015);
+
+         /* Populate board array with macros */
+         idx2015++;
+         for (pos = 0; pos < json_object_array_length(macro); pos++)
+         {
+           tmp = json_object_array_get_idx(macro, pos);
+           barray[idx2015 + pos] = convertIPACKey(bid, tmp);
+         }
+
+         /* Move the idx2015 to the next available location */
+         idx2015 += pos;
+       break;
     }
   }
 }
