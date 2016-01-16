@@ -1,8 +1,12 @@
 {
-  "version" : 2,
+  "version" : 1,
   "product" : "jpac",
   "1/2 shift key" : "1start",
-  "macros": {
+  "macros" : {
+    "m1" : ["", "", "", ""],
+    "m2" : ["", "", "", ""],
+    "m3" : ["", "", "", ""],
+    "m4" : ["", "", "", ""]
   },
   "pins": {
     "1right": {
@@ -11,7 +15,7 @@
     },
     "1up": {
       "key": "up",
-      "shift": "~"
+      "shift": "`"
     },
     "1down": {
       "key": "down",
@@ -55,7 +59,7 @@
     },
     "1start": {
       "key": "1",
-      "shift": "1"
+      "shift": ""
     },
     "1coin": {
       "key": "5",
