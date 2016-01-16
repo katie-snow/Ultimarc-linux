@@ -56,7 +56,7 @@
     },
     "1start": {
       "key": "1",
-      "shift": "1"
+      "shift": ""
     },
     "1coin": {
       "key": "5",
@@ -151,19 +151,19 @@
       "shift": ""
     },
     "3sw5": {
-      "key": "f5",
+      "key": "",
       "shift": ""
     },
     "3sw6": {
-      "key": "f6",
+      "key": "",
       "shift": ""
     },
     "3sw7": {
-      "key": "f7",
+      "key": "",
       "shift": ""
     },
     "3sw8": {
-      "key": "f8",
+      "key": "",
       "shift": ""
     },
     "3start": {
@@ -207,19 +207,19 @@
       "shift": ""
     },
     "4sw5": {
-      "key": "f9",
+      "key": "",
       "shift": ""
     },
     "4sw6": {
-      "key": "f10",
+      "key": "",
       "shift": ""
     },
     "4sw7": {
-      "key": "f11",
+      "key": "",
       "shift": ""
     },
     "4sw8": {
-      "key": "f12",
+      "key": "",
       "shift": ""
     },
     "4start": {
