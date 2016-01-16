@@ -3,42 +3,42 @@
   "product" : "ipac2",
   "1/2 shift key" : "1start",
   "macros" : {
-    "m1" : ["1", "2", "3", "z"],
-    "m2" : ["2", "3", "4", "z"],
-    "m3" : ["3", "4", "5", "z"],
-    "m4" : ["4", "5", "6", "z"]
+    "m1" : ["m", "1", "", ""],
+    "m2" : ["m", "2", "", ""],
+    "m3" : ["m1", "m1", "m2", "m2"],
+    "m4" : ["m1", "m2", "m1", "m2"]
   },
   "pins": {
     "1right": {
-      "key": "m1",
+      "key": "0",
       "shift": "x"
     },
     "1up": {
-      "key": "m2",
+      "key": "0",
       "shift": "x"
     },
     "1down": {
-      "key": "m3",
+      "key": "0",
       "shift": "x"
     },
     "1left": {
-      "key": "m4",
+      "key": "0",
       "shift": "x"
     },
     "1sw1": {
-      "key": "0",
+      "key": "m1",
       "shift": "x"
     },
     "1sw2": {
-      "key": "0",
+      "key": "m2",
       "shift": "x"
     },
     "1sw3": {
-      "key": "0",
+      "key": "m3",
       "shift": "x"
     },
     "1sw4": {
-      "key": "0",
+      "key": "m4",
       "shift": "x"
     },
     "1sw5": {
@@ -66,12 +66,12 @@
       "shift": "x"
     },
     "1a": {
-      "key": "1",
-      "shift": "a"
+      "key": "a",
+      "shift": "e"
     },
     "1b": {
-      "key": "2",
-      "shift": "b"
+      "key": "b",
+      "shift": "f"
     },
     "2right": {
       "key": "0",
@@ -130,12 +130,12 @@
       "shift": "x"
     },
     "2a": {
-      "key": "3",
-      "shift": "c"
+      "key": "c",
+      "shift": "g"
     },
     "2b": {
-      "key": "4",
-      "shift": "d"
+      "key": "d",
+      "shift": "h"
     }
   }
 }

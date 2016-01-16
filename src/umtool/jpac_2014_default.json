@@ -1,127 +1,133 @@
 {
-  "version" : 2,
+  "version" : 1,
   "product" : "jpac",
-  "1/2 shift key" : "1sw8",
+  "1/2 shift key" : "1start",
+  "macros" : {
+    "m1" : ["", "", "", ""],
+    "m2" : ["", "", "", ""],
+    "m3" : ["", "", "", ""],
+    "m4" : ["", "", "", ""]
+  },
   "pins": {
     "1right": {
       "key": "right",
-      "shift": "x"
+      "shift": "tab"
     },
     "1up": {
       "key": "up",
-      "shift": "v"
+      "shift": "`"
     },
     "1down": {
       "key": "down",
-      "shift": "w"
+      "shift": "p"
     },
     "1left": {
       "key": "left",
-      "shift": "y"
+      "shift": "enter"
     },
     "1sw1": {
-      "key": "l",
-      "shift": "z"
+      "key": "l ctrl",
+      "shift": "5"
     },
     "1sw2": {
-      "key": "t",
-      "shift": "d"
+      "key": "l alt",
+      "shift": ""
     },
     "1sw3": {
-      "key": "a",
-      "shift": "w"
+      "key": "space",
+      "shift": ""
     },
     "1sw4": {
-      "key": "s",
-      "shift": "4"
+      "key": "l shift",
+      "shift": ""
     },
     "1sw5": {
       "key": "z",
-      "shift": "w"
+      "shift": ""
     },
     "1sw6": {
       "key": "x",
-      "shift": "g"
+      "shift": ""
     },
     "1sw7": {
       "key": "c",
-      "shift": "k"
+      "shift": ""
     },
     "1sw8": {
       "key": "v",
-      "shift": "e"
+      "shift": ""
     },
     "1start": {
       "key": "1",
-      "shift": "p"
+      "shift": ""
     },
     "1coin": {
       "key": "5",
-      "shift": "f"
+      "shift": ""
     },
     "1test": {
-      "key": "r",
-      "shift": "s"
+      "key": "f2",
+      "shift": ""
     },
     "2right": {
       "key": "g",
-      "shift": "b"
+      "shift": ""
     },
     "2up": {
       "key": "r",
-      "shift": "o"
+      "shift": ""
     },
     "2down": {
       "key": "f",
-      "shift": "8"
+      "shift": ""
     },
     "2left": {
       "key": "d",
-      "shift": "1"
+      "shift": ""
     },
     "2sw1": {
       "key": "a",
-      "shift": "9"
+      "shift": ""
     },
     "2sw2": {
       "key": "s",
-      "shift": "3"
+      "shift": ""
     },
     "2sw3": {
       "key": "q",
-      "shift": "6"
+      "shift": ""
     },
     "2sw4": {
       "key": "w",
-      "shift": "7"
+      "shift": ""
     },
     "2sw5": {
       "key": "i",
-      "shift": "v"
+      "shift": ""
     },
     "2sw6": {
       "key": "k",
-      "shift": "h"
+      "shift": ""
     },
     "2sw7": {
       "key": "j",
-      "shift": "c"
+      "shift": ""
     },
     "2sw8": {
-      "key": "r",
-      "shift": "2"
+      "key": "l",
+      "shift": ""
     },
     "2start": {
       "key": "2",
-      "shift": "t"
+      "shift": "esc"
     },
     "2coin": {
       "key": "6",
-      "shift": "i"
+      "shift": ""
     },
     "2test": {
-      "key": "7",
-      "shift": "r"
+      "key": "f3",
+      "shift": ""
     },
   }
 }

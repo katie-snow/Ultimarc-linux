@@ -1,36 +1,32 @@
 {
-  "version" : 1,
-  "product" : "minipac",
+  "version" : 2,
+  "product" : "jpac",
   "1/2 shift key" : "1start",
-  "macros" : {
-    "m1" : ["", "", "", ""],
-    "m2" : ["", "", "", ""],
-    "m3" : ["", "", "", ""],
-    "m4" : ["", "", "", ""]
+  "macros": {
   },
   "pins": {
     "1right": {
       "key": "right",
-      "shift": "x"
+      "shift": "tab"
     },
     "1up": {
       "key": "up",
-      "shift": "v"
+      "shift": "`"
     },
     "1down": {
       "key": "down",
-      "shift": "w"
+      "shift": "p"
     },
     "1left": {
       "key": "left",
-      "shift": "y"
+      "shift": "enter"
     },
     "1sw1": {
-      "key": "ctrl l",
-      "shift": "z"
+      "key": "l ctrl",
+      "shift": "5"
     },
     "1sw2": {
-      "key": "alt l",
+      "key": "l alt",
       "shift": ""
     },
     "1sw3": {
@@ -38,7 +34,7 @@
       "shift": ""
     },
     "1sw4": {
-      "key": "shift l",
+      "key": "l shift",
       "shift": ""
     },
     "1sw5": {
@@ -65,12 +61,8 @@
       "key": "5",
       "shift": ""
     },
-    "1a": {
-      "key": "",
-      "shift": ""
-    },
-    "1b": {
-      "key": "",
+    "1test": {
+      "key": "f2",
       "shift": ""
     },
     "2right": {
@@ -129,13 +121,9 @@
       "key": "6",
       "shift": ""
     },
-    "2a": {
-      "key": "",
+    "2test": {
+      "key": "f3",
       "shift": ""
     },
-    "2b": {
-      "key": "",
-      "shift": ""
-    }
   }
 }
