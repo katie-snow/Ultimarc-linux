@@ -12,23 +12,23 @@
   "pins": {
     "1right": {
       "key": "right",
-      "shift": "x"
+      "shift": "tab"
     },
     "1up": {
       "key": "up",
-      "shift": "v"
+      "shift": "`"
     },
     "1down": {
       "key": "down",
-      "shift": "w"
+      "shift": "p"
     },
     "1left": {
       "key": "left",
-      "shift": "y"
+      "shift": "enter"
     },
     "1sw1": {
       "key": "ctrl l",
-      "shift": "z"
+      "shift": "5"
     },
     "1sw2": {
       "key": "alt l",
@@ -191,7 +191,7 @@
       "shift": ""
     },
     "4left": {
-      "key": "y",
+      "key": "v",
       "shift": ""
     },
     "4sw1": {
