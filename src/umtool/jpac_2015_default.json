@@ -11,7 +11,7 @@
     },
     "1up": {
       "key": "up",
-      "shift": "~"
+      "shift": "`"
     },
     "1down": {
       "key": "down",
@@ -55,7 +55,7 @@
     },
     "1start": {
       "key": "1",
-      "shift": "1"
+      "shift": ""
     },
     "1coin": {
       "key": "5",
