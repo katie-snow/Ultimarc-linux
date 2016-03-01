@@ -12,6 +12,8 @@ AM_PROG_CC_C_O
 AC_CONFIG_MACRO_DIR([m4])
 LT_INIT
 
+m4_ifdef([AM_SILENT_RULES], [AM_SILENT_RULES([yes])])
+
 # Kernel headers path.
 AC_ARG_WITH(kernel-headers,
     [AC_HELP_STRING([--with-kernel-headers=DIR],
