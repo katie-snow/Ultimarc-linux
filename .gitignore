@@ -30,10 +30,16 @@ linux-kernel/.*
 .settings
 .project
 
+# pkgconfig stuff
+ultimarc*.pc
+
 # Autotool stuff
 /autom4te.cache/
 /config/
 Makefile
+Makefile.in
+src/libs/Makefile.in
+src/umtool/Makefile.in
 app.info
 compile
 config.h
@@ -43,8 +49,19 @@ config.status
 configure
 configure.scan
 coverage_report
+INSTALL
 install-sh
 libtool
+aclocal.m4
+config.guess
+config.sub
+depcomp
+ltmain.sh
+m4/libtool.m4
+m4/ltoptions.m4
+m4/ltsugar.m4
+m4/ltversion.m4
+m4/lt~obsolete.m4
 missing
 stamp-h1
 *~
