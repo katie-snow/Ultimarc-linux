@@ -333,7 +333,7 @@ bool updateBoardIPAC (json_object *jobj)
         updatePre2015IPAC2Board (jobj, barray);
         result = writeIPACSeriesUSB(barray, IPAC_SIZE_PRE_2015,
                                     IPAC_VENDOR_PRE_2015, IPAC_PRODUCT_PRE_2015,
-                                    IPAC_INTERFACE, 1, true);
+                                    IPAC_INTERFACE, 0, true);
         free(barray);
       }
     }
@@ -348,7 +348,7 @@ bool updateBoardIPAC (json_object *jobj)
         updatePre2015MINIPACBoard (jobj, barray);
         result = writeIPACSeriesUSB(barray, IPAC_SIZE_PRE_2015,
                                     IPAC_VENDOR_PRE_2015, IPAC_PRODUCT_PRE_2015,
-                                    IPAC_INTERFACE, 1, true);
+                                    IPAC_INTERFACE, 0, true);
         free(barray);
       }
     }
@@ -363,7 +363,7 @@ bool updateBoardIPAC (json_object *jobj)
         updatePre2015IPAC4Board(jobj, barray);
         result = writeIPACSeriesUSB(barray, (IPAC_SIZE_PRE_2015 * 2),
                                     IPAC_VENDOR_PRE_2015, IPAC_PRODUCT_PRE_2015,
-                                    IPAC_INTERFACE, 1, true);
+                                    IPAC_INTERFACE, 0, true);
 
         free(barray);
       }
