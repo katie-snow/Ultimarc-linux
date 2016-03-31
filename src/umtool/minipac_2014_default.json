@@ -1,9 +1,12 @@
 {
-  "version" : 2,
-  "product" : "ipac4",
+  "version" : 1,
+  "product" : "minipac",
   "1/2 shift key" : "1start",
-  "3/4 shift key" : "3start",
-  "macros": {
+  "macros" : {
+    "m1" : ["", "", "", ""],
+    "m2" : ["", "", "", ""],
+    "m3" : ["", "", "", ""],
+    "m4" : ["", "", "", ""]
   },
   "pins": {
     "1right": {
@@ -118,116 +121,20 @@
       "key": "6",
       "shift": ""
     },
-    "3right": {
-      "key": "l",
+    "1a": {
+      "key": "p",
       "shift": ""
     },
-    "3up": {
-      "key": "i",
+    "2a": {
+      "key": "tab",
       "shift": ""
     },
-    "3down": {
-      "key": "k",
-      "shift": ""
-    },
-    "3left": {
-      "key": "j",
-      "shift": ""
-    },
-    "3sw1": {
-      "key": "ctrl r",
-      "shift": ""
-    },
-    "3sw2": {
-      "key": "shift r",
-      "shift": ""
-    },
-    "3sw3": {
+    "1b": {
       "key": "enter",
       "shift": ""
     },
-    "3sw4": {
-      "key": "o",
-      "shift": ""
-    },
-    "3sw5": {
-      "key": "",
-      "shift": ""
-    },
-    "3sw6": {
-      "key": "",
-      "shift": ""
-    },
-    "3sw7": {
-      "key": "",
-      "shift": ""
-    },
-    "3sw8": {
-      "key": "",
-      "shift": ""
-    },
-    "3start": {
-      "key": "3",
-      "shift": ""
-    },
-    "3coin": {
-      "key": "7",
-      "shift": ""
-    },
-    "4right": {
-      "key": "u",
-      "shift": ""
-    },
-    "4up": {
-      "key": "y",
-      "shift": ""
-    },
-    "4down": {
-      "key": "n",
-      "shift": ""
-    },
-    "4left": {
-      "key": "v",
-      "shift": ""
-    },
-    "4sw1": {
-      "key": "b",
-      "shift": ""
-    },
-    "4sw2": {
-      "key": "e",
-      "shift": ""
-    },
-    "4sw3": {
-      "key": "h",
-      "shift": ""
-    },
-    "4sw4": {
-      "key": "m",
-      "shift": ""
-    },
-    "4sw5": {
-      "key": "",
-      "shift": ""
-    },
-    "4sw6": {
-      "key": "",
-      "shift": ""
-    },
-    "4sw7": {
-      "key": "",
-      "shift": ""
-    },
-    "4sw8": {
-      "key": "",
-      "shift": ""
-    },
-    "4start": {
-      "key": "4",
-      "shift": ""
-    },
-    "4coin": {
-      "key": "8",
+    "2b": {
+      "key": "esc",
       "shift": ""
     }
   }

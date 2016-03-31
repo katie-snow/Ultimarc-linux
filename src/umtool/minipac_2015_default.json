@@ -1,6 +1,6 @@
 {
   "version" : 2,
-  "product" : "jpac",
+  "product" : "minipac",
   "1/2 shift key" : "1start",
   "macros": {
   },
@@ -11,7 +11,7 @@
     },
     "1up": {
       "key": "up",
-      "shift": "~"
+      "shift": "`"
     },
     "1down": {
       "key": "down",
@@ -22,11 +22,11 @@
       "shift": "enter"
     },
     "1sw1": {
-      "key": "l ctrl",
+      "key": "ctrl l",
       "shift": "5"
     },
     "1sw2": {
-      "key": "l alt",
+      "key": "alt l",
       "shift": ""
     },
     "1sw3": {
@@ -34,7 +34,7 @@
       "shift": ""
     },
     "1sw4": {
-      "key": "l shift",
+      "key": "shift l",
       "shift": ""
     },
     "1sw5": {
@@ -55,14 +55,10 @@
     },
     "1start": {
       "key": "1",
-      "shift": "1"
+      "shift": ""
     },
     "1coin": {
       "key": "5",
-      "shift": ""
-    },
-    "1test": {
-      "key": "f2",
       "shift": ""
     },
     "2right": {
@@ -121,9 +117,21 @@
       "key": "6",
       "shift": ""
     },
-    "2test": {
-      "key": "f3",
+    "1a": {
+      "key": "p",
       "shift": ""
     },
+    "2a": {
+      "key": "tab",
+      "shift": ""
+    },
+    "1b": {
+      "key": "enter",
+      "shift": ""
+    },
+    "2b": {
+      "key": "esc",
+      "shift": ""
+    }
   }
 }
