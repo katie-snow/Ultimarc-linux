@@ -64,7 +64,7 @@ int decipherLookupKey (const char* key);
  */
 int decipherLookupMacroKey (const char* key);
 
-void populateShiftPostion (enum ipac_boards_t bid, json_object* key, unsigned char* barray);
+void populateShiftPosition (enum ipac_boards_t bid, json_object* key, unsigned char* barray);
 
 /**
  * Update the macros data in the array
