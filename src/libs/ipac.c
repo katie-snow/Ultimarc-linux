@@ -426,8 +426,10 @@ void updatePre2015IPAC2Board (json_object *jobj, unsigned char* barray)
   unsigned char header[4] = {0x50, 0xdd, 0x00, 0x00};
   memcpy (barray, &header, sizeof(header));
 
+  /* Checksum data - Redundant? */
+  barray[65] = 0x00;
   /* Control data */
-  barray[65] = 0x29;
+  barray[66] = 0x00;
 
   json_object_object_get_ex(jobj, "1/2 shift key", &shiftKey);
   barray[4] = convertIPAC(shiftKey);
