@@ -13,6 +13,7 @@
 #include <string.h>
 
 #include <libs/ultimarc.h>
+#include <libs/ulboard.h>
 
 typedef struct args
 {
@@ -25,7 +26,7 @@ main (int argc, char **argv)
   int idx;
   int retVal;
 
-  ulobject ulObj;
+  ulboard board;
 
   args args;
   args.help = 0;
@@ -49,11 +50,11 @@ main (int argc, char **argv)
   for (idx = 1; idx < argc; ++idx)
   {
     printf ("Loading %s...\n", argv[idx]);
-    retVal = ulValidateConfigFileStr (argv[idx], &ulObj);
+    retVal = ulValidateConfigFileStr (argv[idx], &board);
 
     if (retVal == 0)
     {
-      retVal = ulWriteToBoardFileStr(argv[idx], &ulObj);
+      retVal = ulWriteToBoardFileStr(argv[idx], &board);
     }
   }
 

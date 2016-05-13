@@ -18,44 +18,37 @@
 #include <libusb-1.0/libusb.h>
 
 /* Local */
+#include "ulboard.h"
 #include "common.h"
 #include "ipac.h"
 #include "ipacseries.h"
 #include "dbg.h"
 
-struct ipac pIPAC;
-
-bool isIPACConfig (const char* prodStr, int version, json_object* jobj)
+bool isIPACConfig (json_object* jobj, ulboard* board)
 {
   bool isBoardCfg = false;
 
-  pIPAC.version = version;
-  pIPAC.ipac2 = (strcmp(prodStr, IPAC_STR_2) == 0);
-  pIPAC.minipac = (strcmp(prodStr, IPAC_STR_M) == 0);
-  pIPAC.ipac4 = (strcmp(prodStr, IPAC_STR_4) == 0);
-  pIPAC.jpac = (strcmp(prodStr, JPAC_STR) == 0);
-
-  if (pIPAC.ipac2)
+if (board->type == ulboard_type_ipac2)
   {
-    isBoardCfg = validateIPACData(jobj, 32);
+    isBoardCfg = validateIPACData(jobj, 32, board);
   }
-  else if (pIPAC.ipac4)
+  else if (board->type == ulboard_type_ipac4)
   {
-    isBoardCfg = validateIPAC4Data(jobj);
+    isBoardCfg = validateIPAC4Data(jobj, board);
   }
-  else if (pIPAC.minipac)
+  else if (board->type == ulboard_type_minipac)
   {
-    isBoardCfg = validateIPACData(jobj, 32);
+    isBoardCfg = validateIPACData(jobj, 32, board);
   }
-  else if (pIPAC.jpac)
+  else if (board->type == ulboard_type_jpac)
   {
-    isBoardCfg = validateIPACData(jobj, 30);
+    isBoardCfg = validateIPACData(jobj, 30, board);
   }
 
   return isBoardCfg;
 }
 
-bool validateIPACData(json_object* jobj, int size)
+bool validateIPACData(json_object* jobj, int size, ulboard* board)
 {
   bool valid = true;
   json_object* tmp = NULL;
@@ -119,12 +112,12 @@ bool validateIPACData(json_object* jobj, int size)
     }
   }
 
-  valid = validateIPACMacros(jobj, valid);
+  valid = validateIPACMacros(jobj, valid, board);
 
   return valid;
 }
 
-bool validateIPAC4Data (json_object* jobj)
+bool validateIPAC4Data (json_object* jobj, ulboard* board)
 {
   bool valid = true;
 
@@ -203,12 +196,12 @@ bool validateIPAC4Data (json_object* jobj)
     }
   }
 
-  valid = validateIPACMacros(jobj, valid);
+  valid = validateIPACMacros(jobj, valid, board);
 
   return valid;
 }
 
-bool validateIPACMacros(json_object* jobj, bool validState)
+bool validateIPACMacros(json_object* jobj, bool validState, ulboard* board)
 {
   bool valid = validState;
 
@@ -253,7 +246,7 @@ bool validateIPACMacros(json_object* jobj, bool validState)
         }
         else
         {
-          if (pIPAC.version == 1)
+          if (board->version == ulboard_version_pre2015)
           {
             if (json_object_array_length(macro) != maxKeyCount)
             {
@@ -289,12 +282,12 @@ bool validateIPACMacros(json_object* jobj, bool validState)
         }
       }
 
-      if ((pIPAC.version == 1) && (macroCount > maxMacroCount))
+      if ((board->version == ulboard_version_pre2015) && (macroCount > maxMacroCount))
       {
         log_err("The number of macros defined is '%i'.  4 macro entries are allowed.", macroCount);
         valid = false;
       }
-      else if (pIPAC.version == 2)
+      else if (board->version == ulboard_version_2015)
       {
         if (macroCount2015 > maxMacroCount2015)
         {
@@ -314,16 +307,16 @@ bool validateIPACMacros(json_object* jobj, bool validState)
   return valid;
 }
 
-bool updateBoardIPAC (json_object *jobj)
+bool updateBoardIPAC (json_object *jobj, ulboard *board)
 {
   bool result = false;
   int bprod = 0;
   unsigned char* barray = NULL;
 
-  switch (pIPAC.version)
+  switch (board->version)
   {
-  case 1:
-    if (pIPAC.ipac2)
+  case ulboard_version_pre2015:
+    if (board->type == ulboard_type_ipac2)
     {
       log_info ("Updating IPAC2 board...");
       barray = calloc(IPAC_SIZE_PRE_2015, sizeof(unsigned char));
@@ -338,7 +331,7 @@ bool updateBoardIPAC (json_object *jobj)
       }
     }
 
-    if (pIPAC.minipac)
+    if (board->type == ulboard_type_minipac)
     {
       log_info ("Updating MinIPAC board...");
       barray = calloc(IPAC_SIZE_PRE_2015, sizeof(unsigned char));
@@ -353,7 +346,7 @@ bool updateBoardIPAC (json_object *jobj)
       }
     }
 
-    if (pIPAC.ipac4)
+    if (board->type == ulboard_type_jpac)
     {
       log_info ("Updating IPAC4 board...");
       barray = calloc((IPAC_SIZE_PRE_2015 * 2), sizeof(unsigned char));
@@ -370,32 +363,32 @@ bool updateBoardIPAC (json_object *jobj)
     }
     break;
 
-  case 2:
+  case ulboard_version_2015:
     barray = calloc(IPACSERIES_SIZE, sizeof(unsigned char));
 
     if (barray != NULL)
     {
-      if (pIPAC.ipac2)
+      if (board->type == ulboard_type_ipac2)
       {
         log_info ("Updating IPAC2 board...");
         bprod = IPAC_2_PRODUCT;
         update2015IPAC2Board(jobj, barray);
       }
 
-      else if (pIPAC.minipac)
+      else if (board->type == ulboard_type_minipac)
       {
         log_info ("Updating MinIPAC board...");
         bprod = IPAC_M_PRODUCT;
         update2015MinIPACBoard(jobj, barray);
       }
 
-      else if (pIPAC.ipac4)
+      else if (board->type == ulboard_type_ipac4)
       {
         log_info ("Updating IPAC4 board...");
         bprod = IPAC_4_PRODUCT;
         update2015IPAC4Board(jobj, barray);
       }
-      else if (pIPAC.jpac)
+      else if (board->type == ulboard_type_jpac)
       {
         log_info ("Updating JPAC board...");
         bprod = JPAC_PRODUCT;

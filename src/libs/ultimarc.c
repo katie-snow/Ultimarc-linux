@@ -17,6 +17,7 @@
 #include <string.h>
 
 #include "ultimarc.h"
+#include "ulboard.h"
 #include "ipac.h"
 #include "pacLED.h"
 #include "ultistik.h"
@@ -25,35 +26,34 @@
 #include "dbg.h"
 
 int
-ulValidateConfig (json_object* bcfg, ulobject* ulobj)
+ulValidateConfig (json_object* bcfg, ulboard* ulcfg)
 {
   int retCode = 0;
 
-  if (bcfg)
+  if (bcfg && ulcfg)
   {
-    retCode = ulGetProdAndVersion (bcfg, ulobj);
+    retCode = ulGetProdAndVersion (bcfg, ulcfg);
 
     if (retCode == 0)
     {
-      if ((ulobj->ipac = isIPACConfig (ulobj->pStr, ulobj->version, bcfg))
-          || (ulobj->ultimate = isIPACUltimateConfig (ulobj->pStr,
-                                                      ulobj->version, bcfg))
-          || (ulobj->pacDrive = isPACDriveConfig (ulobj->pStr, ulobj->version,
-                                                  bcfg)) || (ulobj->pacLED =
-              isPACLED64Config (ulobj->pStr, ulobj->version, bcfg))
-          || (ulobj->ultistik = isUltistikConfig (ulobj->pStr, ulobj->version,
-                                                  bcfg)))
+      if (isIPACConfig (bcfg, ulcfg)
+          || isIPACUltimateConfig (ulBoardTypeToString(ulcfg->type), ulcfg->version, bcfg)
+          || isPACDriveConfig (ulBoardTypeToString(ulcfg->type), ulcfg->version, bcfg)
+          || isPACLED64Config (ulBoardTypeToString(ulcfg->type), ulcfg->version, bcfg)
+          || isUltistikConfig (ulBoardTypeToString(ulcfg->type), ulcfg->version, bcfg))
       {
-        log_info("Configuration is %s. [Validated]", ulobj->pStr);
+        log_info("Configuration is %s. [Validated]", ulBoardTypeToString(ulcfg->type));
       }
       else
       {
-        log_err("Configuration is '%s'. [Not validated].", ulobj->pStr);
+        retCode = -1;
+        log_err("Configuration is '%s'. [Not validated].", ulBoardTypeToString(ulcfg->type));
       }
     }
     else
     {
-      log_err("Configuration is '%s'. [Not validated].", ulobj->pStr);
+      retCode = -1;
+      log_err("Configuration is '%s'. [Not validated].", ulBoardTypeToString(ulcfg->type));
     }
   }
   else
@@ -66,40 +66,40 @@ ulValidateConfig (json_object* bcfg, ulobject* ulobj)
 }
 
 int
-ulValidateConfigFileStr (const char* file, ulobject* ulobj)
+ulValidateConfigFileStr (const char* file, ulboard* board)
 {
   json_object *bcfg = json_object_from_file (file);
 
-  return ulValidateConfig (bcfg, ulobj);
+  return ulValidateConfig (bcfg, board);
 }
 
 int
-ulWriteToBoard (json_object* bcfg, ulobject* ulobj)
+ulWriteToBoard (json_object* bcfg, ulboard* board)
 {
   int retCode = 0;
 
-  if (bcfg && ulobj)
+  if (bcfg && board)
   {
-    if (ulobj->ipac)
+    if (board->type == ulboard_type_ipac2)
     {
-      retCode = updateBoardIPAC (bcfg);
+      retCode = updateBoardIPAC (bcfg, board);
     }
-    else if (ulobj->ultimate)
+    else if (board->type == ulboard_type_ultimate)
     {
       log_info("Updating IPAC Ultimate board...");
       retCode = updateBoardIPacUltimate (bcfg);
     }
-    else if (ulobj->pacDrive)
+    else if (board->type == ulboard_type_pacDrive)
     {
       log_info("Updating PAC Drive board...");
       retCode = updateBoardPacDrive (bcfg);
     }
-    else if (ulobj->pacLED)
+    else if (board->type == ulboard_type_pacLED)
     {
       log_info("Updating PAC LED 64 board...");
       retCode = updateBoardPacLED (bcfg);
     }
-    else if (ulobj->ultistik)
+    else if (board->type == ulboard_type_ultistik)
     {
       log_info("Updating Ultistik board...");
       retCode = updateBoardULTISTIK (bcfg);
@@ -124,40 +124,41 @@ ulWriteToBoard (json_object* bcfg, ulobject* ulobj)
 }
 
 int
-ulWriteToBoardFileStr (const char* file, ulobject* ulobj)
+ulWriteToBoardFileStr (const char* file, ulboard* board)
 {
   json_object *bcfg = json_object_from_file (file);
 
-  return ulWriteToBoard (bcfg, ulobj);
+  return ulWriteToBoard (bcfg, board);
 }
 
 int
-ulGetProdAndVersion (json_object* jobj, ulobject* ulobj)
+ulGetProdAndVersion (json_object* jobj, ulboard* ulcfg)
 {
   int retCode = 0;
+  int version = 0;
 
   json_object* prodobj = NULL;
   json_object* verobj = NULL;
 
-  if (jobj && ulobj)
+  if (jobj && ulcfg)
   {
     if (json_object_object_get_ex (jobj, "product", &prodobj))
     {
       if (json_object_get_type (prodobj) == json_type_string)
       {
-        ulobj->pStr = json_object_get_string (prodobj);
+        ulcfg->type = ulStringToBoardType(json_object_get_string (prodobj));
       }
       else
       {
         log_err("'product' is not defined as a string");
-        ulobj->pStr = "";
+        ulcfg->type = ulboard_type_null;
         retCode = 1;
       }
     }
     else
     {
       log_err("'product' is not defined in the configuration file");
-      ulobj->pStr = "";
+      ulcfg->type = ulboard_type_null;
       retCode = 1;
     }
 
@@ -165,19 +166,19 @@ ulGetProdAndVersion (json_object* jobj, ulobject* ulobj)
     {
       if (json_object_get_type (verobj) == json_type_int)
       {
-        ulobj->version = json_object_get_int (verobj);
+        ulcfg->version = ulIntToBoardVersion(json_object_get_int (verobj));
       }
       else
       {
         log_err("'version' is not defined as a integer");
-        ulobj->version = -1;
+        ulcfg->version = ulboard_version_null;
         retCode = 1;
       }
     }
     else
     {
       log_err("'version' is not defined in the configuration file");
-      ulobj->version = -1;
+      ulcfg->version = ulboard_version_null;
       retCode = 1;
     }
   }

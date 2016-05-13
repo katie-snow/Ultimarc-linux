@@ -21,40 +21,31 @@ extern "C"
 
 typedef struct json_object json_object;
 
-typedef struct ulobject
-{
-  const char* pStr;
-  int version;
-  bool ipac;
-  bool ultimate;
-  bool pacDrive;
-  bool pacLED;
-  bool ultistik;
-} ulobject;
+typedef struct ulboard ulboard;
 
 /**
  * ulValidateConfig
  * Validates the configuration
  */
 extern int
-ulValidateConfig (json_object* bcfg, ulobject* ulobj);
+ulValidateConfig (json_object* bcfg, ulboard* ulobj);
 extern int
-ulValidateConfigFileStr (const char* file, ulobject* ulobj);
+ulValidateConfigFileStr (const char* file, ulboard* ulobj);
 
 /**
  * ulWriteToBoard
  * Writes the configuration provided out to the Ultimarc hardware
  */
 extern int
-ulWriteToBoard (json_object* bcfg, ulobject* ulobj);
+ulWriteToBoard (json_object* bcfg, ulboard* ulobj);
 extern int
-ulWriteToBoardFileStr (const char* file, ulobject* ulobj);
+ulWriteToBoardFileStr (const char* file, ulboard* ulobj);
 
 /**
  * Populates the ulobj with the product and version in the json_object
  */
 int
-ulGetProdAndVersion (json_object* jobj, ulobject* ulobj);
+ulGetProdAndVersion (json_object* jobj, ulboard* ulobj);
 
 #ifdef __cplusplus
 }

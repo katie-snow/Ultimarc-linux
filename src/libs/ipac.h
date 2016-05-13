@@ -17,12 +17,6 @@
 extern "C" {
 #endif
 
-/* Required items in the json file for IPAC2, MINIPAC, IPAC4 and JPAC cards */
-#define IPAC_STR_2 "ipac2"
-#define IPAC_STR_M "minipac"
-#define IPAC_STR_4 "ipac4"
-#define JPAC_STR   "jpac"
-
 /* Required items for writing out through the USB port */
 #define IPAC_VENDOR_PRE_2015  0xD208
 #define IPAC_VENDOR_2015      0xD209
@@ -35,19 +29,11 @@ extern "C" {
 #define IPAC_INTERFACE        2
 
 typedef struct json_object json_object;
+typedef struct ulboard ulboard;
 
-struct ipac
-{
-  int version;
-  bool minipac;
-  bool ipac2;
-  bool ipac4;
-  bool jpac;
-};
-
-bool isIPACConfig (const char* prodStr, int version, json_object* jobj);
-bool validateIPACData(json_object* jobj, int size);
-bool validateIPAC4Data(json_object* jobj);
+bool isIPACConfig (json_object* jobj, ulboard* board);
+bool validateIPACData(json_object* jobj, int size, ulboard* board);
+bool validateIPAC4Data(json_object* jobj, ulboard* board);
 
 /*
  * macros are optional.
@@ -59,12 +45,12 @@ bool validateIPAC4Data(json_object* jobj);
  *  limit of 85 bytes for the complete macro group (2015 boards)
  *
  */
-bool validateIPACMacros(json_object* jobj, bool valid);
+bool validateIPACMacros(json_object* jobj, bool valid, ulboard* board);
 
 /*
  * Writes the data out to the board.
  */
-bool updateBoardIPAC (json_object *jobj);
+bool updateBoardIPAC (json_object *jobj, ulboard* board);
 
 void updatePre2015IPAC2Board (json_object *jobj, unsigned char* barray);
 
