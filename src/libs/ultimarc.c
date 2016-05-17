@@ -38,7 +38,7 @@ ulValidateConfig (json_object* bcfg, ulboard* ulcfg)
     {
       if (isIPACConfig (bcfg, ulcfg)
           || isIPACUltimateConfig (ulBoardTypeToString(ulcfg->type), ulcfg->version, bcfg)
-          || isPACDriveConfig (ulBoardTypeToString(ulcfg->type), ulcfg->version, bcfg)
+          || isPACDriveConfig (bcfg, ulcfg)
           || isPACLED64Config (bcfg, ulcfg)
           || isUltistikConfig (bcfg, ulcfg))
       {

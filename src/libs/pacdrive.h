@@ -17,10 +17,6 @@
 extern "C" {
 #endif
 
-#define PACDRIVE_VERSION 1
-#define PACDRIVE_PRODUCT_STR "1500"
-#define PACDRIVE_STR "PACDrive"
-
 /* Required items for writing out through the USB port */
 #define PACDRIVE_VENDOR        0xD209
 #define PACDRIVE_PRODUCT       0x1500
@@ -32,13 +28,12 @@ extern "C" {
 #define PACDRIVE_INTERFACE     0
 
 typedef struct json_object json_object;
+typedef struct ulboard ulboard;
 
 /*
  * Determine if the json file is an PAC drive configuration
  */
-bool isPACDriveConfig(const char* prodStr, int version, json_object* jobj);
-const char* getPacDriveProductStr ();
-int getPacDriveVersion();
+bool isPACDriveConfig(json_object* jobj, ulboard* board);
 bool validatePacDriveData(json_object* jobj);
 bool updateBoardPacDrive (json_object* jobj);
 
