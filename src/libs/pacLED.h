@@ -17,10 +17,6 @@
 extern "C" {
 #endif
 
-#define PACLED_VERSION 1
-#define PACLED_PRODUCT_STR "1401"
-#define PACLED_STR "PACLED64"
-
 /* Required items for writing out through the USB port */
 #define PACLED_VENDOR        0xD209
 #define PACLED_PRODUCT       0x1401
@@ -34,6 +30,7 @@ extern "C" {
 #define PACLED_FADE_ALL_BASE 4
 
 typedef struct json_object json_object;
+typedef struct ulboard ulboard;
 
 struct pacLED
 {
@@ -48,9 +45,7 @@ struct pacLED
 /*
  * Determine if the json file is an pacLED configuration
  */
-bool isPACLED64Config(const char* prodStr, int version, json_object* jobj);
-const char* getPacLED64ProductStr ();
-int getPacLED64Version();
+bool isPACLED64Config(json_object* jobj, ulboard* board);
 bool validatePacLED64Data(json_object* jobj);
 bool updateBoardPacLED (json_object* jobj);
 

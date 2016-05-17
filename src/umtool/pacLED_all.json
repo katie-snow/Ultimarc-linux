@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "product": "1401",
+  "product": "PACLED64",
   "board id" : 1,
   "LED fade all" : 4,
   "LED intensity all" : 255

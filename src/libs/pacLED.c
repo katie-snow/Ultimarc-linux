@@ -20,33 +20,20 @@
 #include "common.h"
 #include "pacLED.h"
 #include "dbg.h"
+#include "ulboard.h"
 
 struct pacLED pLED;
 
-bool isPACLED64Config(const char* prodStr, int version, json_object* jobj)
+bool isPACLED64Config(json_object* jobj, ulboard* board)
 {
   bool isBoardCfg = false;
 
-  if (strcmp(prodStr, PACLED_PRODUCT_STR) == 0 ||
-      strcmp(prodStr, PACLED_STR) == 0)
+  if (board->type == ulboard_type_pacLED)
   {
-    if (version == PACLED_VERSION)
-    {
-      isBoardCfg = validatePacLED64Data(jobj);
-    }
+    isBoardCfg = validatePacLED64Data(jobj);
   }
 
   return isBoardCfg;
-}
-
-const char* getPacLED64ProductStr ()
-{
-  return PACLED_PRODUCT_STR;
-}
-
-int getPacLED64Version()
-{
-  return PACLED_VERSION;
 }
 
 bool validatePacLED64Data(json_object* jobj)
