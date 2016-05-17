@@ -40,7 +40,7 @@ ulValidateConfig (json_object* bcfg, ulboard* ulcfg)
           || isIPACUltimateConfig (ulBoardTypeToString(ulcfg->type), ulcfg->version, bcfg)
           || isPACDriveConfig (ulBoardTypeToString(ulcfg->type), ulcfg->version, bcfg)
           || isPACLED64Config (ulBoardTypeToString(ulcfg->type), ulcfg->version, bcfg)
-          || isUltistikConfig (ulBoardTypeToString(ulcfg->type), ulcfg->version, bcfg))
+          || isUltistikConfig (bcfg, ulcfg))
       {
         log_info("Configuration is %s. [Validated]", ulBoardTypeToString(ulcfg->type));
       }
@@ -102,7 +102,7 @@ ulWriteToBoard (json_object* bcfg, ulboard* board)
     else if (board->type == ulboard_type_ultistik)
     {
       log_info("Updating Ultistik board...");
-      retCode = updateBoardULTISTIK (bcfg);
+      retCode = updateBoardULTISTIK (bcfg, board);
     }
 
     if (retCode)

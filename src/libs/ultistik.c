@@ -20,25 +20,21 @@
 #include "common.h"
 #include "ultistik.h"
 #include "dbg.h"
+#include "ulboard.h"
 
-struct Ultistik ustik;
-
-bool isUltistikConfig (const char* prodStr, int version, json_object* jobj)
+bool isUltistikConfig (json_object* jobj, ulboard* board)
 {
   bool isBoardCfg = false;
 
-  ustik.version = version;
-
-  if (strcmp(prodStr, USTIK_PRODUCT_STR) == 0 ||
-      strcmp(prodStr, USTIK_STR) == 0)
+  if (board->type == ulboard_type_ultistik)
   {
-    isBoardCfg = validateUltistikData(jobj);
+    isBoardCfg = validateUltistikData(jobj, board);
   }
 
   return isBoardCfg;
 }
 
-bool validateUltistikData(json_object* jobj)
+bool validateUltistikData(json_object* jobj, ulboard* board)
 {
   int idx = 0;
   bool valid = false;
@@ -48,8 +44,6 @@ bool validateUltistikData(json_object* jobj)
 
   json_object* tmp = NULL;
   json_object* key = NULL;
-
-  ustik.controllerIDUpdate = false;
 
   if (checkBoardID(jobj, "controller id"))
   {
@@ -170,7 +164,6 @@ bool validateUltistikData(json_object* jobj)
   {
     if (checkBoardID(jobj, "new controller id"))
     {
-      ustik.controllerIDUpdate = true;
       valid = true;
     }
     else
@@ -226,7 +219,7 @@ convertULTISTIK (json_object *jobj)
     return retval;
 }
 
-bool updateBoardULTISTIK (json_object* jobj)
+bool updateBoardULTISTIK (json_object* jobj, ulboard* board)
 {
   int idx     = 0;
   int itemidx = 0;
@@ -248,7 +241,7 @@ bool updateBoardULTISTIK (json_object* jobj)
 
   memset(data, 0, sizeof(data));
 
-  if (ustik.controllerIDUpdate == false)
+  if (json_object_object_get_ex(jobj, "controller id", &innerobj))
   {
     data[0] = 0x50;
 
@@ -261,13 +254,13 @@ bool updateBoardULTISTIK (json_object* jobj)
 
     /* Flash: false RAM(0xFF), true FLASH(0x00) */
     json_object_object_get_ex(jobj, "flash", &innerobj);
-    switch (ustik.version)
+    switch (board->version)
     {
-      case 1:
+      case ulboard_version_pre2015:
         data[95] = (json_object_get_boolean(innerobj)? 0x00 : 0xFF);
       break;
 
-      case 2:
+      case ulboard_version_2015:
         /* 2015 and newer boards this value is zero */
         data[95] = 0;
       break;
@@ -297,9 +290,9 @@ bool updateBoardULTISTIK (json_object* jobj)
     json_object_object_get_ex(jobj, "controller id", &innerobj);
     controlCur = json_object_get_int(innerobj);
 
-    switch (ustik.version)
+    switch (board->version)
     {
-      case 1:
+      case ulboard_version_pre2015:
         product = USTIK_PRODUCT_PRE_2015;
         product += (controlCur - 1);
 
@@ -354,7 +347,7 @@ bool updateBoardULTISTIK (json_object* jobj)
         closeUSB(ctx, handle, USTIK_INTERFACE_PRE_2015);
       break;
 
-      case 2:
+      case ulboard_version_2015:
         product = USTIK_PRODUCT;
         product += (controlCur - 1);
 
@@ -397,9 +390,9 @@ bool updateBoardULTISTIK (json_object* jobj)
     json_object_object_get_ex(jobj, "current controller id", &innerobj);
     controlCur = json_object_get_int(innerobj);
 
-    switch (ustik.version)
+    switch (board->version)
     {
-      case 1:
+      case ulboard_version_pre2015:
         product = USTIK_PRODUCT_PRE_2015;
         product += (controlCur - 1);
 
@@ -450,7 +443,7 @@ bool updateBoardULTISTIK (json_object* jobj)
         closeUSB(ctx, handle, USTIK_INTERFACE_PRE_2015);
       break;
 
-    case 2:
+    case ulboard_version_2015:
       product = USTIK_PRODUCT;
       product += (controlCur - 1);
 
