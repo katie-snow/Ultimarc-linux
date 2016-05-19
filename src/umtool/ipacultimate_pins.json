@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "product": "0410",
+  "product": "ultimate",
   "board id" : 1,
   "intensity" : [
   {"led": 0, "intensity" : 10 },

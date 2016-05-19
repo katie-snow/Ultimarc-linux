@@ -17,11 +17,6 @@
 extern "C" {
 #endif
 
-#define IPACULTIMATE_VERSION_MIN 1
-#define IPACULTIMATE_VERSION_MAX 2
-#define IPACULTIMATE_PRODUCT_STR "0410"
-#define IPACULTIMATE_STR "ULTIMATE"
-
 /* Required items for writing out through the USB port */
 #define IPACULTIMATE_VENDOR         0xD209
 #define IPACULTIMATE_PRODUCT        0x0410
@@ -31,6 +26,7 @@ extern "C" {
 #define IPACULTIMATE_DATA_SIZE      260
 
 typedef struct json_object json_object;
+typedef struct ulboard ulboard;
 
 struct ipacultimate
 {
@@ -45,9 +41,7 @@ struct ipacultimate
 /*
  * Determine if the json file is an IPac Ultimate configuration
  */
-bool isIPACUltimateConfig(const char* prodStr, int version, json_object* jobj);
-const char* getIPacUltimateProductStr ();
-int getIPacUltimateVersion();
+bool isIPACUltimateConfig(json_object* jobj, ulboard* board);
 bool validateIPacUltimateData(json_object* jobj);
 
 /** populates the data array from the json configuration file */

@@ -20,37 +20,20 @@
 #include "ipacultimate.h"
 #include "ipacseries.h"
 #include "dbg.h"
+#include "ulboard.h"
 
 struct ipacultimate pLED;
 
-bool isIPACUltimateConfig(const char* prodStr, int version, json_object* jobj)
+bool isIPACUltimateConfig(json_object* jobj, ulboard* board)
 {
   bool isBoardCfg = false;
 
-  if (strcmp(prodStr, IPACULTIMATE_PRODUCT_STR) == 0 ||
-      strcmp(prodStr, IPACULTIMATE_STR) == 0)
+  if (board->type == ulboard_type_ultimate)
   {
-    if (version >= IPACULTIMATE_VERSION_MIN &&
-        version <= IPACULTIMATE_VERSION_MAX)
-    {
-      if (version == 1)
-      {
-        isBoardCfg = validateIPacUltimateData(jobj);
-      }
-    }
+    isBoardCfg = validateIPacUltimateData(jobj);
   }
 
   return isBoardCfg;
-}
-
-const char* getIPacUltimateProductStr ()
-{
-  return IPACULTIMATE_PRODUCT_STR;
-}
-
-int getIPacUltimateVersion()
-{
-  return IPACULTIMATE_VERSION_MIN;
 }
 
 bool validateIPacUltimateData(json_object* jobj)
