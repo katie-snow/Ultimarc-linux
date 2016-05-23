@@ -7,5 +7,5 @@ AM_LDFLAGS = $(JSON_LIBS) $(LIBUSB_LIBS)
 bin_PROGRAMS=umtool
 umtool_SOURCES=main.c
 umtool_CPPFLAGS = -I$(top_srcdir)/src
-umtool_LDADD = ../libs/libultimarc-0.1.la
+umtool_LDADD = ../libs/libultimarc.la
 

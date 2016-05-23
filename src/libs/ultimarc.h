@@ -25,7 +25,8 @@ typedef struct ulboard ulboard;
 
 /**
  * ulValidateConfig
- * Validates the configuration
+ * Validates the configuration.
+ * Populates ulboard structure
  */
 extern int
 ulValidateConfig (json_object* bcfg, ulboard* ulobj);
