@@ -28,7 +28,7 @@ bool isIPACConfig (json_object* jobj, ulboard* board)
 {
   bool isBoardCfg = false;
 
-if (board->type == ulboard_type_ipac2)
+  if (board->type == ulboard_type_ipac2)
   {
     isBoardCfg = validateIPACData(jobj, 32, board);
   }
