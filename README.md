@@ -11,7 +11,7 @@ This library and command line utility support 2012 through 2015 boards.  If you 
 #### Required Libraries
 To build this tool the following libraries need to be install on your system.  
 * json-c (0.11),
-* libusb-dev (1.0.18)
+* libusb-1.0 (1.0.18)
 * libtool
 
 #### UDEV Rule:
