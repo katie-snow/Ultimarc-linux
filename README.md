@@ -10,8 +10,8 @@ This library and command line utility support 2012 through 2015 boards.  If you 
 
 #### Required Libraries
 To build this tool the following libraries need to be install on your system.  
-* json-c (0.11),
-* libusb-1.0 (1.0.18)
+* json-c (0.11), <a href='https://github.com/json-c/json-c/wiki'>site</a>
+* libusb-1.0 (1.0.18), <a href='libusb.info'>site</a>
 * libtool
 
 #### UDEV Rule:
@@ -19,6 +19,7 @@ This utility requires folder permission changes to the usb device directories be
 
 #### Building Utility:
 To build this project, at the base directory run the following commands
+* ./autogen.sh
 * ./configure
 * make
 
@@ -27,7 +28,7 @@ If you need extra debug statements for the IPac boards then run the following
 * make
 
 The executable will be in src/umtool directory and named umtool.out.
-* ./umtool.out ipac2.json
+* ./umtool ipac2.json
 
 #### Donations:
 <a href='https://pledgie.com/campaigns/26846'><img alt='Click here to lend your support to: Ultimarc-Linux and make a donation at pledgie.com !' src='https://pledgie.com/campaigns/26846.png?skin_name=chrome' border='0' ></a>
