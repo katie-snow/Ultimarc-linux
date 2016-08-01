@@ -23,6 +23,7 @@
 #include "ultistik.h"
 #include "pacdrive.h"
 #include "ipacultimate.h"
+#include "usbbutton.h"
 #include "dbg.h"
 
 int
@@ -40,7 +41,8 @@ ulValidateConfig (json_object* bcfg, ulboard* ulcfg)
           || isIPACUltimateConfig (bcfg, ulcfg)
           || isPACDriveConfig (bcfg, ulcfg)
           || isPACLED64Config (bcfg, ulcfg)
-          || isUltistikConfig (bcfg, ulcfg))
+          || isUltistikConfig (bcfg, ulcfg)
+          || isUSBButtonConfig(bcfg, ulcfg))
       {
         log_info("Configuration is %s. [Validated]", ulBoardTypeToString(ulcfg->type));
       }
@@ -103,6 +105,11 @@ ulWriteToBoard (json_object* bcfg, ulboard* board)
     {
       log_info("Updating Ultistik board...");
       retCode = updateBoardULTISTIK (bcfg, board);
+    }
+    else if (board->type == ulboard_type_usbbutton)
+    {
+      log_info("Updating USBButton...");
+      retCode = updateUSBButton (bcfg, board);
     }
 
     if (retCode)
