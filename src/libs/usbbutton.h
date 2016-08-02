@@ -22,7 +22,7 @@ extern "C" {
 #define USBBTN_INTERFACE 0
 #define USBBTN_VALUE 0x0200
 #define USBBTN_MESG_LENGTH 4
-#define USBBTN_SIZE 60
+#define USBBTN_SIZE 64
 
 typedef struct json_object json_object;
 typedef struct ulboard ulboard;
