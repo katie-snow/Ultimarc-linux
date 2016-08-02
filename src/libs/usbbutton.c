@@ -319,7 +319,7 @@ bool updateUSBButton (json_object* bcfg, ulboard* board)
 
   const char* str = NULL;
 
-  unsigned char barray[60];
+  unsigned char barray[USBBTN_SIZE];
   memset (&barray, 0, sizeof(barray));
 
   /* Header */
