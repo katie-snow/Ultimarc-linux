@@ -346,7 +346,7 @@ bool updateBoardIPAC (json_object *jobj, ulboard *board)
       }
     }
 
-    if (board->type == ulboard_type_jpac)
+    if (board->type == ulboard_type_ipac4)
     {
       log_info ("Updating IPAC4 board...");
       barray = calloc((IPAC_SIZE_PRE_2015 * 2), sizeof(unsigned char));
