@@ -82,7 +82,10 @@ ulWriteToBoard (json_object* bcfg, ulboard* board)
 
   if (bcfg && board)
   {
-    if (board->type == ulboard_type_ipac2)
+    if (board->type == ulboard_type_ipac2 ||
+        board->type == ulboard_type_ipac4 ||
+        board->type == ulboard_type_jpac ||
+        board->type == ulboard_type_minipac)
     {
       retCode = updateBoardIPAC (bcfg, board);
     }
