@@ -19,6 +19,7 @@ This utility requires folder permission changes to the usb device directories be
 
 #### Building Utility:
 To build this project, at the base directory run the following commands
+* ./autogen.sh
 * ./configure
 * make
 
