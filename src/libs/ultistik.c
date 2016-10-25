@@ -44,7 +44,7 @@ bool validateUltistikData(json_object* jobj)
   bool valid = false;
 
   char data;
-  const char invalidKey = 0x00;
+  const char invalidKey = 0xFF;
 
   json_object* tmp = NULL;
   json_object* key = NULL;
@@ -69,7 +69,7 @@ bool validateUltistikData(json_object* jobj)
           {
             key = json_object_array_get_idx(tmp, idx);
             data = convertULTISTIK (key);
-            if (strcmp(&invalidKey, &data) == 0)
+            if (strcmp(&invalidKey, &data) == -1)
             {
               log_err ("Error at index %i in 'map' array, entry is '%s'", idx, json_object_get_string(key));
               valid = false;
@@ -194,7 +194,7 @@ bool validateUltistikData(json_object* jobj)
 char
 convertULTISTIK (json_object *jobj)
 {
-  char retval = 0x00;
+  char retval = 0xFF;
   const char* str = json_object_get_string(jobj);
 
   if (strlen(str) > 0)
