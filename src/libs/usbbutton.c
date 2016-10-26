@@ -27,7 +27,10 @@ bool isUSBButtonConfig(json_object *jobj, ulboard* board)
 {
   bool result = false;
 
-  result = validateUSBButtonData(jobj, board);
+  if (board->type == ulboard_type_usbbutton)
+  {
+    result = validateUSBButtonData(jobj, board);
+  }
 
   return result;
 }
