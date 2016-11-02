@@ -326,7 +326,7 @@ bool updateBoardIPAC (json_object *jobj, ulboard *board)
         updatePre2015IPAC2Board (jobj, barray);
         result = writeIPACSeriesUSB(barray, IPAC_SIZE_PRE_2015,
                                     IPAC_VENDOR_PRE_2015, IPAC_PRODUCT_PRE_2015,
-                                    IPAC_INTERFACE, 1, true);
+                                    IPAC_INTERFACE, 0, true);
         free(barray);
       }
     }
@@ -341,7 +341,7 @@ bool updateBoardIPAC (json_object *jobj, ulboard *board)
         updatePre2015MINIPACBoard (jobj, barray);
         result = writeIPACSeriesUSB(barray, IPAC_SIZE_PRE_2015,
                                     IPAC_VENDOR_PRE_2015, IPAC_PRODUCT_PRE_2015,
-                                    IPAC_INTERFACE, 1, true);
+                                    IPAC_INTERFACE, 0, true);
         free(barray);
       }
     }
@@ -356,7 +356,7 @@ bool updateBoardIPAC (json_object *jobj, ulboard *board)
         updatePre2015IPAC4Board(jobj, barray);
         result = writeIPACSeriesUSB(barray, (IPAC_SIZE_PRE_2015 * 2),
                                     IPAC_VENDOR_PRE_2015, IPAC_PRODUCT_PRE_2015,
-                                    IPAC_INTERFACE, 1, true);
+                                    IPAC_INTERFACE, 0, true);
 
         free(barray);
       }
@@ -419,8 +419,10 @@ void updatePre2015IPAC2Board (json_object *jobj, unsigned char* barray)
   unsigned char header[4] = {0x50, 0xdd, 0x00, 0x00};
   memcpy (barray, &header, sizeof(header));
 
+  /* Checksum data - Redundant? */
+  barray[65] = 0x00;
   /* Control data */
-  barray[65] = 0x29;
+  barray[66] = 0x00;
 
   json_object_object_get_ex(jobj, "1/2 shift key", &shiftKey);
   barray[4] = convertIPAC(shiftKey);
