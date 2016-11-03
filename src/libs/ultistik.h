@@ -17,12 +17,6 @@
 extern "C" {
 #endif
 
-/* Required items in the json file for Ultistik card*/
-#define USTIK_VERSION 1
-#define USTIK_CONFIG_VERSION 2
-#define USTIK_PRODUCT_STR "0501"
-#define USTIK_STR "ultistik"
-
 /* Required items for writing out through the USB port */
 #define USTIK_VENDOR             0xD209
 #define USTIK_PRODUCT_PRE_2015   0x0501
@@ -42,24 +36,19 @@ extern "C" {
 #define USTIK_CONFIG_BASE        0x51
 
 typedef struct json_object json_object;
+typedef struct ulboard ulboard;
 
-struct Ultistik
-{
-  int version;
-  bool controllerIDUpdate;
-};
+bool isUltistikConfig (json_object* jobj, ulboard* board);
 
-bool isUltistikConfig (const char* prodStr, int version, json_object* jobj);
-
-bool validateUltistikData(json_object* jobj);
+bool validateUltistikData(json_object* jobj, ulboard* board);
 
 /*
- * Convert the JSON keys data into IPAC data
+ * Convert the JSON keys data into Ultistik data
  * This is done one array element at a time
  */
 char convertULTISTIK (json_object* jobj);
 
-bool updateBoardULTISTIK (json_object* jobj);
+bool updateBoardULTISTIK (json_object* jobj, ulboard* board);
 
 #ifdef __cplusplus
 }

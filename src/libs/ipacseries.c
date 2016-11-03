@@ -142,6 +142,8 @@ convertIPACSeries (json_object* jobj)
       retval = 0x2F;
     if (!strcasecmp(str, "]"))
       retval = 0x30;
+    if (!strcasecmp(str, "non US #"))
+      retval = 0x32;
     if (!strcasecmp(str, "'"))
       retval = 0x34;
     if (!strcasecmp(str, "`"))
@@ -238,7 +240,7 @@ convertIPACSeries (json_object* jobj)
       retval = 0x62;
     if (!strcasecmp(str, "KP ."))
       retval = 0x63;
-    if (!strcasecmp(str, "\\"))
+    if (!strcasecmp(str, "\\") || !strcasecmp(str, "NON US \\"))
       retval = 0x64;
     if (!strcasecmp(str, "APP"))
       retval = 0x65;
@@ -252,6 +254,8 @@ convertIPACSeries (json_object* jobj)
       retval = 0x71;
     if (!strcasecmp(str, "ALT L"))
       retval = 0x72;
+    if (!strcasecmp(str, "WIN L"))
+      retval = 0x73;
     if (!strcasecmp(str, "CTRL R"))
       retval = 0x74;
     if (!strcasecmp(str, "SHIFT R"))
@@ -376,15 +380,15 @@ convertIPACSeries (json_object* jobj)
       retval = 0xe0;
     if (!strcasecmp(str, "m2"))
       retval = 0xe1;
-    if (!strcasecmp(str, "m3"))
+    if (!strcasecmp(str, "m3") || !strcasecmp(str, "MUTE"))
       retval = 0xe2;
-    if (!strcasecmp(str, "m4"))
+    if (!strcasecmp(str, "m4") || !strcasecmp(str, "PLAY/PAUSE"))
       retval = 0xe3;
-    if (!strcasecmp(str, "m5"))
+    if (!strcasecmp(str, "m5") || !strcasecmp(str, "NEXT"))
       retval = 0xe4;
-    if (!strcasecmp(str, "m6"))
+    if (!strcasecmp(str, "m6") || !strcasecmp(str, "PREV"))
       retval = 0xe5;
-    if (!strcasecmp(str, "m7"))
+    if (!strcasecmp(str, "m7") || !strcasecmp(str, "STOP"))
       retval = 0xe6;
     if (!strcasecmp(str, "m8"))
       retval = 0xe7;
@@ -404,35 +408,35 @@ convertIPACSeries (json_object* jobj)
       retval = 0xee;
     if (!strcasecmp(str, "m16"))
       retval = 0xef;
-    if (!strcasecmp(str, "m17"))
+    if (!strcasecmp(str, "m17") || !strcasecmp(str, "EMAIL"))
       retval = 0xf0;
-    if (!strcasecmp(str, "m18"))
+    if (!strcasecmp(str, "m18") || !strcasecmp(str, "SEARCH"))
       retval = 0xf1;
-    if (!strcasecmp(str, "m19"))
+    if (!strcasecmp(str, "m19") || !strcasecmp(str, "BOOKMARKS"))
       retval = 0xf2;
-    if (!strcasecmp(str, "m20"))
+    if (!strcasecmp(str, "m20") || !strcasecmp(str, "OPEN BROWSER"))
       retval = 0xf3;
-    if (!strcasecmp(str, "m21"))
+    if (!strcasecmp(str, "m21") || !strcasecmp(str, "WEB BACK"))
       retval = 0xf4;
-    if (!strcasecmp(str, "m22"))
+    if (!strcasecmp(str, "m22") || !strcasecmp(str, "WEB FORWARD"))
       retval = 0xf5;
-    if (!strcasecmp(str, "m23"))
+    if (!strcasecmp(str, "m23") || !strcasecmp(str, "WEB STOP"))
       retval = 0xf6;
-    if (!strcasecmp(str, "m24"))
+    if (!strcasecmp(str, "m24") || !strcasecmp(str, "WEB REFRESH"))
       retval = 0xf7;
-    if (!strcasecmp(str, "m25"))
+    if (!strcasecmp(str, "m25") || !strcasecmp(str, "MEDIA PLAYER"))
       retval = 0xf8;
     if (!strcasecmp(str, "m26"))
       retval = 0xf9;
-    if (!strcasecmp(str, "m27"))
+    if (!strcasecmp(str, "m27") || !strcasecmp(str, "CALCULATOR"))
       retval = 0xfa;
     if (!strcasecmp(str, "m28"))
       retval = 0xfb;
-    if (!strcasecmp(str, "m29"))
+    if (!strcasecmp(str, "m29") || !strcasecmp(str, "EXPLORER"))
       retval = 0xfc;
     if (!strcasecmp(str, "m30"))
       retval = 0xfd;
-    if (!strcasecmp(str, "m31"))
+    if (!strcasecmp(str, "m31") || !strcasecmp(str, "WAIT 3 SEC"))
       retval = 0xfe;
   }
 

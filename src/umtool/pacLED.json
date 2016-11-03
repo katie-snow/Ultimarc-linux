@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "product": "1401",
+  "product": "pacled64",
   "board id" : 1,
   "fade" : [
   {"led": 0, "fade" : 4 },

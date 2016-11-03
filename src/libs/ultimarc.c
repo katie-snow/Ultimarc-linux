@@ -6,7 +6,7 @@
  Copyright   : Copyright 2014 Robert Abram, Katie Snow
  Description : Ultimarc main configuration library
  ============================================================================
-*/
+ */
 
 /* Unix */
 #include <linux/usbdevice_fs.h>
@@ -17,141 +17,241 @@
 #include <string.h>
 
 #include "ultimarc.h"
+#include "ulboard.h"
 #include "ipac.h"
 #include "pacLED.h"
 #include "ultistik.h"
 #include "pacdrive.h"
 #include "ipacultimate.h"
+#include "usbbutton.h"
 #include "dbg.h"
 
-
-void loadUltimarcConfigurations (int argc, char **argv)
+int
+ulValidateConfig (json_object* bcfg, ulboard* ulcfg)
 {
-  int idx;
-  int inner_idx;
+  int retCode = 0;
 
-  const char* fileStr = NULL;
-
-  json_object *jobj = NULL;
-  json_object *innerobj = NULL;
-  json_object *item = NULL;
-
-  for (idx = 1; idx < argc; ++idx)
+  if (bcfg && ulcfg)
   {
-    jobj = json_object_from_file (argv[idx]);
-    if (jobj)
+    retCode = ulGetProdAndVersion (bcfg, ulcfg);
+
+    if (retCode == 0)
     {
-      log_info ("Loading %s...", argv[idx]);
-
-      if (json_object_object_get_ex(jobj, "configurations", &innerobj))
+      if (isIPACConfig (bcfg, ulcfg)
+          || isIPACUltimateConfig (bcfg, ulcfg)
+          || isPACDriveConfig (bcfg, ulcfg)
+          || isPACLED64Config (bcfg, ulcfg)
+          || isUltistikConfig (bcfg, ulcfg)
+          || isUSBButtonConfig(bcfg, ulcfg))
       {
-        printf ("\n");
-        for (inner_idx = 0; inner_idx < json_object_array_length(innerobj); ++ inner_idx)
-        {
-          item = json_object_array_get_idx(innerobj, inner_idx);
-          fileStr = json_object_get_string(item);
-          item = json_object_from_file (fileStr);
-
-          if (item)
-          {
-            log_info ("Loading %s...", fileStr);
-            updateUltimarcBoard(item);
-          }
-          else
-          {
-            log_err ("%s. Format invalid\n", fileStr);
-          }
-        }
+        log_info("Configuration is %s. [Validated]", ulBoardTypeToString(ulcfg->type));
       }
       else
       {
-        updateUltimarcBoard(jobj);
+        retCode = -1;
+        log_err("Configuration is '%s'. [Not validated].", ulBoardTypeToString(ulcfg->type));
       }
     }
     else
     {
-      log_err ("%s. Format invalid\n", argv[idx]);
+      retCode = -1;
+      log_err("Configuration is '%s'. [Not validated].", ulBoardTypeToString(ulcfg->type));
+    }
+  }
+  else
+  {
+    retCode = -1;
+    log_err("JSON format invalid");
+  }
+
+  return retCode;
+}
+
+int
+ulValidateConfigFileStr (const char* file, ulboard* board)
+{
+  json_object *bcfg = json_object_from_file (file);
+
+  return ulValidateConfig (bcfg, board);
+}
+
+int
+ulWriteToBoard (json_object* bcfg, ulboard* board)
+{
+  int retCode = 0;
+
+  if (bcfg && board)
+  {
+    if (board->type == ulboard_type_ipac2 ||
+        board->type == ulboard_type_ipac4 ||
+        board->type == ulboard_type_jpac ||
+        board->type == ulboard_type_minipac)
+    {
+      retCode = updateBoardIPAC (bcfg, board);
+    }
+    else if (board->type == ulboard_type_ultimate)
+    {
+      log_info("Updating IPAC Ultimate board...");
+      retCode = updateBoardIPacUltimate (bcfg);
+    }
+    else if (board->type == ulboard_type_pacDrive)
+    {
+      log_info("Updating PAC Drive board...");
+      retCode = updateBoardPacDrive (bcfg);
+    }
+    else if (board->type == ulboard_type_pacLED)
+    {
+      log_info("Updating PAC LED 64 board...");
+      retCode = updateBoardPacLED (bcfg);
+    }
+    else if (board->type == ulboard_type_ultistik)
+    {
+      log_info("Updating Ultistik board...");
+      retCode = updateBoardULTISTIK (bcfg, board);
+    }
+    else if (board->type == ulboard_type_usbbutton)
+    {
+      log_info("Updating USBButton...");
+      retCode = updateUSBButton (bcfg, board);
+    }
+
+    if (retCode)
+    {
+      log_info("Board update successful.");
+    }
+    else
+    {
+      log_info("Board update failed.");
+    }
+  }
+  else
+  {
+    retCode = -1;
+    log_info("Board update failed.");
+  }
+
+  return retCode;
+}
+
+int
+ulWriteToBoardFileStr (const char* file, ulboard* board)
+{
+  json_object *bcfg = json_object_from_file (file);
+
+  return ulWriteToBoard (bcfg, board);
+}
+
+void
+ulMultiConfigurationsFileStr (const char* file)
+{
+  ulboard board;
+
+  json_object *bcfg = NULL;
+  json_object *jobj = NULL;
+  json_object *mcfg = json_object_from_file (file);
+
+  int valid = true;
+  int idx = 0;
+
+  const char* fileStr = NULL;
+
+  if (mcfg)
+  {
+    if (json_object_object_get_ex(mcfg, "list", &bcfg))
+    {
+      if (!json_object_is_type(bcfg, json_type_array))
+      {
+        log_err ("'list' needs to be of type array");
+        valid = false;
+      }
+      else
+      {
+        for (idx = 0; idx < json_object_array_length(bcfg); ++ idx)
+        {
+          log_info ("-------");
+          jobj = json_object_array_get_idx(bcfg, idx);
+          fileStr = json_object_get_string (jobj);
+          jobj = json_object_from_file (fileStr);
+
+          if (jobj)
+          {
+            log_info ("Loading %s...", fileStr);
+            if (ulValidateConfig(jobj, &board) == 0)
+            {
+              ulWriteToBoard(jobj, &board);
+            }
+          }
+        }
+      }
+    }
+    else
+    {
+      log_err ("'list' is not defined in the configuration");
+      valid = false;
+    }
+
+    if (!valid)
+    {
+      log_err ("Configuration. [Not validated]");
     }
   }
 }
 
-bool updateUltimarcBoard (json_object* jobj)
+int
+ulGetProdAndVersion (json_object* jobj, ulboard* ulcfg)
 {
-  bool ret = false;
-
-  const char* prodstr = NULL;
+  int retCode = 0;
   int version = 0;
 
   json_object* prodobj = NULL;
   json_object* verobj = NULL;
 
-  if (json_object_object_get_ex(jobj, "product", &prodobj) &&
-      json_object_get_type(prodobj) == json_type_string)
+  if (jobj && ulcfg)
   {
-    if (json_object_object_get_ex(jobj, "version", &verobj) &&
-        json_object_get_type(verobj) == json_type_int)
+    if (json_object_object_get_ex (jobj, "product", &prodobj))
     {
-      prodstr = json_object_get_string(prodobj);
-      version = json_object_get_int(verobj);
-
-      if (isIPACConfig(prodstr, version, jobj))
+      if (json_object_get_type (prodobj) == json_type_string)
       {
-        ret = updateBoardIPAC(jobj);
-      }
-      else if (isIPACUltimateConfig(prodstr, version, jobj))
-      {
-        log_info ("Updating IPAC Ultimate board...");
-        ret = updateBoardIPacUltimate(jobj);
-      }
-      else if (isPACDriveConfig(prodstr, version, jobj))
-      {
-        log_info ("Updating PAC Drive board...");
-        ret = updateBoardPacDrive(jobj);
-      }
-      else if (isPACLED64Config(prodstr, version, jobj))
-      {
-        log_info ("Updating PAC LED 64 board...");
-        ret = updateBoardPacLED(jobj);
-      }
-      else if (isUltistikConfig(prodstr, version, jobj))
-      {
-        log_info ("Updating Ultistik board...");
-        ret = updateBoardULTISTIK(jobj);
-      }
-    }
-    else
-    {
-      if (json_object_object_get_ex(jobj, "version", &verobj))
-      {
-        log_err ("'version' is not defined as a integer");
+        ulcfg->type = ulStringToBoardType(json_object_get_string (prodobj));
       }
       else
       {
-        log_err ("'version' is not defined in the configuration file");
+        log_err("'product' is not defined as a string");
+        ulcfg->type = ulboard_type_null;
+        retCode = 1;
       }
-    }
-  }
-  else
-  {
-    if (json_object_object_get_ex(jobj, "product", &prodobj))
-    {
-      log_err ("'product' is not defined as a string");
     }
     else
     {
-      log_err ("'product' is not defined in the configuration file");
+      log_err("'product' is not defined in the configuration file");
+      ulcfg->type = ulboard_type_null;
+      retCode = 1;
     }
-  }
 
-  if (ret)
-  {
-    log_info ("Update done.\n");
+    if (json_object_object_get_ex (jobj, "version", &verobj))
+    {
+      if (json_object_get_type (verobj) == json_type_int)
+      {
+        ulcfg->version = ulIntToBoardVersion(json_object_get_int (verobj));
+      }
+      else
+      {
+        log_err("'version' is not defined as a integer");
+        ulcfg->version = ulboard_version_null;
+        retCode = 1;
+      }
+    }
+    else
+    {
+      log_err("'version' is not defined in the configuration file");
+      ulcfg->version = ulboard_version_null;
+      retCode = 1;
+    }
   }
   else
   {
-    log_info ("Update failed!\n");
+    log_err("JSON_Object is null");
   }
 
-  json_object_put(jobj);
-  return ret;
+  return retCode;
 }

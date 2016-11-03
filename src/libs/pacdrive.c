@@ -21,31 +21,17 @@
 /* Local */
 #include "common.h"
 #include "dbg.h"
+#include "ulboard.h"
 
-bool isPACDriveConfig(const char* prodStr, int version, json_object* jobj)
+bool isPACDriveConfig(json_object* jobj, ulboard* board)
 {
   bool isBoardCfg = false;
-
-  if (strcmp(prodStr, PACDRIVE_PRODUCT_STR) == 0 ||
-      strcmp(prodStr, PACDRIVE_STR) == 0)
+  if (board->type == ulboard_type_pacDrive)
   {
-    if (version == PACDRIVE_VERSION)
-    {
-      isBoardCfg = validatePacDriveData(jobj);
-    }
+    isBoardCfg = validatePacDriveData(jobj);
   }
 
   return isBoardCfg;
-}
-
-const char* getPacDriveProductStr ()
-{
-  return PACDRIVE_PRODUCT_STR;
-}
-
-int getPacDriveVersion()
-{
-  return PACDRIVE_VERSION;
 }
 
 bool validatePacDriveData(json_object* jobj)

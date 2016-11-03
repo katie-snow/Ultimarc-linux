@@ -1,0 +1,30 @@
+{
+  "version" : 1,
+  "product" : "usbbutton",
+  "board id" : 1,
+  "action" : "alternate",
+  "pressed" : {
+    "red" : 255,
+    "green" : 0,
+    "blue" : 0
+  },
+  "released" : {
+    "red" : 0,
+    "green" : 0,
+    "blue" : 255
+  },
+  "keys" : {
+    "primary" : {
+      "row 1" : ["U", "l", "t", "i", "m", "a"],
+      "row 2" : ["r", "c", "-", "l", "i", "n"],
+      "row 3" : ["u", "x", "space", "l", "i", "b"],
+      "row 4" : ["r", "a", "r", "y", "space", ""]
+    },
+    "secondary" : {
+      "row 1" : ["shift l", "u", "s", "b", "b", ""],
+      "row 2" : ["u", "t", "t", "o", "n", "space"],
+      "row 3" : ["", "", "", "", "", ""],
+      "row 4" : ["", "", "", "", "", ""]
+    }
+  }
+}

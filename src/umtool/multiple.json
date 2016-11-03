@@ -1,6 +1,6 @@
 {
-	"configurations" : [
+	"list" : [
 		"pacLED.json",
-		"ultistik.json"
+		"ultistik_2015_map2way.json"
 	]
 }
