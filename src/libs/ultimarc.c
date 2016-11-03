@@ -141,6 +141,62 @@ ulWriteToBoardFileStr (const char* file, ulboard* board)
   return ulWriteToBoard (bcfg, board);
 }
 
+void
+ulMultiConfigurationsFileStr (const char* file)
+{
+  ulboard board;
+
+  json_object *bcfg = NULL;
+  json_object *jobj = NULL;
+  json_object *mcfg = json_object_from_file (file);
+
+  int valid = true;
+  int idx = 0;
+
+  const char* fileStr = NULL;
+
+  if (mcfg)
+  {
+    if (json_object_object_get_ex(mcfg, "list", &bcfg))
+    {
+      if (!json_object_is_type(bcfg, json_type_array))
+      {
+        log_err ("'list' needs to be of type array");
+        valid = false;
+      }
+      else
+      {
+        for (idx = 0; idx < json_object_array_length(bcfg); ++ idx)
+        {
+          log_info ("-------");
+          jobj = json_object_array_get_idx(bcfg, idx);
+          fileStr = json_object_get_string (jobj);
+          jobj = json_object_from_file (fileStr);
+
+          if (jobj)
+          {
+            log_info ("Loading %s...", fileStr);
+            if (ulValidateConfig(jobj, &board) == 0)
+            {
+              ulWriteToBoard(jobj, &board);
+            }
+          }
+        }
+      }
+    }
+    else
+    {
+      log_err ("'list' is not defined in the configuration");
+      valid = false;
+    }
+
+    if (!valid)
+    {
+      log_err ("Configuration. [Not validated]");
+    }
+  }
+}
+
 int
 ulGetProdAndVersion (json_object* jobj, ulboard* ulcfg)
 {

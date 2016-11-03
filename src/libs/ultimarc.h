@@ -43,6 +43,14 @@ extern int
 ulWriteToBoardFileStr (const char* file, ulboard* ulobj);
 
 /**
+ * ulMultiConfigurationsFileStr
+ * Loads multiple configuration.
+ * Performs both validate and write functions.
+ */
+void
+ulMultiConfigurationsFileStr (const char* file);
+
+/**
  * Populates the ulobj with the product and version in the json_object
  */
 int
