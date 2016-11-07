@@ -24,6 +24,7 @@
 #include "pacdrive.h"
 #include "ipacultimate.h"
 #include "usbbutton.h"
+#include "servostik.h"
 #include "dbg.h"
 
 int
@@ -42,7 +43,8 @@ ulValidateConfig (json_object* bcfg, ulboard* ulcfg)
           || isPACDriveConfig (bcfg, ulcfg)
           || isPACLED64Config (bcfg, ulcfg)
           || isUltistikConfig (bcfg, ulcfg)
-          || isUSBButtonConfig(bcfg, ulcfg))
+          || isUSBButtonConfig(bcfg, ulcfg)
+          || isServoStikConfig(bcfg, ulcfg))
       {
         log_info("Configuration is %s. [Validated]", ulBoardTypeToString(ulcfg->type));
       }
@@ -113,6 +115,11 @@ ulWriteToBoard (json_object* bcfg, ulboard* board)
     {
       log_info("Updating USBButton...");
       retCode = updateUSBButton (bcfg, board);
+    }
+    else if (board->type == ulboard_type_servostik)
+    {
+      log_info("Updating ServoStik...");
+      retCode = updateServoStik (bcfg, board);
     }
 
     if (retCode)
