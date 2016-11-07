@@ -68,6 +68,7 @@ bool validateServoStikData(json_object* jobj, ulboard* board)
   /* Optional */
   /* NOTE: hardware option is a permanent action on this board.
    * Not documented in json configuration file
+   * USE WITH CAUTION
    */
   if (json_object_object_get_ex(jobj, "hardware", &tmp))
   {
@@ -99,6 +100,7 @@ bool updateServoStik (json_object* bcfg, ulboard* board)
 
   /* NOTE: hardware option is a permanent action on this board.
    * Not documented in json configuration file
+   * USE WITH CAUTION
    */
   json_object_object_get_ex(bcfg, "hardware", &tmp);
   hardware = json_object_get_boolean(tmp);
