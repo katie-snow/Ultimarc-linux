@@ -94,5 +94,11 @@ intensity: an array that is variable size each entry must have the following
 LED states random:  true or false.  If true then all the LED states (on/off) are set randomly by the board  
 LED intensity all: 0-255 are the valid integer values for this entry.  NOTE: This entry and the intensity array entry are not allowed in the same configuration file.  The utility will not process the configuration file since it will consider it invalid.
 
+ServoStik:
+version: This should be set to 1 always.  This is used for version control of the configuration file in the future
+product: ServoStik
+switch: This is a required integer, that can be 4 or 8.
+hardware: This is a boolean value.  When true permanently sets the board to hardware only.  See Ultimarc website for information about this feature.  USE with caution.
+
 Donations:
 <a href='https://pledgie.com/campaigns/26846'><img alt='Click here to lend your support to: Ultimarc-Linux and make a donation at pledgie.com !' src='https://pledgie.com/campaigns/26846.png?skin_name=chrome' border='0' ></a>

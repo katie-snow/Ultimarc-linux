@@ -28,7 +28,8 @@ typedef enum ulboard_type
   ulboard_type_pacDrive,
   ulboard_type_pacLED,
   ulboard_type_ultistik,
-  ulboard_type_usbbutton
+  ulboard_type_usbbutton,
+  ulboard_type_servostik
 } ulboard_type;
 
 /* Supported versions */
