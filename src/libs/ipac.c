@@ -42,7 +42,7 @@ bool isIPACConfig (json_object* jobj, ulboard* board)
   }
   else if (board->type == ulboard_type_jpac)
   {
-    isBoardCfg = validateIPACData(jobj, 30, board);
+    isBoardCfg = validateIPACData(jobj, 31, board);
   }
 
   return isBoardCfg;
@@ -607,6 +607,9 @@ void update2015JPACBoard (json_object *jobj, unsigned char* barray)
   memset (&barray[155], 0x80, 7);
   memset (&barray[162], 0x0a, 1);
   memset (&barray[163], 0x10, 7);
+  memset (&barray[256], 0x59, 1);
+  memset (&barray[257], 0xdd, 1);
+  memset (&barray[258], 0x0f, 1);
 
   json_object_object_get_ex(jobj, "1/2 shift key", &shiftKey);
   populateShiftPosition(JPAC_BOARD, shiftKey, &barray[3]);
