@@ -125,5 +125,9 @@
       "key": "f3",
       "shift": ""
     },
+    "service": {
+      "key": "f1",
+      "shift": ""
+    }
   }
 }
