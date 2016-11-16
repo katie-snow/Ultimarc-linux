@@ -159,6 +159,23 @@ bool validateUltistikData(json_object* jobj, ulboard* board)
       log_err ("'flash' is not defined in the configuration file");
       valid = false;
     }
+
+    if (board->version == ulboard_version_2015)
+    {
+      if (json_object_object_get_ex(jobj, "keep analog", &tmp))
+      {
+        if (json_object_get_type(tmp) != json_type_boolean)
+        {
+          log_err ("'keep analog' is not defined as a boolean");
+          valid = false;
+        }
+      }
+      else
+      {
+        log_err ("'keep analog' is not defined in the configuration file");
+        valid = false;
+      }
+    }
   }
   else if (checkBoardID(jobj, "current controller id"))
   {
@@ -266,6 +283,12 @@ bool updateBoardULTISTIK (json_object* jobj, ulboard* board)
       break;
     }
 
+    /* Keep Analog: false off(0x50), true on(0x11) */
+    if (board->version == ulboard_version_2015)
+    {
+      json_object_object_get_ex(jobj, "keep analog", &innerobj);
+      data[0] = (json_object_get_boolean(innerobj)? 0x11 : 0x50);
+    }
 
     /* Borders 3 - 10 */
     itemidx = 3;
