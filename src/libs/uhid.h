@@ -31,6 +31,10 @@ typedef struct ulboard ulboard;
 bool isUHidConfig(json_object *jobj, ulboard* board);
 bool validateUHidData(json_object* jobj, ulboard* board);
 
+bool validateSwitch(json_object* jobj, const char* key, bool curResult);
+bool validateQuadrature(json_object* jobj, const char* key, bool curResult);
+bool validateLED(json_object* jobj, const char* key, bool curResult);
+
 bool updateUHid(json_object* bcfg, ulboard* board);
 
 bool writeUHid(unsigned char* barray, int autoconnect, bool transfer);
