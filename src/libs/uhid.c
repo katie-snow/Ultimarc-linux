@@ -23,8 +23,6 @@
 #include "uhid.h"
 #include "dbg.h"
 
-enum uhid_boards_t {NO_UHID_BOARD = -1, UHID, NANO};
-
 bool isUHidConfig(json_object *jobj, ulboard* board)
 {
   bool result = false;
