@@ -47,11 +47,6 @@ unsigned char convertIPACSeries (json_object* jobj);
  */
 unsigned char convertIPAC (json_object* jobj);
 
-/**
- * Update one of the PAC Series boards.  These boards are the 2015 boards from Ultimarc.
- */
-bool updatePACSeriesBoard(json_object* jobj);
-
 void populateBoardArray (enum ipac_boards_t bid, json_object* jobj, unsigned char* barray);
 
 /**
