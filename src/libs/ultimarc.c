@@ -118,7 +118,6 @@ ulWriteToBoard (json_object* bcfg, ulboard* board)
     }
     else if (board->type == ulboard_type_uhid)
     {
-      log_info("Updating UHid...");
       retCode = updateUHid (bcfg, board);
     }
 
