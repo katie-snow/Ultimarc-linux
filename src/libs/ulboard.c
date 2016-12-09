@@ -41,9 +41,9 @@ ulStringToBoardType (const char* bStr)
   int pos = 0;
   for (pos = 0; pos < (int)ULSIZE(ulBoardTypeName); pos++)
   {
-    debug ("'%s' = '%s'", bStr, ulBoardTypeName[pos]);
     if (!strcasecmp (bStr, ulBoardTypeName[pos]))
     {
+      debug ("'%s' = '%s'", bStr, ulBoardTypeName[pos]);
       return (ulboard_type) pos;
     }
   }
