@@ -117,6 +117,8 @@ bool validateUHidData(json_object* jobj, ulboard* board)
     }
   }
 
+  result = validateUHidMacros(jobj, result);
+
   return result;
 }
 
@@ -333,6 +335,81 @@ bool validateLED(json_object* jobj, const char* key, bool curResult, json_object
   return result;
 }
 
+/*
+ * macros are optional.
+ * Validation will be the following:
+ *  each macro entry is an array (all boards)
+ *  each key entry is type string (all boards)
+ *  limit of 85 bytes for the complete macro group (2015 boards)
+ */
+bool validateUHidMacros (json_object *jobj, bool curResult)
+{
+  bool result = curResult;
+
+  /* 2015 board variables */
+  int macroEntries = 0;
+  static const int maxMacroEntries = 85;
+
+  int macroCount2015 = 0;
+  static const int maxMacroCount2015 = 30;
+
+  /* General variables */
+  json_object* macros = NULL;
+  json_object* key    = NULL;
+
+  int keyCount = 0;
+
+  if (json_object_object_get_ex(jobj, "macros", &macros))
+  {
+    if (!json_object_is_type(macros, json_type_object))
+    {
+      log_err ("'macros' is not of type object");
+      result = false;
+    }
+    else
+    {
+      json_object_object_foreach(macros, name, macro)
+      {
+        macroEntries++;
+        macroCount2015++;
+
+        if (!json_object_is_type(macro, json_type_array))
+        {
+          log_err ("'%s' is not of type array", name);
+          result = false;
+        }
+        else
+        {
+          macroEntries += json_object_array_length(macro);
+          for (; keyCount < json_object_array_length(macro); ++keyCount)
+          {
+            key = json_object_array_get_idx(macro, keyCount);
+            if (!json_object_is_type(key, json_type_string))
+            {
+              log_err ("Key entry in '%s' needs to be of type string", name);
+              result = false;
+            }
+          }
+        }
+      }
+
+      if (macroCount2015 > maxMacroCount2015)
+      {
+        log_err("The number of macros defined is '%i'. 30 macro entries are allowed.", macroCount2015);
+        result = false;
+      }
+
+      if (macroEntries > maxMacroEntries)
+      {
+        log_err("The total size of the macros plus control characters is '%i'.  Needs to be a total size of 85 or less.", macroEntries);
+        result = false;
+      }
+    }
+  }
+
+  return result;
+}
+
 /* j1-p3, j1-p4, j1-p5, j1-p6, j1-p7, j1-p8, j1-p9, j1-p10,
  * j2-p3, j2-p4, j2-p5, j2-p6, j2-p7, j2-p8, j2-p9, j2-p10,
  * j3-p3, j3-p4, j3-p5, j3-p6, j3-p7, j3-p8, j3-p9, j3-p10,
@@ -481,9 +558,10 @@ bool updateUHid (json_object* bcfg, ulboard* board)
   bool result = false;
 
   json_object* pins = NULL;
+  json_object* macros = NULL;
 
   /* Header data */
-  char header[4] = {0x50, 0xdd, 0x0f, 0x00};
+  char header[4] = {0x50, 0xdd, 0x00, 0x00};
 
   if (board->type == ulboard_type_uhid)
   {
@@ -497,8 +575,11 @@ bool updateUHid (json_object* bcfg, ulboard* board)
     if (barray != NULL)
     {
       json_object_object_get_ex(bcfg, "pins", &pins);
-      populateUHidBoardArray(UHID, pins, &barray[4]);
-      result = writeUHid(barray, 1, false);
+      populateUHidBoardArray(UHID, pins, &barray[3]);
+
+      json_object_object_get_ex(bcfg, "macros", &macros);
+      populateUHidMacro(macros, &barray[3]);
+      result = writeUHid(barray, 1, true);
       free(barray);
     }
   }
@@ -679,6 +760,9 @@ void populateUHidBoardArray(int bid, json_object* jobj, unsigned char* barray)
             log_info ("Pin '%s' does not have a valid entry for quadrature button", key);
           }
         }
+
+        barray[idx + 100] = 0x01;
+        barray[idx2 + 100] = 0x01;
       }
       else if (json_object_object_get_ex(pin, "led", &entity))
       {
@@ -696,9 +780,7 @@ void populateUHidBoardArray(int bid, json_object* jobj, unsigned char* barray)
           /* access uhid key lookup table with bid and lkey */
           idx2 = uhidKeyLookupTable[bid][lkey];
 
-          log_info ("%i idx, %s pin value: %x", idx2+100, actionStr, barray[idx2 + 100]);
           barray[idx2 + 100] |= 0x80;
-          log_info ("%s pin value: %x", actionStr, barray[idx2 + 100]);
         }
 
         if (json_object_object_get_ex(entity, "pc", &tmp))
@@ -771,12 +853,12 @@ void populateUHidBoardArray(int bid, json_object* jobj, unsigned char* barray)
           }
 
           barray[idx + 100] = keyval;
-          log_info ("%x", barray[idx + 100]);
         }
       }
       else if (json_object_object_get_ex(pin, "analog axis", &entity))
       {
         barray[idx] = analogAxisUHid (entity);
+        barray[idx + 100] = 0x01;
       }
       else if (json_object_object_get_ex(pin, "+5v", &entity))
       {
@@ -795,8 +877,29 @@ void populateUHidBoardArray(int bid, json_object* jobj, unsigned char* barray)
     }
     /* else the pin is disabled */
   }
+}
 
-  /* Assign Macros */
+void populateUHidMacro(json_object* jobj, unsigned char* barray)
+{
+  int pos = 0;
+  int idx = 168;
+
+  json_object *tmp = NULL;
+
+  json_object_object_foreach(jobj, key, macro)
+  {
+    barray[idx] = convertIPACSeries(json_object_new_string(key));
+
+    idx++;
+    for (pos = 0; pos < json_object_array_length(macro); pos++)
+    {
+      tmp = json_object_array_get_idx(macro, pos);
+      barray[idx+pos] = convertIPACSeries(tmp);
+    }
+
+    /* Move the idx to the next available location */
+    idx += pos;
+  }
 }
 
 unsigned char switchActionUHid (json_object* jobj, bool isUp)
@@ -918,7 +1021,7 @@ bool writeUHid(unsigned char* barray, int autoconnect, bool transfer)
 
   while (pos < UHID_SIZE)
   {
-    memcpy(&mesg[0], &barray[pos], 4);
+    memcpy(&mesg[0], &barray[pos], UHID_MESG_LENGTH);
 
     debug ("Writing (%i): %x, %x, %x, %x", pos, mesg[0], mesg[1], mesg[2], mesg[3]);
     if (transfer)

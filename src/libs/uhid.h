@@ -19,10 +19,10 @@ extern "C" {
 #endif
 
 #define UHID_VENDOR  0xD209
-#define UHID_PRODUCT 0x1200
-#define UHID_INTERFACE 3
-#define UHID_VALUE 0x0203
-#define UHID_MESG_LENGTH 5
+#define UHID_PRODUCT 0x1501
+#define UHID_INTERFACE 0
+#define UHID_VALUE 0x0200
+#define UHID_MESG_LENGTH 4
 #define UHID_SIZE 200
 
 typedef struct json_object json_object;
@@ -36,10 +36,12 @@ bool validateUHidData(json_object* jobj, ulboard* board);
 bool validateSwitch(json_object* jobj, const char* key, bool curResult);
 bool validateQuadrature(json_object* jobj, const char* key, bool curResult);
 bool validateLED(json_object* jobj, const char* key, bool curResult, json_object* pins);
+bool validateUHidMacros(json_object* jobj, bool curResult);
 
 bool updateUHid(json_object* bcfg, ulboard* board);
 
 void populateUHidBoardArray(enum uhid_boards_t bid, json_object* jobj, unsigned char* barray);
+void populateUHidMacro(json_object* jobj, unsigned char* barray);
 
 int decipherUHidLookupKey (const char* key);
 unsigned char switchActionUHid (json_object* action, bool isUp);
