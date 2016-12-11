@@ -119,6 +119,10 @@ bool validateUHidData(json_object* jobj, ulboard* board)
 
   result = validateUHidMacros(jobj, result);
 
+  result = validateUHidCalibration(jobj, result);
+
+  result = validateUHidQuadratureButtonTime(jobj, result);
+
   return result;
 }
 
@@ -295,7 +299,7 @@ bool validateLED(json_object* jobj, const char* key, bool curResult, json_object
   {
     if (!json_object_is_type(entity, json_type_string))
     {
-      log_err("Pin '%s' entry 'switch' needs to be of type string", key);
+      log_err("LED pin '%s' entry 'switch' needs to be of type string", key);
       result = false;
     }
 
@@ -303,7 +307,7 @@ bool validateLED(json_object* jobj, const char* key, bool curResult, json_object
     str = json_object_get_string(entity);
     if (!json_object_object_get_ex(pins, str, &pin))
     {
-      log_err("Pin '%s' entry 'switch' pin '%s' is not a valid pin", key, str);
+      log_err("LED pin '%s' entry 'switch' pin '%s' is not a valid pin", key, str);
       result = false;
     }
     else if (!json_object_is_type(pin, json_type_object))
@@ -317,7 +321,7 @@ bool validateLED(json_object* jobj, const char* key, bool curResult, json_object
           !json_object_object_get_ex(pin, "analog axis", &tmp) &&
           !json_object_object_get_ex(pin, "quadrature", &tmp))
       {
-        log_err("Pin '%s' entry 'switch' pin '%s' is not an action pin", key, str);
+        log_err("LED pin '%s' entry 'switch' pin '%s' is not an action pin", key, str);
         result = false;
       }
     }
@@ -326,9 +330,19 @@ bool validateLED(json_object* jobj, const char* key, bool curResult, json_object
   /* Optional */
   if (json_object_object_get_ex(jobj, "pc", &entity))
   {
-    if (!json_object_is_type(entity, json_type_string))
+    if (json_object_is_type(entity, json_type_int))
     {
-      log_err("Pin '%s' entry 'pc' needs to be of type string", key);
+      if (json_object_get_int(entity) < 1 ||
+          json_object_get_int(entity) > 16)
+      {
+      log_err("LED pin '%s' entry 'pc' value '%i' is not between 1 and 16",
+               key, json_object_get_int(entity));
+      result = false;
+      }
+    }
+    else
+    {
+      log_err("LED pin '%s' entry 'pc' needs to be of type int", key);
       result = false;
     }
   }
@@ -405,6 +419,130 @@ bool validateUHidMacros (json_object *jobj, bool curResult)
         result = false;
       }
     }
+  }
+
+  return result;
+}
+
+bool validateUHidCalibration (json_object* jobj, bool curResult)
+{
+  bool result = curResult;
+
+  int axisCount = 0;
+
+  json_object *calibration = NULL;
+  json_object *tmp = NULL;
+
+  if (json_object_object_get_ex(jobj, "axis calibration", &calibration))
+  {
+    if (json_object_is_type(calibration, json_type_object))
+    {
+      json_object_object_foreach(calibration, key, axis)
+      {
+        axisCount++;
+
+        if (json_object_is_type(axis, json_type_object))
+        {
+          /* Required */
+          if (json_object_object_get_ex(axis, "offset", &tmp))
+          {
+            if (json_object_is_type(tmp, json_type_int))
+            {
+              if (json_object_get_int(tmp) < 0 ||
+                  json_object_get_int(tmp) > 256)
+              {
+                log_err("Axis '%s' entry 'offset' value '%i' is not between 0 and 255", key, json_object_get_int(tmp));
+                result = false;
+              }
+            }
+            else
+            {
+              log_err("Axis '%s' entry 'offset' needs to be of type integer", key);
+              result = false;
+            }
+          }
+          else
+          {
+            log_err ("Axis '%s' entry 'offset' is not defined in the configuration", key);
+            result = false;
+          }
+
+          /* Required */
+          if (json_object_object_get_ex(axis, "scale", &tmp))
+          {
+            if (json_object_is_type(tmp, json_type_int))
+            {
+              if (json_object_get_int(tmp) < 1 ||
+                  json_object_get_int(tmp) > 33)
+              {
+                log_err("Axis '%s' entry 'scale' value '%i' is not between 1 and 32", key, json_object_get_int(tmp));
+                result = false;
+              }
+            }
+            else
+            {
+              log_err("Axis '%s' entry 'scale' needs to be of type integer", key);
+              result = false;
+            }
+          }
+          else
+          {
+            log_err ("Axis '%s' entry 'scale' is not defined in the configuration", key);
+            result = false;
+          }
+        }
+        else
+        {
+          log_err ("Axis '%s' is not of type object", key);
+          result = false;
+        }
+      }
+    }
+    else
+    {
+      log_err("'axis calibration' is not of type object");
+      result = false;
+    }
+  }
+  else
+  {
+    log_err("'axis calibration' is not defined in the configuration");
+    result = false;
+
+  }
+
+  return result;
+}
+
+bool validateUHidQuadratureButtonTime (json_object* jobj, bool curResult)
+{
+  bool result = curResult;
+
+  json_object* tmp = NULL;
+
+  /* Required */
+  if (json_object_object_get_ex(jobj, "quadrature time", &tmp))
+  {
+    if (json_object_is_type(tmp, json_type_int))
+    {
+      if (json_object_get_int(tmp) < 0 ||
+          json_object_get_int(tmp) > 256)
+      {
+        log_err("'quadrature time' value '%i' is not between 0 and 255",
+                json_object_get_int(tmp));
+        result = false;
+      }
+    }
+    else
+    {
+      log_err("'quadrature time' needs to be of type integer");
+      result = false;
+    }
+  }
+  else
+  {
+    log_err ("'quadrature time' is not defined in the configuration");
+    result = false;
   }
 
   return result;
@@ -559,6 +697,7 @@ bool updateUHid (json_object* bcfg, ulboard* board)
 
   json_object* pins = NULL;
   json_object* macros = NULL;
+  json_object* calibration = NULL;
 
   /* Header data */
   char header[4] = {0x50, 0xdd, 0x00, 0x00};
@@ -579,6 +718,15 @@ bool updateUHid (json_object* bcfg, ulboard* board)
 
       json_object_object_get_ex(bcfg, "macros", &macros);
       populateUHidMacro(macros, &barray[3]);
+
+      /* quadrature time */
+      json_object_object_get_ex(bcfg, "quadrature time", &calibration);
+      barray[3] = convertDecimalToHex(json_object_get_int(calibration));
+
+      /* offset and scale */
+      json_object_object_get_ex(bcfg, "axis calibration", &calibration);
+      populateUHidCalibration(calibration, &barray[3]);
+
       result = writeUHid(barray, 1, true);
       free(barray);
     }
@@ -785,74 +933,7 @@ void populateUHidBoardArray(int bid, json_object* jobj, unsigned char* barray)
 
         if (json_object_object_get_ex(entity, "pc", &tmp))
         {
-          actionStr = json_object_get_string(tmp);
-
-          if (!strcasecmp(actionStr, "1"))
-          {
-            keyval = 0x01;
-          }
-          if (!strcasecmp(actionStr, "2"))
-          {
-            keyval = 0x02;
-          }
-          if (!strcasecmp(actionStr, "3"))
-          {
-            keyval = 0x03;
-          }
-          if (!strcasecmp(actionStr, "4"))
-          {
-            keyval = 0x04;
-          }
-          if (!strcasecmp(actionStr, "5"))
-          {
-            keyval = 0x05;
-          }
-          if (!strcasecmp(actionStr, "6"))
-          {
-            keyval = 0x06;
-          }
-          if (!strcasecmp(actionStr, "7"))
-          {
-            keyval = 0x07;
-          }
-          if (!strcasecmp(actionStr, "8"))
-          {
-            keyval = 0x08;
-          }
-          if (!strcasecmp(actionStr, "9"))
-          {
-            keyval = 0x09;
-          }
-          if (!strcasecmp(actionStr, "10"))
-          {
-            keyval = 0x0A;
-          }
-          if (!strcasecmp(actionStr, "11"))
-          {
-            keyval = 0x0B;
-          }
-          if (!strcasecmp(actionStr, "12"))
-          {
-            keyval = 0x0C;
-          }
-          if (!strcasecmp(actionStr, "13"))
-          {
-            keyval = 0x0D;
-          }
-          if (!strcasecmp(actionStr, "14"))
-          {
-            keyval = 0x0E;
-          }
-          if (!strcasecmp(actionStr, "15"))
-          {
-            keyval = 0x0F;
-          }
-          if (!strcasecmp(actionStr, "16"))
-          {
-            keyval = 0x10;
-          }
-
-          barray[idx + 100] = keyval;
+          barray[idx + 100] = convertDecimalToHex(json_object_get_int(tmp));
         }
       }
       else if (json_object_object_get_ex(pin, "analog axis", &entity))
@@ -995,6 +1076,27 @@ unsigned char analogAxisUHid(json_object* jobj)
     axis = 0xB9;
 
   return axis;
+}
+
+void populateUHidCalibration(json_object* jobj, unsigned char* barray)
+{
+  int offsetIdx = 151;
+  int scaleIdx = 159;
+  int pos = 0;
+
+  json_object* offset = NULL;
+  json_object* scale = NULL;
+
+  json_object_object_foreach(jobj, key, axis)
+  {
+    json_object_object_get_ex(axis, "offset", &offset);
+    json_object_object_get_ex(axis, "scale", &scale);
+
+    pos = strtol(key, NULL, 10);
+
+    barray[offsetIdx + pos] = convertDecimalToHex(json_object_get_int(offset));
+    barray[scaleIdx + pos] = convertDecimalToHex(json_object_get_int(scale));
+  }
 }
 
 bool writeUHid(unsigned char* barray, int autoconnect, bool transfer)
