@@ -929,6 +929,9 @@ void populateUHidBoardArray(int bid, json_object* jobj, unsigned char* barray)
           idx2 = uhidKeyLookupTable[bid][lkey];
 
           barray[idx2 + 100] |= 0x80;
+
+          /* connect the two switches */
+          barray[idx + 50] = convertDecimalToHex(idx2 + 4);
         }
 
         if (json_object_object_get_ex(entity, "pc", &tmp))
