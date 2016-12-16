@@ -23,7 +23,7 @@ extern "C" {
 #define UHID_INTERFACE 0
 #define UHID_VALUE 0x0200
 #define UHID_MESG_LENGTH 4
-#define UHID_SIZE 200
+#define UHID_SIZE 260
 
 typedef struct json_object json_object;
 typedef struct ulboard ulboard;
