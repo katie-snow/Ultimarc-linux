@@ -43,9 +43,11 @@ struct ipacultimate
  */
 bool isIPACUltimateConfig(json_object* jobj, ulboard* board);
 bool validateIPacUltimateData(json_object* jobj);
+bool validateIPacUltimarcMacros(json_object* jobj, bool curResult);
 
 /** populates the data array from the json configuration file */
 bool populateIPACUltimateData(json_object* jobj, unsigned char* data);
+void populateIPacUltimateMacro(json_object* jobj, unsigned char* barray);
 
 /*
  * Assigns the quadrature pins to the correct corresponding value

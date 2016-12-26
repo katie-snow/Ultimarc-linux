@@ -181,6 +181,9 @@ bool validateIPacUltimateData(json_object* jobj)
 	    valid = false;
 	  }
 
+	  /* Macro validation */
+	  valid = validateIPacUltimarcMacros(jobj, valid);
+
 	  if (json_object_object_get_ex(jobj, "x threshold", &tmp))
       {
         if (json_object_get_type(tmp) == json_type_int)
@@ -253,6 +256,82 @@ bool validateIPacUltimateData(json_object* jobj)
   }
 
   return valid;
+}
+
+/*
+ * macros are optional.
+ * Validation will be the following:
+ *  each macro entry is an array (all boards)
+ *  each key entry is type string (all boards)
+ *  limit of 85 bytes for the complete macro group (2015 boards)
+ */
+bool
+validateIPacUltimarcMacros (json_object* jobj, bool curResult)
+{
+  bool result = curResult;
+
+  /* 2015 board variables */
+  int macroEntries = 0;
+  static const int maxMacroEntries = 85;
+
+  int macroCount2015 = 0;
+  static const int maxMacroCount2015 = 30;
+
+  /* General variables */
+  json_object* macros = NULL;
+  json_object* key    = NULL;
+
+  int keyCount = 0;
+
+  if (json_object_object_get_ex(jobj, "macros", &macros))
+  {
+    if (!json_object_is_type(macros, json_type_object))
+    {
+      log_err ("'macros' is not of type object");
+      result = false;
+    }
+    else
+    {
+      json_object_object_foreach(macros, name, macro)
+      {
+        macroEntries++;
+        macroCount2015++;
+
+        if (!json_object_is_type(macro, json_type_array))
+        {
+          log_err ("'%s' is not of type array", name);
+          result = false;
+        }
+        else
+        {
+          macroEntries += json_object_array_length(macro);
+          for (; keyCount < json_object_array_length(macro); ++keyCount)
+          {
+            key = json_object_array_get_idx(macro, keyCount);
+            if (!json_object_is_type(key, json_type_string))
+            {
+              log_err ("Key entry in '%s' needs to be of type string", name);
+              result = false;
+            }
+          }
+        }
+      }
+
+      if (macroCount2015 > maxMacroCount2015)
+      {
+        log_err("The number of macros defined is '%i'. 30 macro entries are allowed.", macroCount2015);
+        result = false;
+      }
+
+      if (macroEntries > maxMacroEntries)
+      {
+        log_err("The total size of the macros plus control characters is '%i'.  Needs to be a total size of 85 or less.", macroEntries);
+        result = false;
+      }
+    }
+  }
+
+  return result;
 }
 
 bool
@@ -563,6 +642,29 @@ bool populateIPACUltimateData(json_object* jobj, unsigned char* data)
   return retval;
 }
 
+void populateIPacUltimateMacro(json_object* jobj, unsigned char* barray)
+{
+  int pos = 0;
+  int idx = 168;
+
+  json_object *tmp = NULL;
+
+  json_object_object_foreach(jobj, key, macro)
+  {
+    barray[idx] = convertIPACSeries(json_object_new_string(key));
+
+    idx++;
+    for (pos = 0; pos < json_object_array_length(macro); pos++)
+    {
+      tmp = json_object_array_get_idx(macro, pos);
+      barray[idx+pos] = convertIPACSeries(tmp);
+    }
+
+    /* Move the idx to the next available location */
+    idx += pos;
+  }
+}
+
 bool updateBoardIPacUltimate(json_object* jobj)
 {
   libusb_context *ctx = NULL;
@@ -588,6 +690,7 @@ bool updateBoardIPacUltimate(json_object* jobj)
   json_object *tmp  = NULL;
   json_object *pins = NULL;
   json_object *pin  = NULL;
+  json_object *macros = NULL;
 
   if (pLED.boardIDUpdate == true)
   {
@@ -703,6 +806,12 @@ bool updateBoardIPacUltimate(json_object* jobj)
        pin = json_object_array_get_idx(pins, idx);
        populateIPACUltimateData(pin, data);
        ++ipac_idx;
+     }
+
+     json_object_object_get_ex(jobj, "macros", &macros);
+     if (macros != NULL)
+     {
+       populateUHidMacro(macros, &data[3]);
      }
 
      json_object_object_get_ex(jobj, "x threshold", &tmp);

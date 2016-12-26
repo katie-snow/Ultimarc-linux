@@ -6,6 +6,9 @@
   {"led": 0, "intensity" : 10 },
   {"led": 4, "intensity" : 10 }
   ],
+  "macros" : {
+	"m1" : ["b", "c", "d"]
+  },
   "pins": [
   {"1right" : ["A", "m", true]},
   {"1up" : ["b", "l", false]},
