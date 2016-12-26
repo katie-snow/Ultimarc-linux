@@ -717,7 +717,10 @@ bool updateUHid (json_object* bcfg, ulboard* board)
       populateUHidBoardArray(UHID, pins, &barray[3]);
 
       json_object_object_get_ex(bcfg, "macros", &macros);
-      populateUHidMacro(macros, &barray[3]);
+      if (macros != NULL)
+      {
+        populateUHidMacro(macros, &barray[3]);
+      }
 
       /* quadrature time */
       json_object_object_get_ex(bcfg, "quadrature time", &calibration);
