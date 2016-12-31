@@ -31,7 +31,7 @@ typedef struct ulboard ulboard;
 enum uhid_boards_t {NO_UHID_BOARD = -1, UHID, NANO};
 
 bool isUHidConfig(json_object *jobj, ulboard* board);
-bool validateUHidData(json_object* jobj, ulboard* board);
+bool validateUHidData(json_object* jobj, ulboard* board, int pCount);
 
 bool validateSwitch(json_object* jobj, const char* key, bool curResult);
 bool validateQuadrature(json_object* jobj, const char* key, bool curResult);

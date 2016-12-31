@@ -116,7 +116,8 @@ ulWriteToBoard (json_object* bcfg, ulboard* board)
       log_info("Updating USBButton...");
       retCode = updateUSBButton (bcfg, board);
     }
-    else if (board->type == ulboard_type_uhid)
+    else if (board->type == ulboard_type_uhid ||
+             board->type == ulboard_type_uhidNano)
     {
       retCode = updateUHid (bcfg, board);
     }
