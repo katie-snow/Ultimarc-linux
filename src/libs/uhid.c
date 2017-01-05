@@ -38,6 +38,11 @@ bool isUHidConfig(json_object *jobj, ulboard* board)
     result = validateUHidData(jobj, board, 8);
   }
 
+  if (board->type == ulboard_type_uhidBlue)
+  {
+    result = validateUHidData(jobj, board, 36);
+  }
+
   return result;
 }
 
@@ -561,7 +566,7 @@ bool validateUHidQuadratureButtonTime (json_object* jobj, bool curResult)
  * j6-p3, j6-p4, j6-p5, j6-p6, j6-p7, j6-p8, j6-p9, j6-p10,
  * j7-p9, j7-p10
  */
-int uhidKeyLookupTable[2][50] = {
+int uhidKeyLookupTable[3][50] = {
 /* U-HID */
 {1, 3, 5, 7, 8, 6, 4, 2,
  24, 22, 20, 18, 40, 38, 36, 34,
@@ -572,12 +577,21 @@ int uhidKeyLookupTable[2][50] = {
  49, 50},
 
 /* NANO */
-{3, 1, 7, 5, 6, 8, 2, 4,
+{-1, -1 ,-1, -1, -1, -1, -1, -1,
  -1, -1 ,-1, -1, -1, -1, -1, -1,
  -1, -1 ,-1, -1, -1, -1, -1, -1,
  -1, -1 ,-1, -1, -1, -1, -1, -1,
+ 33, 35, 37, 38, 17, 19, 21, 23,
  -1, -1 ,-1, -1, -1, -1, -1, -1,
- -1, -1 ,-1, -1, -1, -1, -1, -1,
+ -1, -1},
+
+ /* BLUE */
+{1, 3, 5, 7, 8, 6, 4, 2,
+ 24, 22, 20, 18, -1, -1, 36, 34,
+ 32, 30, 28, 26, -1, -1, -1, -1,
+ 16, 14, 12, 10, 9, 11, 13, 15,
+ 33, 35, -1, -1, 17, 19, 21, 23,
+ -1, -1, -1, -1, 25, 27, 29, 31,
  -1, -1}
 
 };
@@ -720,7 +734,8 @@ bool updateUHid (json_object* bcfg, ulboard* board)
   char header[4] = {0x50, 0xdd, 0x00, 0x00};
 
   if (board->type == ulboard_type_uhid ||
-      board->type == ulboard_type_uhidNano)
+      board->type == ulboard_type_uhidNano ||
+      board->type == ulboard_type_uhidBlue)
   {
     log_info ("Updating %s board...", ulBoardTypeToString(board->type));
 
@@ -732,6 +747,11 @@ bool updateUHid (json_object* bcfg, ulboard* board)
     if (board->type == ulboard_type_uhidNano)
     {
       bid = NANO;
+    }
+
+    if (board->type == ulboard_type_uhidBlue)
+    {
+      bid = BLUE;
     }
 
     /* Pin assignment */

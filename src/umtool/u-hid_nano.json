@@ -7,7 +7,7 @@
 	"m1" : ["b", "c", "d"]
   },
   "pins" : {
-    "j1-p3" : {
+    "j5-p3" : {
       "switch" : {
         "primary" : "b",
         "secondary" : "c",
@@ -16,7 +16,7 @@
         "shift" : false                
       }
     },
-    "j2-p4" : {
+    "j5-p4" : {
       "switch" : {
       	"primary" : "a",
         "secondary" : "b",
@@ -25,19 +25,19 @@
         "shift" : false                
       }
     },
-    "j1-p5" : "disabled", 
-    "j1-p6" : "disabled",
-    "j1-p7" : "disabled", 
-    "j1-p8" : {
+    "j5-p5" : "disabled", 
+    "j5-p6" : "disabled",
+    "j5-p7" : "disabled", 
+    "j5-p8" : {
       "led" : {
-        "switch" : "j1-p3",
+        "switch" : "j5-p3",
         "pc" : 9
       }
     },
-    "j1-p9" : {
+    "j5-p9" : {
       "+5v" : false
     },
-    "j1-p10" : {
+    "j5-p10" : {
       "ground" : true
     }
   },
