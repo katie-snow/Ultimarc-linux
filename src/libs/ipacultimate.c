@@ -22,7 +22,7 @@
 #include "dbg.h"
 #include "ulboard.h"
 
-struct ipacultimate pLED;
+struct ipacultimate pUltimate;
 
 bool isIPACUltimateConfig(json_object* jobj, ulboard* board)
 {
@@ -49,11 +49,11 @@ bool validateIPacUltimateData(json_object* jobj)
   json_object* led = NULL;
   json_object* pins = NULL;
 
-  pLED.allIntensities = false;
-  pLED.ledMapIntensity = false;
-  pLED.random = false;
-  pLED.boardIDUpdate = false;
-  pLED.pins = false;
+  pUltimate.allIntensities = false;
+  pUltimate.ledMapIntensity = false;
+  pUltimate.random = false;
+  pUltimate.boardIDUpdate = false;
+  pUltimate.pins = false;
 
   if (checkBoardID(jobj, "board id"))
   {
@@ -75,7 +75,7 @@ bool validateIPacUltimateData(json_object* jobj)
 			valid = false;
 		  }
 
-		  pLED.ledMapIntensity = true;
+		  pUltimate.ledMapIntensity = true;
 		}
 	  }
 	  else
@@ -86,14 +86,14 @@ bool validateIPacUltimateData(json_object* jobj)
 	if (json_object_object_get_ex(jobj, "LED intensity all", &tmp))
 	{
 	  /* can't have the intensity entry with 'LED intensity all' */
-	  if (pLED.ledMapIntensity == true)
+	  if (pUltimate.ledMapIntensity == true)
 	  {
 		log_err ("'intensity' and 'LED intensity all' are not permitted same configuration file");
 		valid = false;
 	  }
 	  else if (json_object_get_type(tmp) == json_type_int)
 	  {
-		pLED.allIntensities = true;
+		pUltimate.allIntensities = true;
 	  }
 	  else
 	  {
@@ -106,7 +106,7 @@ bool validateIPacUltimateData(json_object* jobj)
 	{
 	  if (json_object_get_type(tmp) == json_type_boolean)
 	  {
-		pLED.random = json_object_get_boolean(tmp);
+		pUltimate.random = json_object_get_boolean(tmp);
 	  }
 	  else
 	  {
@@ -122,7 +122,7 @@ bool validateIPacUltimateData(json_object* jobj)
 	    if (json_object_get_int(tmp) >= 0 &&
 	        json_object_get_int(tmp) <= 255)
 	    {
-	      pLED.fadeRate = true;
+	      pUltimate.fadeRate = true;
 	    }
 	    else
 	    {
@@ -227,14 +227,14 @@ bool validateIPacUltimateData(json_object* jobj)
         valid = false;
       }
 
-	  pLED.pins = true;
+	  pUltimate.pins = true;
     }
   }
   else if (checkBoardID(jobj, "current board id"))
   {
 	if (checkBoardID(jobj, "new board id"))
 	{
-	  pLED.boardIDUpdate = true;
+	  pUltimate.boardIDUpdate = true;
 	  valid = true;
 	}
 	else
@@ -589,7 +589,7 @@ bool updateBoardIPacUltimate(json_object* jobj)
   json_object *pins = NULL;
   json_object *pin  = NULL;
 
-  if (pLED.boardIDUpdate == true)
+  if (pUltimate.boardIDUpdate == true)
   {
 	json_object_object_get_ex(jobj, "current board id", &tmp);
 	board = json_object_get_int(tmp);
@@ -611,7 +611,7 @@ bool updateBoardIPacUltimate(json_object* jobj)
   }
 
   /* Intensity settings */
-  if (pLED.ledMapIntensity == true)
+  if (pUltimate.ledMapIntensity == true)
   {
 	json_object_object_get_ex(jobj, "intensity", &leds);
 	for (idx = 0; idx < json_object_array_length(leds); ++ idx)
@@ -634,7 +634,7 @@ bool updateBoardIPacUltimate(json_object* jobj)
 							  UM_TIMEOUT);
 	}
   }
-  else if (pLED.allIntensities == true)
+  else if (pUltimate.allIntensities == true)
   {
 	map[1] = 0x80; // 128 decimal
 	json_object_object_get_ex(jobj, "LED intensity all", &tmp);
@@ -652,7 +652,7 @@ bool updateBoardIPacUltimate(json_object* jobj)
   }
 
   /* Random states */
-  if (pLED.random == true)
+  if (pUltimate.random == true)
   {
 	map[1] = 0x89; // 137 decimal
 	map[2] = 0;
@@ -669,7 +669,7 @@ bool updateBoardIPacUltimate(json_object* jobj)
   }
 
   /* Fade rate */
-  if (pLED.fadeRate == true)
+  if (pUltimate.fadeRate == true)
   {
 	map[1] = 0xc0; // 192 decimal
 	json_object_object_get_ex(jobj, "fade rate", &tmp);
@@ -686,7 +686,7 @@ bool updateBoardIPacUltimate(json_object* jobj)
 							UM_TIMEOUT);
   }
 
-  if (pLED.pins == true)
+  if (pUltimate.pins == true)
   {
     /* Setup data to send to board */
      memset (&data, 0, sizeof(data));
@@ -729,7 +729,7 @@ bool updateBoardIPacUltimate(json_object* jobj)
      }
   }
 
-  if (pLED.boardIDUpdate == true)
+  if (pUltimate.boardIDUpdate == true)
   {
     /* THIS IS NOT WORKING CORRECTLY */
     memcpy (&map[1], &header, sizeof(header));
