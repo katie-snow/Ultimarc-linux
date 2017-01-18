@@ -38,11 +38,6 @@ bool isUHidConfig(json_object *jobj, ulboard* board)
     result = validateUHidData(jobj, board, 8);
   }
 
-  if (board->type == ulboard_type_uhidBlue)
-  {
-    result = validateUHidData(jobj, board, 36);
-  }
-
   return result;
 }
 
@@ -734,8 +729,7 @@ bool updateUHid (json_object* bcfg, ulboard* board)
   char header[4] = {0x50, 0xdd, 0x00, 0x00};
 
   if (board->type == ulboard_type_uhid ||
-      board->type == ulboard_type_uhidNano ||
-      board->type == ulboard_type_uhidBlue)
+      board->type == ulboard_type_uhidNano)
   {
     log_info ("Updating %s board...", ulBoardTypeToString(board->type));
 
@@ -747,11 +741,6 @@ bool updateUHid (json_object* bcfg, ulboard* board)
     if (board->type == ulboard_type_uhidNano)
     {
       bid = NANO;
-    }
-
-    if (board->type == ulboard_type_uhidBlue)
-    {
-      bid = BLUE;
     }
 
     /* Pin assignment */

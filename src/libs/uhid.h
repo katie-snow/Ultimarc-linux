@@ -5,7 +5,7 @@
  Version     :
  Copyright   : Copyright 2015 Robert Abram, Katie Snow
  Description : U-Hid Board configuration library, 
-               includes U-Hid Nano and BlueHid
+               includes U-Hid Nano
  ============================================================================
  */
 
@@ -28,7 +28,7 @@ extern "C" {
 typedef struct json_object json_object;
 typedef struct ulboard ulboard;
 
-enum uhid_boards_t {NO_UHID_BOARD = -1, UHID, NANO, BLUE};
+enum uhid_boards_t {NO_UHID_BOARD = -1, UHID, NANO};
 
 bool isUHidConfig(json_object *jobj, ulboard* board);
 bool validateUHidData(json_object* jobj, ulboard* board, int pCount);

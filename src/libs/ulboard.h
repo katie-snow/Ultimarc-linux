@@ -30,8 +30,7 @@ typedef enum ulboard_type
   ulboard_type_ultistik,
   ulboard_type_usbbutton,
   ulboard_type_uhid,
-  ulboard_type_uhidNano,
-  ulboard_type_uhidBlue
+  ulboard_type_uhidNano
 } ulboard_type;
 
 /* Supported versions */
