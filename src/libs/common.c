@@ -15,6 +15,13 @@
 #include "common.h"
 #include "dbg.h"
 
+#ifdef __linux__
+  #define IS_LINUX 1
+#else
+  #define IS_LINUX 0
+#endif
+
+
 struct libusb_device_handle*
 openUSB(libusb_context *ctx, uint16_t vendor, uint16_t product, int interface, int autoconnect)
 {
@@ -53,11 +60,14 @@ openUSB(libusb_context *ctx, uint16_t vendor, uint16_t product, int interface, i
     libusb_set_auto_detach_kernel_driver(handle, 1);
   }
 
-  ret = libusb_claim_interface(handle, interface);
-  if (ret < 0)
+  if (IS_LINUX)
   {
-    log_err ("Unable to claim interface.");
-    goto error;
+    ret = libusb_claim_interface(handle, interface);
+    if (ret < 0)
+    {
+      log_err ("Unable to claim interface.");
+      goto error;
+    }
   }
 
   exit:

@@ -9,7 +9,9 @@
  */
 
 /* Unix */
-#include <linux/usbdevice_fs.h>
+#ifdef __linux__
+  #include <linux/usbdevice_fs.h>
+#endif
 #include <json.h>
 
 /* C */
