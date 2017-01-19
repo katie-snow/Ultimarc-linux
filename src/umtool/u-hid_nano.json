@@ -1,0 +1,78 @@
+{
+  "version" : 1,
+  "product" : "uhid nano",
+  "board id" : 1,
+  "quadrature time" : 3,
+  "macros" : {
+	"m1" : ["b", "c", "d"]
+  },
+  "pins" : {
+    "j5-p3" : {
+      "switch" : {
+        "primary" : "b",
+        "secondary" : "c",
+        "down" : "normal primary",
+        "up" : "clear",
+        "shift" : false                
+      }
+    },
+    "j5-p4" : {
+      "switch" : {
+      	"primary" : "a",
+        "secondary" : "b",
+        "down" : "normal primary",
+        "up" : "clear",
+        "shift" : false                
+      }
+    },
+    "j5-p5" : "disabled", 
+    "j5-p6" : "disabled",
+    "j5-p7" : "disabled", 
+    "j5-p8" : {
+      "led" : {
+        "switch" : "j5-p3",
+        "pc" : 9
+      }
+    },
+    "j5-p9" : {
+      "+5v" : false
+    },
+    "j5-p10" : {
+      "ground" : true
+    }
+  },
+  "axis calibration" : {
+    "1" : {
+      "offset" : 128,
+      "scale" : 16
+    },
+    "2" : {
+      "offset" : 128,
+      "scale" : 16
+    },
+    "3" : {
+      "offset" : 128,
+      "scale" : 16
+    },
+    "4" : {
+      "offset" : 128,
+      "scale" : 16
+    },
+    "5" : {
+      "offset" : 128,
+      "scale" : 16
+    },
+    "6" : {
+      "offset" : 128,
+      "scale" : 16
+    },
+    "7" : {
+      "offset" : 128,
+      "scale" : 16
+    },
+    "8" : {
+      "offset" : 128,
+      "scale" : 16
+    }
+  }
+}

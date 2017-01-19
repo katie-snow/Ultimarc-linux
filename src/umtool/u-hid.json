@@ -1,0 +1,150 @@
+{
+  "version" : 1,
+  "product" : "uhid",
+  "board id" : 1,
+  "quadrature time" : 3,
+  "macros" : {
+	"m1" : ["b", "c", "d"]
+  },
+  "pins" : {
+    "j1-p3" : {
+      "switch" : {
+        "primary" : "b",
+        "secondary" : "c",
+        "down" : "normal primary",
+        "up" : "clear",
+        "shift" : false                
+      }
+    },
+    "j1-p4" : {
+      "switch" : {
+      	"primary" : "a",
+        "secondary" : "b",
+        "down" : "normal primary",
+        "up" : "clear",
+        "shift" : false                
+      }
+    },
+    "j1-p5" : "disabled", 
+    "j1-p6" : "disabled",
+    "j1-p7" : "disabled", 
+    "j1-p8" : {
+      "led" : {
+        "switch" : "j3-p3",
+        "pc" : 9
+      }
+    },
+    "j1-p9" : {
+      "+5v" : false
+    },
+    "j1-p10" : {
+      "ground" : true
+    },
+    "j2-p3" : "disabled",
+    "j2-p4" : "disabled",
+    "j2-p5" : "disabled",
+    "j2-p6" : "disabled",
+    "j2-p7" : "disabled",
+    "j2-p8" : "disabled",
+    "j2-p9" : "disabled",
+    "j2-p10" : "disabled",
+    "j3-p3" : {
+      "switch" : {
+      	"primary" : "a",
+        "secondary" : "",
+        "down" : "normal primary",
+        "up" : "clear",
+      }
+    },
+    "j3-p4" : {
+      "switch" : {
+        "primary" : "b",
+        "secondary" : "",
+        "down" : "normal primary",
+        "up" : "clear",
+      }
+    },
+    "j3-p5" : "disabled",
+    "j3-p6" : "disabled",
+    "j3-p7" : "disabled",
+    "j3-p8" : "disabled",
+    "j3-p9" : "disabled",
+    "j3-p10" : "disabled",
+    "j4-p3" : "diabled",
+    "j4-p4" : "disabled",
+    "j4-p5" : "disabled",
+    "j4-p6" : "disabled",
+    "j4-p7" : "disabled",
+    "j4-p8" : "disabled",
+    "j4-p9" : "disabled",
+    "j4-p10" : "disabled",
+    "j5-p3" : { "+5v" : true },
+    "j5-p4" : {
+      "led" : {
+        "switch" : "j1-p3",
+      }
+    },
+    "j5-p5" :  {
+      "led" : {
+        "switch" : "j1-p4",
+      }
+    },
+    "j5-p6" : {
+      "led" : {
+        "switch" : "j1-p3",
+      }
+    },
+    "j5-p7" : "disabled",
+    "j5-p8" : "disabled",
+    "j5-p9" : {
+      "led" : {
+        "switch" : "j1-p3",
+      }
+    },
+    "j5-p10" : { "+5v" : true },
+    "j6-p3" : "disabled",
+    "j6-p4" : "disabled",
+    "j6-p5" : "disabled",
+    "j6-p6" : "disabled",
+    "j6-p7" : "disabled",
+    "j6-p8" : "disabled",
+    "j6-p9" : "disabled",
+    "j6-p10" : "disabled",
+    "j7-p9" : "disabled",
+    "j7-p10" : "disabled"
+  },
+  "axis calibration" : {
+    "1" : {
+      "offset" : 128,
+      "scale" : 16
+    },
+    "2" : {
+      "offset" : 128,
+      "scale" : 16
+    },
+    "3" : {
+      "offset" : 128,
+      "scale" : 16
+    },
+    "4" : {
+      "offset" : 128,
+      "scale" : 16
+    },
+    "5" : {
+      "offset" : 128,
+      "scale" : 16
+    },
+    "6" : {
+      "offset" : 128,
+      "scale" : 16
+    },
+    "7" : {
+      "offset" : 128,
+      "scale" : 16
+    },
+    "8" : {
+      "offset" : 128,
+      "scale" : 16
+    }
+  }
+}

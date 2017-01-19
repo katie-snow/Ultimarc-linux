@@ -29,7 +29,9 @@ typedef enum ulboard_type
   ulboard_type_pacLED,
   ulboard_type_ultistik,
   ulboard_type_usbbutton,
-  ulboard_type_servostik
+  ulboard_type_servostik,
+  ulboard_type_uhid,
+  ulboard_type_uhidNano
 } ulboard_type;
 
 /* Supported versions */

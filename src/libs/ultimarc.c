@@ -27,6 +27,7 @@
 #include "ipacultimate.h"
 #include "usbbutton.h"
 #include "servostik.h"
+#include "uhid.h"
 #include "dbg.h"
 
 int
@@ -46,7 +47,8 @@ ulValidateConfig (json_object* bcfg, ulboard* ulcfg)
           || isPACLED64Config (bcfg, ulcfg)
           || isUltistikConfig (bcfg, ulcfg)
           || isUSBButtonConfig(bcfg, ulcfg)
-          || isServoStikConfig(bcfg, ulcfg))
+          || isServoStikConfig(bcfg, ulcfg)
+          || isUHidConfig (bcfg, ulcfg))
       {
         log_info("Configuration is %s. [Validated]", ulBoardTypeToString(ulcfg->type));
       }
@@ -122,6 +124,11 @@ ulWriteToBoard (json_object* bcfg, ulboard* board)
     {
       log_info("Updating ServoStik...");
       retCode = updateServoStik (bcfg, board);
+    }
+    else if (board->type == ulboard_type_uhid ||
+             board->type == ulboard_type_uhidNano)
+    {
+      retCode = updateUHid (bcfg, board);
     }
 
     if (retCode)
