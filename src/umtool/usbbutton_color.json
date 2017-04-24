@@ -1,0 +1,10 @@
+{
+  "version" : 1,
+  "product" : "usbbutton",
+  "board id" : 1,
+  "color" : {
+    "red" : 200,
+    "green" : 200,
+    "blue" : 100
+  }
+}
