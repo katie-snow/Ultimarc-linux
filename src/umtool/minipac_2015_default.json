@@ -1,6 +1,7 @@
 {
   "version" : 2,
   "product" : "minipac",
+  "game controller" : false,
   "1/2 shift key" : "1start",
   "macros": {
   },
