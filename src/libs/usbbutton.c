@@ -21,6 +21,7 @@
 #include "ulboard.h"
 #include "common.h"
 #include "usbbutton.h"
+#include "ipacseries.h"
 #include "dbg.h"
 
 bool isUSBButtonConfig(json_object *jobj, ulboard* board)
