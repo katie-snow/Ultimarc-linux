@@ -19,6 +19,7 @@
 #include "common.h"
 #include "ipacultimate.h"
 #include "ipacseries.h"
+#include "uhid.h"
 #include "dbg.h"
 #include "ulboard.h"
 
@@ -41,7 +42,7 @@ bool validateIPacUltimateData(json_object* jobj)
   const char invalidKey = 0x00;
   char data;
 
-  bool valid = false;
+  bool valid = true;
   int idx = 0;
   int boardID = 0;
   json_object* tmp = NULL;
@@ -55,10 +56,22 @@ bool validateIPacUltimateData(json_object* jobj)
   pUltimate.boardIDUpdate = false;
   pUltimate.pins = false;
 
+  if (json_object_object_get_ex(jobj, "game controller", &tmp))
+  {
+      if (!json_object_is_type(tmp, json_type_boolean))
+      {
+          log_err ("'game controller' needs to be of type boolean");
+          valid = false;
+      }
+  }
+  else
+  {
+      log_err ("'game controller' is not defined in the configuration");
+      valid = false;
+  }
+
   if (checkBoardID(jobj, "board id"))
   {
-	valid = true;
-
 	/* Figure out what items we have in this file */
 	if (json_object_object_get_ex(jobj, "intensity", &leds))
 	{
@@ -129,50 +142,50 @@ bool validateIPacUltimateData(json_object* jobj)
 	      log_err ("'Fade rate' value is not between 0 and 255");
 	      valid = false;
 	    }
-      }
-      else
-      {
-        log_err ("'Fade rate' is not defined as an integer");
-        valid = false;
-      }
+          }
+          else
+          {
+            log_err ("'Fade rate' is not defined as an integer");
+            valid = false;
+          }
 	}
 
 	if (json_object_object_get_ex(jobj, "pins", &tmp))
-    {
-      valid = true;
+        {
+          //valid = true;
 
 	  if (json_object_get_type(tmp) == json_type_array)
 	  {
 	    if (json_object_array_length(tmp) == 48)
 	    {
 	      for (idx = 0; idx < json_object_array_length(tmp); ++ idx)
-          {
-            pins = json_object_array_get_idx(tmp, idx);
+              {
+                pins = json_object_array_get_idx(tmp, idx);
 
 	        json_object_object_foreach(pins, key, pin)
 	        {
-              if (json_object_get_type(pin) == json_type_array)
-              {
-                if (json_object_get_type(json_object_array_get_idx(pin, 0)) != json_type_string ||
-                    json_object_get_type(json_object_array_get_idx(pin, 1)) != json_type_string ||
-                    json_object_get_type(json_object_array_get_idx(pin, 2)) != json_type_boolean)
-                {
-                  log_err ("The pin at index %i is not defined as a string, string, boolean", idx);
-                  valid = false;
-                }
-              }
-              else
-              {
-                log_err ("'pin' object is not defined as an array");
-                valid = false;
-              }
+                  if (json_object_get_type(pin) == json_type_array)
+                  {
+                    if (json_object_get_type(json_object_array_get_idx(pin, 0)) != json_type_string ||
+                      json_object_get_type(json_object_array_get_idx(pin, 1)) != json_type_string ||
+                      json_object_get_type(json_object_array_get_idx(pin, 2)) != json_type_boolean)
+                    {
+                      log_err ("The pin at index %i is not defined as a string, string, boolean", idx);
+                      valid = false;
+                    }
+                  }
+                  else
+                  {
+                    log_err ("'pin' object is not defined as an array");
+                    valid = false;
+                  }
 	        }
 	      }
 	    }
 	    else
 	    {
-		  log_err ("'pins' array is not the correct size. Size is %i, should be 48", json_object_array_length(tmp));
-		  valid = false;
+              log_err ("'pins' array is not the correct size. Size is %i, should be 48", json_object_array_length(tmp));
+              valid = false;
 	    }
 	  }
 	  else
@@ -185,60 +198,59 @@ bool validateIPacUltimateData(json_object* jobj)
 	  valid = validateIPacUltimarcMacros(jobj, valid);
 
 	  if (json_object_object_get_ex(jobj, "x threshold", &tmp))
-      {
-        if (json_object_get_type(tmp) == json_type_int)
-        {
-          if (json_object_get_int(tmp) <= 0 ||
-              json_object_get_int(tmp) > 128)
           {
-            log_err ("'x threshold' value is not between 0 and 127");
+            if (json_object_get_type(tmp) == json_type_int)
+            {
+              if (json_object_get_int(tmp) <= 0 ||
+                  json_object_get_int(tmp) > 128)
+              {
+                log_err ("'x threshold' value is not between 0 and 127");
+                valid = false;
+              }
+            }
+            else
+            {
+              log_err ("'x threshold' is not defined as an integer");
+              valid = false;
+            }
+          }
+          else
+          {
+            log_err ("'x threshold' is required when pins array is defined");
             valid = false;
           }
-        }
-        else
-        {
-          log_err ("'x threshold' is not defined as an integer");
-          valid = false;
-        }
-      }
-      else
-      {
-        log_err ("'x threshold' is required when pins array is defined");
-        valid = false;
-      }
 
 	  if (json_object_object_get_ex(jobj, "y threshold", &tmp))
-      {
-        if (json_object_get_type(tmp) == json_type_int)
-        {
-          if (json_object_get_int(tmp) <= 0 ||
-              json_object_get_int(tmp) >= 128)
           {
-            log_err ("'y threshold' value is not between 0 and 127");
+            if (json_object_get_type(tmp) == json_type_int)
+            {
+              if (json_object_get_int(tmp) <= 0 ||
+                  json_object_get_int(tmp) >= 128)
+              {
+                log_err ("'y threshold' value is not between 0 and 127");
+                valid = false;
+              }
+            }
+            else
+            {
+              log_err ("'y threshold' is not defined as an integer");
+              valid = false;
+            }
+          }
+          else
+          {
+            log_err ("'y threshold' is required when pins array is defined");
             valid = false;
           }
-        }
-        else
-        {
-          log_err ("'y threshold' is not defined as an integer");
-          valid = false;
-        }
-      }
-      else
-      {
-        log_err ("'y threshold' is required when pins array is defined");
-        valid = false;
-      }
 
 	  pUltimate.pins = true;
-    }
-  }
-  else if (checkBoardID(jobj, "current board id"))
-  {
+        }
+      }
+      else if (checkBoardID(jobj, "current board id"))
+      {
 	if (checkBoardID(jobj, "new board id"))
 	{
 	  pUltimate.boardIDUpdate = true;
-	  valid = true;
 	}
 	else
 	{
@@ -246,16 +258,17 @@ bool validateIPacUltimateData(json_object* jobj)
 
 	  if (!json_object_object_get_ex(jobj, "new board id", &tmp))
 	  {
-		log_err ("'new board id' is not defined in the configuration file");
+            log_err ("'new board id' is not defined in the configuration file");
 	  }
 	}
-  }
-  else
-  {
-	log_err ("IPAC Ultimate configuration file is not configured correctly");
-  }
+      }
+      else
+      {
+        valid = false;
+        log_err ("IPAC Ultimate configuration file is not configured correctly");
+      }
 
-  return valid;
+    return valid;
 }
 
 /*
@@ -677,6 +690,7 @@ bool updateBoardIPacUltimate(json_object* jobj)
   int idx = 0;
   int intensity = 0;
   int board = 0;
+  int interface = IPACULTIMATE_INTERFACE;
   uint16_t product = IPACULTIMATE_PRODUCT;
 
   unsigned char data[IPACULTIMATE_DATA_SIZE];
@@ -705,7 +719,16 @@ bool updateBoardIPacUltimate(json_object* jobj)
 	product += (board - 1);
   }
 
-  handle = openUSB(ctx, IPACULTIMATE_VENDOR, product, IPACULTIMATE_INTERFACE, 1);
+  if (json_object_object_get_ex(jobj, "game controller", &tmp))
+  {
+    if (!json_object_get_boolean(tmp))
+    {
+       interface = IPACSERIES_NGC_INTERFACE;
+    }
+  }
+  debug ("Write Interface: %i", interface);
+
+  handle = openUSB(ctx, IPACULTIMATE_VENDOR, product, interface, 1);
 
   if (!handle)
   {

@@ -60,6 +60,24 @@ bool validateIPACData(json_object* jobj, int size, ulboard* board)
   char* key = NULL;
   char* tmpKey = NULL;
 
+  /* Required for 2015 boards */
+  if (board->version == ulboard_version_2015)
+  {
+    if (json_object_object_get_ex(jobj, "game controller", &tmp))
+    {
+      if (!json_object_is_type(tmp, json_type_boolean))
+      {
+        log_err ("'game controller' needs to be of type boolean");
+        valid = false;
+      }
+    }
+    else
+    {
+      log_err ("'game controller' is not defined in the configuration");
+      valid = false;
+    }
+  } 
+
   /* Required */
   if (json_object_object_get_ex(jobj, "1/2 shift key", &tmp))
   {
@@ -74,7 +92,7 @@ bool validateIPACData(json_object* jobj, int size, ulboard* board)
     log_err ("'1/2 shift key' is not defined in the configuration");
     valid = false;
   }
-
+ 
   /* Required */
   if (json_object_object_get_ex(jobj, "pins", &pins))
   {
@@ -130,6 +148,24 @@ bool validateIPAC4Data (json_object* jobj, ulboard* board)
   char* key = NULL;
   char* tmpKey = NULL;
 
+  /* Required for 2015 boards */
+  if (board->version == ulboard_version_2015)
+  {
+    if (json_object_object_get_ex(jobj, "game controller", &tmp))
+    {
+      if (!json_object_is_type(tmp, json_type_boolean))
+      {
+        log_err ("'game controller' needs to be of type boolean");
+        valid = false;
+      }
+    }
+    else
+    {
+      log_err ("'game controller' is not defined in the configuration");
+      valid = false;
+    }
+  } 
+
   /* Required */
   if (json_object_object_get_ex(jobj, "1/2 shift key", &tmp))
   {
@@ -158,7 +194,7 @@ bool validateIPAC4Data (json_object* jobj, ulboard* board)
     log_err ("'3/4 shift key' is not defined in the configuration");
     valid = false;
   }
-
+ 
   /* Required */
   if (json_object_object_get_ex(jobj, "pins", &pins))
   {
@@ -312,6 +348,10 @@ bool updateBoardIPAC (json_object *jobj, ulboard *board)
   bool result = false;
   int bprod = 0;
   unsigned char* barray = NULL;
+ 
+  json_object* tmp = NULL;
+  const char* str = NULL;
+  int interface = -1;
 
   switch (board->version)
   {
@@ -364,6 +404,17 @@ bool updateBoardIPAC (json_object *jobj, ulboard *board)
     break;
 
   case ulboard_version_2015:
+
+    interface = IPACSERIES_INTERFACE;
+    if (json_object_object_get_ex(jobj, "game controller", &tmp))
+    {
+      if(!json_object_get_boolean(tmp))
+      {
+         interface = IPACSERIES_NGC_INTERFACE;
+      } 
+    }
+    debug ("Write to interface: %i", interface);
+
     barray = calloc(IPACSERIES_SIZE, sizeof(unsigned char));
 
     if (barray != NULL)
@@ -398,7 +449,7 @@ bool updateBoardIPAC (json_object *jobj, ulboard *board)
       if (bprod != 0)
       {
         result = writeIPACSeriesUSB(barray, IPACSERIES_SIZE, IPAC_VENDOR_2015,
-                                    bprod, IPACSERIES_INTERFACE, 1, true);
+                                    bprod, interface, 1, true);
       }
 
       free(barray);

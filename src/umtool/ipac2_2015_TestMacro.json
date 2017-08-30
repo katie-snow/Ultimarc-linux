@@ -1,6 +1,7 @@
 {
   "version" : 2,
   "product" : "ipac2",
+  "game controller" : true,
   "1/2 shift key" : "1start",
   "macros": {
     "m1" : [ "m", "1"],
