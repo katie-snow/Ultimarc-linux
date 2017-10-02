@@ -9,7 +9,10 @@ This utility will configure the following Ultimarc boards; ServoStik, PACDrive, 
 This library and command line utility support 2012 through 2015 boards.  If you need support for older Ultimarc boards, please look at the following utility developed by Travis, <a href='http://www.zumbrovalley.net/articles.php?catid=3'>Ipacutil</a> or use the Windows WinIpac v1 from <a href='http://www.ultimarc.com'>Ultimarc</a>
 
 #### Required Libraries
-To build this tool the following libraries need to be install on your system.  
+To build this tool the following libraries need to be install on your system.
+* autoreconf
+* automake
+* libudev-dev
 * json-c (0.11), <a href='https://github.com/json-c/json-c/wiki'>site</a>
 * libusb-1.0 (1.0.18), <a href='http://libusb.info'>site</a>
 * libtool
@@ -27,7 +30,7 @@ If you need extra debug statements for the IPac boards then run the following
 * ./configure CFLAGS='-DDEBUG'
 * make
 
-The executable will be in src/umtool directory and named umtool.out.
+The executable will be in src/umtool directory and named umtool.
 * ./umtool ipac2.json
 
 #### Donations:
