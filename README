@@ -7,6 +7,9 @@ If you need support for older Ultimarc boards, please look at the following util
 
 Required Libraries
 To build this tool the following libraries need to be install on your system.  
+autoreconf,
+automake,
+libudev-dev,
 json-c (0.11),
 libusb-dev (1.0.18)
 libtool
@@ -18,8 +21,8 @@ Building Utility:
 To build this project, at the base directory run the following commands
 ./configure
 make
-The executable will be in src/umtool directory and named umtool.out.
-./umtool.out ipac2.json
+The executable will be in src/umtool directory and named umtool.
+./umtool ipac2.json
 
 Configuration Files:
 There are example configuration files for each of the boards in the src/umtool directory.  The following is information about each configuration file.
@@ -27,6 +30,7 @@ There are example configuration files for each of the boards in the src/umtool d
 PAC boards:
 version: This should be set to 1(pre 2015 board) or 2(2015 and newer).  This is used for determining which version of the board to configure
 product: This is either 'ipac2', 'ipac4', 'minipac', 'jpac',  depending on what board you are configuring
+game controller : true or false.  This changes which interface is used.  If have a no game controller board set to false.  True follows the 1.3X firmware version.  False follows the 1.4X firmware version.
 1/2 shift key: Key that will be used as the shift key for player 1 and 2
 3/4 shift key: Key that will be used as the shift key for player 3 and 4
 pins: List of all the pins(keys) that are on the board.  Please modify the example configuration files.
@@ -84,6 +88,7 @@ IPAC Ultimate:
 version: This should be set to 1 always.  This is used for version control of the configuration file in the future
 product: The IPAC Ultimate product number in string format “0410”
 board id: This number is 1-4.  This states which board this configuration is for
+game controller : true or false.  This changes which interface is used.  If have a no game controller board set to false.  True follows the 1.3X firmware version.  False follows the 1.4X firmware version.
 pins: The array size is 48 and each entry is a object (key, value).  The value is an array with the format string, string, boolean.  The key value matches or closely matches the names printed on the board.
 x threshold: An integer between 0 and 127 inclusive.  This is a required entry when pins array is defined
 y threshold: An integer between 0 and 127 inclusive.  This is a required entry when pins array is defined
