@@ -754,7 +754,7 @@ bool updateBoardIPacUltimate(json_object* jobj)
 							  UM_REQUEST_TYPE,
 							  UM_REQUEST,
 							  IPACULTIMATE_VALUE,
-							  IPACULTIMATE_INTERFACE,
+							  interface,
 							  map,
 							  IPACSERIES_MESG_LENGTH,
 							  UM_TIMEOUT);
@@ -771,7 +771,7 @@ bool updateBoardIPacUltimate(json_object* jobj)
 							UM_REQUEST_TYPE,
 							UM_REQUEST,
 							IPACULTIMATE_VALUE,
-							IPACULTIMATE_INTERFACE,
+							interface,
 							map,
 							IPACSERIES_MESG_LENGTH,
 							UM_TIMEOUT);
@@ -788,7 +788,7 @@ bool updateBoardIPacUltimate(json_object* jobj)
 							UM_REQUEST_TYPE,
 							UM_REQUEST,
 							IPACULTIMATE_VALUE,
-							IPACULTIMATE_INTERFACE,
+							interface,
 							map,
 							IPACSERIES_MESG_LENGTH,
 							UM_TIMEOUT);
@@ -806,7 +806,7 @@ bool updateBoardIPacUltimate(json_object* jobj)
 							UM_REQUEST_TYPE,
 							UM_REQUEST,
 							IPACULTIMATE_VALUE,
-							IPACULTIMATE_INTERFACE,
+							interface,
 							map,
 							IPACSERIES_MESG_LENGTH,
 							UM_TIMEOUT);
@@ -853,7 +853,7 @@ bool updateBoardIPacUltimate(json_object* jobj)
                                      UM_REQUEST_TYPE,
                                      UM_REQUEST,
                                      IPACULTIMATE_VALUE,
-                                     IPACULTIMATE_INTERFACE,
+                                     interface,
                                      map,
                                      IPACSERIES_MESG_LENGTH,
                                      UM_TIMEOUT);
@@ -873,14 +873,14 @@ bool updateBoardIPacUltimate(json_object* jobj)
 							UM_REQUEST_TYPE,
 							UM_REQUEST,
 							IPACULTIMATE_VALUE,
-							IPACULTIMATE_INTERFACE,
+							interface,
 							map,
 							IPACSERIES_MESG_LENGTH,
 							UM_TIMEOUT);
   }
 
 exit:
-	closeUSB(ctx, handle, IPACULTIMATE_INTERFACE);
+	closeUSB(ctx, handle, interface);
 	return result;
 
 error:
