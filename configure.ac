@@ -31,9 +31,9 @@ AX_PKG_CHECK_MODULES([LIBUSB], [], [libusb-1.0 >= 1.0.18])
 
 AC_SUBST([ULTIMARC_LIB_VERSION], [1.1])
 
-AC_CONFIG_FILES([Makefile 
-				src/libs/Makefile
-				src/umtool/Makefile				
-				ultimarc-${ULTIMARC_LIB_VERSION}.pc:ultimarc.pc.in])
+AC_CONFIG_FILES([Makefile
+		 src/libs/Makefile
+		 src/umtool/Makefile
+		 ultimarc-${ULTIMARC_LIB_VERSION}.pc:ultimarc.pc.in])
 AC_OUTPUT
 
