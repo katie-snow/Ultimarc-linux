@@ -14,6 +14,16 @@ LT_INIT
 
 m4_ifdef([AM_SILENT_RULES], [AM_SILENT_RULES([yes])])
 
+# Checks for header files.
+AC_CHECK_HEADERS([stdlib.h string.h])
+
+# Checks for typedefs, structures, and compiler characteristics.
+AC_CHECK_HEADER_STDBOOL
+AC_TYPE_UINT16_T
+
+# Checks for library functions.
+AC_CHECK_FUNCS([memset strcasecmp strncasecmp strtol])
+
 # Kernel headers path.
 AC_ARG_WITH(kernel-headers,
     [AC_HELP_STRING([--with-kernel-headers=DIR],
