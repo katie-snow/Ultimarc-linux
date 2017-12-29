@@ -45,6 +45,28 @@ openUSB(libusb_context *ctx, uint16_t vendor, uint16_t product, int interface, i
     goto error;
   }
 
+  if (interface != -1)
+  {
+    if (!claimInterface(handle, interface, autoconnect))
+    {
+      goto error;
+    }
+  }
+
+  exit:
+  return handle;
+
+  error:
+  closeUSB(ctx, handle, interface);
+  return NULL;
+}
+
+bool
+claimInterface(struct libusb_device_handle *handle, int interface, bool autoconnect)
+{
+  int ret = 0;
+  bool success = true;
+
   if (autoconnect == 0)
   {
     /* detach the kernel driver */
@@ -66,16 +88,11 @@ openUSB(libusb_context *ctx, uint16_t vendor, uint16_t product, int interface, i
     if (ret < 0)
     {
       log_err ("Unable to claim interface.");
-      goto error;
+      success = false;
     }
   }
 
-  exit:
-  return handle;
-
-  error:
-  closeUSB(ctx, handle, interface);
-  return NULL;
+  return success;
 }
 
 void
