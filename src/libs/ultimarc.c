@@ -85,6 +85,7 @@ int
 ulWriteToBoard (json_object* bcfg, ulboard* board)
 {
   int retCode = 0;
+  bool ret = false;
 
   if (bcfg && board)
   {
@@ -93,56 +94,57 @@ ulWriteToBoard (json_object* bcfg, ulboard* board)
         board->type == ulboard_type_jpac ||
         board->type == ulboard_type_minipac)
     {
-      retCode = updateBoardIPAC (bcfg, board);
+      ret = updateBoardIPAC (bcfg, board);
     }
     else if (board->type == ulboard_type_ultimate)
     {
       log_info("Updating IPAC Ultimate board...");
-      retCode = updateBoardIPacUltimate (bcfg);
+      ret = updateBoardIPacUltimate (bcfg);
     }
     else if (board->type == ulboard_type_pacDrive)
     {
       log_info("Updating PAC Drive board...");
-      retCode = updateBoardPacDrive (bcfg);
+      ret = updateBoardPacDrive (bcfg);
     }
     else if (board->type == ulboard_type_pacLED)
     {
       log_info("Updating PAC LED 64 board...");
-      retCode = updateBoardPacLED (bcfg);
+      ret = updateBoardPacLED (bcfg);
     }
     else if (board->type == ulboard_type_ultistik)
     {
       log_info("Updating Ultistik board...");
-      retCode = updateBoardULTISTIK (bcfg, board);
+      ret = updateBoardULTISTIK (bcfg, board);
     }
     else if (board->type == ulboard_type_usbbutton)
     {
       log_info("Updating USBButton...");
-      retCode = updateUSBButton (bcfg, board);
+      ret = updateUSBButton (bcfg, board);
     }
     else if (board->type == ulboard_type_servostik)
     {
       log_info("Updating ServoStik...");
-      retCode = updateServoStik (bcfg, board);
+      ret = updateServoStik (bcfg, board);
     }
     else if (board->type == ulboard_type_uhid ||
              board->type == ulboard_type_uhidNano)
     {
-      retCode = updateUHid (bcfg, board);
+      ret = updateUHid (bcfg, board);
     }
 
-    if (retCode)
+    if (ret)
     {
       log_info("Board update successful.");
     }
     else
     {
       log_info("Board update failed.");
+      retCode = 1;
     }
   }
   else
   {
-    retCode = -1;
+    retCode = 1;
     log_info("Board update failed.");
   }
 
