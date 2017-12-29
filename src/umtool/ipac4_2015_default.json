@@ -1,7 +1,6 @@
 {
   "version" : 2,
   "product" : "ipac4",
-  "game controller" : false,
   "1/2 shift key" : "1start",
   "3/4 shift key" : "3start",
   "macros": {

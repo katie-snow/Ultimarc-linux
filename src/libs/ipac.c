@@ -60,24 +60,6 @@ bool validateIPACData(json_object* jobj, int size, ulboard* board)
   char* key = NULL;
   char* tmpKey = NULL;
 
-  /* Required for 2015 boards */
-  if (board->version == ulboard_version_2015)
-  {
-    if (json_object_object_get_ex(jobj, "game controller", &tmp))
-    {
-      if (!json_object_is_type(tmp, json_type_boolean))
-      {
-        log_err ("'game controller' needs to be of type boolean");
-        valid = false;
-      }
-    }
-    else
-    {
-      log_err ("'game controller' is not defined in the configuration");
-      valid = false;
-    }
-  } 
-
   /* Required */
   if (json_object_object_get_ex(jobj, "1/2 shift key", &tmp))
   {
@@ -147,24 +129,6 @@ bool validateIPAC4Data (json_object* jobj, ulboard* board)
   int tmpCount = 0;
   char* key = NULL;
   char* tmpKey = NULL;
-
-  /* Required for 2015 boards */
-  if (board->version == ulboard_version_2015)
-  {
-    if (json_object_object_get_ex(jobj, "game controller", &tmp))
-    {
-      if (!json_object_is_type(tmp, json_type_boolean))
-      {
-        log_err ("'game controller' needs to be of type boolean");
-        valid = false;
-      }
-    }
-    else
-    {
-      log_err ("'game controller' is not defined in the configuration");
-      valid = false;
-    }
-  } 
 
   /* Required */
   if (json_object_object_get_ex(jobj, "1/2 shift key", &tmp))
@@ -404,17 +368,6 @@ bool updateBoardIPAC (json_object *jobj, ulboard *board)
     break;
 
   case ulboard_version_2015:
-
-    interface = IPACSERIES_INTERFACE;
-    if (json_object_object_get_ex(jobj, "game controller", &tmp))
-    {
-      if(!json_object_get_boolean(tmp))
-      {
-         interface = IPACSERIES_NGC_INTERFACE;
-      } 
-    }
-    debug ("Write to interface: %i", interface);
-
     barray = calloc(IPACSERIES_SIZE, sizeof(unsigned char));
 
     if (barray != NULL)
@@ -448,8 +401,9 @@ bool updateBoardIPAC (json_object *jobj, ulboard *board)
 
       if (bprod != 0)
       {
+        /* Send -1 for interface value, function will figure out which interface to write to */
         result = writeIPACSeriesUSB(barray, IPACSERIES_SIZE, IPAC_VENDOR_2015,
-                                    bprod, interface, 1, true);
+                                    bprod, -1, 1, true);
       }
 
       free(barray);
@@ -672,3 +626,4 @@ void update2015JPACBoard (json_object *jobj, unsigned char* barray)
   json_object_object_get_ex(jobj, "macros", &macros);
   populateMacrosPosition(JPAC_BOARD, macros, &barray[3]);
 }
+
