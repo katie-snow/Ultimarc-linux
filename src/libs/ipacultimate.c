@@ -56,20 +56,6 @@ bool validateIPacUltimateData(json_object* jobj)
   pUltimate.boardIDUpdate = false;
   pUltimate.pins = false;
 
-  if (json_object_object_get_ex(jobj, "game controller", &tmp))
-  {
-      if (!json_object_is_type(tmp, json_type_boolean))
-      {
-          log_err ("'game controller' needs to be of type boolean");
-          valid = false;
-      }
-  }
-  else
-  {
-      log_err ("'game controller' is not defined in the configuration");
-      valid = false;
-  }
-
   if (checkBoardID(jobj, "board id"))
   {
 	/* Figure out what items we have in this file */
@@ -681,7 +667,10 @@ void populateIPacUltimateMacro(json_object* jobj, unsigned char* barray)
 bool updateBoardIPacUltimate(json_object* jobj)
 {
   libusb_context *ctx = NULL;
+  libusb_device *device = NULL;
+
   struct libusb_device_handle *handle = NULL;
+  struct libusb_device_descriptor descriptor;
 
   int ipac_idx = 4;
   int pos = 0;
@@ -719,21 +708,40 @@ bool updateBoardIPacUltimate(json_object* jobj)
 	product += (board - 1);
   }
 
-  if (json_object_object_get_ex(jobj, "game controller", &tmp))
-  {
-    if (!json_object_get_boolean(tmp))
-    {
-       interface = IPACSERIES_NGC_INTERFACE;
-    }
-  }
-  debug ("Write Interface: %i", interface);
-
-  handle = openUSB(ctx, IPACULTIMATE_VENDOR, product, interface, 1);
+  handle = openUSB(ctx, IPACULTIMATE_VENDOR, product, -1, 1);
 
   if (!handle)
   {
 	result = false;
 	goto error;
+  }
+
+  debug ("Figuring out which interface to use for reading and writing...");
+  device = libusb_get_device(handle);
+
+  if (!device)
+  {
+    result = false;
+    goto error;
+  }
+
+  libusb_get_device_descriptor (device, &descriptor);
+  if ((descriptor.bcdDevice & 0x40) != 0)
+  {
+    log_info ("No Game Controller board");
+    interface = IPACULTIMATE_NGC_INTERFACE;
+  }
+  else
+  {
+    log_info ("Game Controller board");
+    interface = IPACULTIMATE_INTERFACE;
+  } 
+
+  debug ("Claiming interface...");
+  if (!claimInterface(handle, interface, true))
+  {
+    result = false;
+    goto error;
   }
 
   /* Intensity settings */

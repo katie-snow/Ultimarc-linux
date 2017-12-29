@@ -2,7 +2,6 @@
   "version": 1,
   "product": "ultimate",
   "board id" : 1,
-  "game controller" : false,
   "intensity" : [
   {"led": 0, "intensity" : 10 },
   {"led": 4, "intensity" : 10 }

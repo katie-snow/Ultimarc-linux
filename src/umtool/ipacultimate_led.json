@@ -2,7 +2,6 @@
   "version": 1,
   "product": "ultimate",
   "board id" : 1,
-  "game controller" : true,
   "LED states random" : true,
   "intensity" : [
   {"led": 93, "intensity" : 1 },
