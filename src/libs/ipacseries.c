@@ -1095,7 +1095,11 @@ void populateMacrosPosition (enum ipac_boards_t bid, json_object* macros, unsign
 bool writeIPACSeriesUSB (unsigned char* barray, int size, uint16_t vendor, uint16_t product, int interface, int autoconnect, bool transfer)
 {
   libusb_context *ctx = NULL;
+  libusb_device  *device = NULL;
+
+  struct libusb_device_descriptor descriptor;
   struct libusb_device_handle *handle = NULL;
+
   unsigned char mesg[IPACSERIES_MESG_LENGTH] = {0x03,0,0,0,0};
 
   bool result = true;
@@ -1112,6 +1116,34 @@ bool writeIPACSeriesUSB (unsigned char* barray, int size, uint16_t vendor, uint1
       result = false;
       goto error;
     }
+ 
+    debug ("Determine which interface to use...");
+    device = libusb_get_device(handle);
+
+    if (!device)
+    {
+      result = false;
+      goto error;
+    }
+
+    libusb_get_device_descriptor (device, &descriptor);
+    if ((descriptor.bcdDevice & 0x40) != 0)
+    {
+      debug ("No Game Controller interface");
+      interface = IPACSERIES_NGC_INTERFACE;
+    }
+    else
+    {
+      debug ("Game Controller interface");
+      interface = IPACSERIES_INTERFACE;
+    }
+  }
+  
+  debug ("Claiming interface...");
+  if (!claimInterface(handle, interface, true))
+  {
+    result = false;
+    goto error;
   }
 
   while (pos < size)
@@ -1148,3 +1180,4 @@ exit:
 error:
   return result;
 }
+
