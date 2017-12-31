@@ -28,9 +28,69 @@ bool isUSBButtonConfig(json_object *jobj, ulboard* board)
 {
   bool result = false;
 
+  json_object* tmp = NULL;
+
   if (board->type == ulboard_type_usbbutton)
   {
-    result = validateUSBButtonData(jobj, board);
+    if (json_object_object_get_ex(jobj, "color", &tmp))
+    {
+      result = validateUSBButtonColor(tmp, true);
+    }
+    else
+    {
+      result = validateUSBButtonData(jobj, board);
+    }
+  }
+
+  return result;
+}
+
+bool validateUSBButtonColor(json_object* jobj, bool curResult)
+{
+  bool result = curResult;
+
+  json_object* color = NULL;
+
+  if (json_object_object_get_ex(jobj, "red", &color))
+  {
+    if(!json_object_is_type(color, json_type_int))
+    {
+      log_err("'red' needs to be of type integer");
+      result = false;
+    }
+  }
+  else
+  {
+    log_err("'red' is not defined in the configuration");
+    result = false;
+  }
+
+  if (json_object_object_get_ex(jobj, "green", &color))
+  {
+    if(!json_object_is_type(color, json_type_int))
+    {
+      log_err("'green' needs to be of type integer");
+      result = false;
+    }
+  }
+  else
+  {
+    log_err("'green' is not defined in the configuration");
+    result = false;
+  }
+
+  if (json_object_object_get_ex(jobj, "blue", &color))
+  {
+    if(!json_object_is_type(color, json_type_int))
+    {
+      log_err("'blue' needs to be of type integer");
+      result = false;
+    }
+  }
+  else
+  {
+    log_err("'blue' is not defined in the configuration");
+    result = false;
   }
 
   return result;
@@ -68,47 +128,7 @@ bool validateUSBButtonData(json_object* jobj, ulboard* board)
     }
     else
     {
-      if (json_object_object_get_ex(tmp, "red", &color))
-      {
-        if(!json_object_is_type(color, json_type_int))
-        {
-          log_err("'red' needs to be of type integer");
-          result = false;
-        }
-      }
-      else
-      {
-        log_err("'red' is not defined in the configuration");
-        result = false;
-      }
-
-      if (json_object_object_get_ex(tmp, "green", &color))
-      {
-        if(!json_object_is_type(color, json_type_int))
-        {
-          log_err("'green' needs to be of type integer");
-          result = false;
-        }
-      }
-      else
-      {
-        log_err("'green' is not defined in the configuration");
-        result = false;
-      }
-
-      if (json_object_object_get_ex(tmp, "blue", &color))
-      {
-        if(!json_object_is_type(color, json_type_int))
-        {
-          log_err("'blue' needs to be of type integer");
-          result = false;
-        }
-      }
-      else
-      {
-        log_err("'blue' is not defined in the configuration");
-        result = false;
-      }
+      result = validateUSBButtonColor(tmp, result);
     }
   }
   else
@@ -126,47 +146,7 @@ bool validateUSBButtonData(json_object* jobj, ulboard* board)
     }
     else
     {
-      if (json_object_object_get_ex(tmp, "red", &color))
-      {
-        if(!json_object_is_type(color, json_type_int))
-        {
-          log_err("'red' needs to be of type integer");
-          result = false;
-        }
-      }
-      else
-      {
-        log_err("'red' is not defined in the configuration");
-        result = false;
-      }
-
-      if (json_object_object_get_ex(tmp, "green", &color))
-      {
-        if(!json_object_is_type(color, json_type_int))
-        {
-          log_err("'green' needs to be of type integer");
-          result = false;
-        }
-      }
-      else
-      {
-        log_err("'green' is not defined in the configuration");
-        result = false;
-      }
-
-      if (json_object_object_get_ex(tmp, "blue", &color))
-      {
-        if(!json_object_is_type(color, json_type_int))
-        {
-          log_err("'blue' needs to be of type integer");
-          result = false;
-        }
-      }
-      else
-      {
-        log_err("'blue' is not defined in the configuration");
-        result = false;
-      }
+      result = validateUSBButtonColor(tmp, result);
     }
   }
   else
@@ -312,7 +292,54 @@ int usbKeyLookupTable[8][6] = {
 
 };
 
-bool updateUSBButton (json_object* bcfg, ulboard* board)
+bool updateUSBButton(json_object* bcfg, ulboard* board)
+{
+  bool result = false;
+
+  json_object* tmp = NULL;
+
+  if (board->type == ulboard_type_usbbutton)
+  {
+    if (json_object_object_get_ex(bcfg, "color", &tmp))
+    {
+      result = updateUSBButtonColor(tmp, board);
+    }
+    else
+    {
+      result = updateUSBButtonData(bcfg, board);
+    }
+  }
+
+  return result;
+}
+
+bool updateUSBButtonColor(json_object* bcfg, ulboard* board)
+{
+  bool result = false;
+
+  json_object* color = NULL;
+
+  unsigned char barray[USBBTN_MESG_LENGTH];
+  memset (&barray, 0, sizeof(barray));
+
+  barray[0] = 0x01;
+
+  /* Color */
+  json_object_object_get_ex(bcfg, "red", &color);
+  barray[1] = convertDecimalToHex(json_object_get_int(color));
+
+  json_object_object_get_ex(bcfg, "green", &color);
+  barray[2] = convertDecimalToHex(json_object_get_int(color));
+
+  json_object_object_get_ex(bcfg, "blue", &color);
+  barray[3] = convertDecimalToHex(json_object_get_int(color));
+
+  result = writeUSBButton(barray, 1, true, USBBTN_MESG_LENGTH);
+
+  return result;
+}
+
+bool updateUSBButtonData(json_object* bcfg, ulboard* board)
 {
   bool result = false;
 
@@ -398,7 +425,7 @@ bool updateUSBButton (json_object* bcfg, ulboard* board)
   json_object_object_get_ex(val, "row 4", &keys);
   populateUSBKeys(keys, 7, barray);
 
-  result = writeUSBButton(barray, 1, true);
+  result = writeUSBButton(barray, 1, true, USBBTN_SIZE);
 
   return result;
 }
@@ -415,7 +442,7 @@ void populateUSBKeys(json_object* keys, int row, unsigned char* barray)
   }
 }
 
-bool writeUSBButton(unsigned char* barray, int autoconnect, bool transfer)
+bool writeUSBButton(unsigned char* barray, int autoconnect, bool transfer, unsigned int size)
 {
   libusb_context *ctx = NULL;
   struct libusb_device_handle *handle = NULL;
@@ -437,7 +464,7 @@ bool writeUSBButton(unsigned char* barray, int autoconnect, bool transfer)
     }
   }
 
-  while (pos < USBBTN_SIZE)
+  while (pos < size)
   {
     memcpy(&mesg[0], &barray[pos], 4);
 
