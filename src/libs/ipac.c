@@ -74,7 +74,7 @@ bool validateIPACData(json_object* jobj, int size, ulboard* board)
     log_err ("'1/2 shift key' is not defined in the configuration");
     valid = false;
   }
- 
+
   /* Required */
   if (json_object_object_get_ex(jobj, "pins", &pins))
   {
@@ -313,10 +313,6 @@ bool updateBoardIPAC (json_object *jobj, ulboard *board)
   int bprod = 0;
   unsigned char* barray = NULL;
  
-  json_object* tmp = NULL;
-  const char* str = NULL;
-  int interface = -1;
-
   switch (board->version)
   {
   case ulboard_version_pre2015:
