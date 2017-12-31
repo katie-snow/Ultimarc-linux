@@ -716,7 +716,7 @@ bool updateBoardIPacUltimate(json_object* jobj)
 	goto error;
   }
 
-  debug ("Figuring out which interface to use for reading and writing...");
+  debug ("Determine which interface to use...");
   device = libusb_get_device(handle);
 
   if (!device)
