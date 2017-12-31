@@ -19,6 +19,7 @@
 #include "common.h"
 #include "ipacultimate.h"
 #include "ipacseries.h"
+#include "uhid.h"
 #include "dbg.h"
 #include "ulboard.h"
 
@@ -41,7 +42,7 @@ bool validateIPacUltimateData(json_object* jobj)
   const char invalidKey = 0x00;
   char data;
 
-  bool valid = false;
+  bool valid = true;
   int idx = 0;
   int boardID = 0;
   json_object* tmp = NULL;
@@ -57,100 +58,96 @@ bool validateIPacUltimateData(json_object* jobj)
 
   if (checkBoardID(jobj, "board id"))
   {
-	valid = true;
+    /* Figure out what items we have in this file */
+    if (json_object_object_get_ex(jobj, "intensity", &leds))
+    {
+      if (json_object_get_type(leds) == json_type_array)
+      {
+        for (idx = 0; idx < json_object_array_length(leds); ++ idx)
+        {
+          led = json_object_array_get_idx(leds, idx);
+          /* required entries */
+          if (!json_object_object_get_ex(led, "led", &tmp) &&
+              !json_object_object_get_ex(led, "intensity", &tmp))
+          {
+            log_err ("Missing required entries.  Valid entries 'led' and 'intensity'");
+            valid = false;
+          }
 
-	/* Figure out what items we have in this file */
-	if (json_object_object_get_ex(jobj, "intensity", &leds))
-	{
-	  if (json_object_get_type(leds) == json_type_array)
-	  {
-		for (idx = 0; idx < json_object_array_length(leds); ++ idx)
-		{
-		  led = json_object_array_get_idx(leds, idx);
-		  /* required entries */
-		  if (!json_object_object_get_ex(led, "led", &tmp) &&
-			  !json_object_object_get_ex(led, "intensity", &tmp))
-		  {
-			log_err ("Missing required entries.  Valid entries 'led' and 'intensity'");
-			valid = false;
-		  }
+          pUltimate.ledMapIntensity = true;
+        }
+      }
+      else
+      {
+        log_err ("'intensity' is not defined as an array");
+      }
+    }
+    if (json_object_object_get_ex(jobj, "LED intensity all", &tmp))
+    {
+      /* can't have the intensity entry with 'LED intensity all' */
+      if (pUltimate.ledMapIntensity == true)
+      {
+        log_err ("'intensity' and 'LED intensity all' are not permitted same configuration file");
+        valid = false;
+      }
+      else if (json_object_get_type(tmp) == json_type_int)
+      {
+        pUltimate.allIntensities = true;
+      }
+      else
+      {
+        log_err ("'LED intensity all' is not defined as an integer");
+        valid = false;
+      }
+    }
 
-		  pUltimate.ledMapIntensity = true;
-		}
-	  }
-	  else
-	  {
-		log_err ("'intensity' is not defined as an array");
-	  }
-	}
-	if (json_object_object_get_ex(jobj, "LED intensity all", &tmp))
-	{
-	  /* can't have the intensity entry with 'LED intensity all' */
-	  if (pUltimate.ledMapIntensity == true)
-	  {
-		log_err ("'intensity' and 'LED intensity all' are not permitted same configuration file");
-		valid = false;
-	  }
-	  else if (json_object_get_type(tmp) == json_type_int)
-	  {
-		pUltimate.allIntensities = true;
-	  }
-	  else
-	  {
-		log_err ("'LED intensity all' is not defined as an integer");
-		valid = false;
-	  }
-	}
+    if (json_object_object_get_ex(jobj, "LED states random", &tmp))
+    {
+      if (json_object_get_type(tmp) == json_type_boolean)
+      {
+        pUltimate.random = json_object_get_boolean(tmp);
+      }
+      else
+      {
+        log_err ("'LED states random' is not defined as a boolean");
+        valid = false;
+      }
+    }
 
-	if (json_object_object_get_ex(jobj, "LED states random", &tmp))
-	{
-	  if (json_object_get_type(tmp) == json_type_boolean)
-	  {
-		pUltimate.random = json_object_get_boolean(tmp);
-	  }
-	  else
-	  {
-		log_err ("'LED states random' is not defined as a boolean");
-		valid = false;
-	  }
-	}
-
-	if (json_object_object_get_ex(jobj, "fade rate", &tmp))
-	{
-	  if (json_object_get_type(tmp) == json_type_int)
-	  {
-	    if (json_object_get_int(tmp) >= 0 &&
-	        json_object_get_int(tmp) <= 255)
-	    {
-	      pUltimate.fadeRate = true;
-	    }
-	    else
-	    {
-	      log_err ("'Fade rate' value is not between 0 and 255");
-	      valid = false;
-	    }
+    if (json_object_object_get_ex(jobj, "fade rate", &tmp))
+    {
+      if (json_object_get_type(tmp) == json_type_int)
+      {
+        if (json_object_get_int(tmp) >= 0 &&
+            json_object_get_int(tmp) <= 255)
+        {
+          pUltimate.fadeRate = true;
+        }
+        else
+        {
+          log_err ("'Fade rate' value is not between 0 and 255");
+          valid = false;
+        }
       }
       else
       {
         log_err ("'Fade rate' is not defined as an integer");
-        valid = false;
+         valid = false;
       }
-	}
+    }
 
-	if (json_object_object_get_ex(jobj, "pins", &tmp))
+    if (json_object_object_get_ex(jobj, "pins", &tmp))
     {
-      valid = true;
-
-	  if (json_object_get_type(tmp) == json_type_array)
-	  {
-	    if (json_object_array_length(tmp) == 48)
-	    {
-	      for (idx = 0; idx < json_object_array_length(tmp); ++ idx)
+      if (json_object_get_type(tmp) == json_type_array)
+      {
+        if (json_object_array_length(tmp) == 48)
+        {
+          for (idx = 0; idx < json_object_array_length(tmp); ++ idx)
           {
             pins = json_object_array_get_idx(tmp, idx);
 
-	        json_object_object_foreach(pins, key, pin)
-	        {
+            json_object_object_foreach(pins, key, pin)
+            {
               if (json_object_get_type(pin) == json_type_array)
               {
                 if (json_object_get_type(json_object_array_get_idx(pin, 0)) != json_type_string ||
@@ -158,7 +155,7 @@ bool validateIPacUltimateData(json_object* jobj)
                     json_object_get_type(json_object_array_get_idx(pin, 2)) != json_type_boolean)
                 {
                   log_err ("The pin at index %i is not defined as a string, string, boolean", idx);
-                  valid = false;
+                   valid = false;
                 }
               }
               else
@@ -166,25 +163,25 @@ bool validateIPacUltimateData(json_object* jobj)
                 log_err ("'pin' object is not defined as an array");
                 valid = false;
               }
-	        }
-	      }
-	    }
-	    else
-	    {
-		  log_err ("'pins' array is not the correct size. Size is %i, should be 48", json_object_array_length(tmp));
-		  valid = false;
-	    }
-	  }
-	  else
-	  {
-	    log_err ("'pins' is not defined as an array");
-	    valid = false;
-	  }
+            }
+          }
+        }
+        else
+        {
+          log_err ("'pins' array is not the correct size. Size is %i, should be 48", json_object_array_length(tmp));
+          valid = false;
+        }
+      }
+      else
+      {
+        log_err ("'pins' is not defined as an array");
+        valid = false;
+      }
 
-	  /* Macro validation */
-	  valid = validateIPacUltimarcMacros(jobj, valid);
+      /* Macro validation */
+      valid = validateIPacUltimarcMacros(jobj, valid);
 
-	  if (json_object_object_get_ex(jobj, "x threshold", &tmp))
+      if (json_object_object_get_ex(jobj, "x threshold", &tmp))
       {
         if (json_object_get_type(tmp) == json_type_int)
         {
@@ -207,7 +204,7 @@ bool validateIPacUltimateData(json_object* jobj)
         valid = false;
       }
 
-	  if (json_object_object_get_ex(jobj, "y threshold", &tmp))
+      if (json_object_object_get_ex(jobj, "y threshold", &tmp))
       {
         if (json_object_get_type(tmp) == json_type_int)
         {
@@ -230,29 +227,29 @@ bool validateIPacUltimateData(json_object* jobj)
         valid = false;
       }
 
-	  pUltimate.pins = true;
+      pUltimate.pins = true;
     }
   }
   else if (checkBoardID(jobj, "current board id"))
   {
-	if (checkBoardID(jobj, "new board id"))
-	{
-	  pUltimate.boardIDUpdate = true;
-	  valid = true;
-	}
-	else
-	{
-	  valid = false;
+    if (checkBoardID(jobj, "new board id"))
+    {
+      pUltimate.boardIDUpdate = true;
+    }
+    else
+    {
+      valid = false;
 
-	  if (!json_object_object_get_ex(jobj, "new board id", &tmp))
-	  {
-		log_err ("'new board id' is not defined in the configuration file");
-	  }
-	}
+      if (!json_object_object_get_ex(jobj, "new board id", &tmp))
+      {
+        log_err ("'new board id' is not defined in the configuration file");
+      }
+    }
   }
   else
   {
-	log_err ("IPAC Ultimate configuration file is not configured correctly");
+    valid = false;
+    log_err ("IPAC Ultimate configuration file is not configured correctly");
   }
 
   return valid;
@@ -668,7 +665,10 @@ void populateIPacUltimateMacro(json_object* jobj, unsigned char* barray)
 bool updateBoardIPacUltimate(json_object* jobj)
 {
   libusb_context *ctx = NULL;
+  libusb_device *device = NULL;
+
   struct libusb_device_handle *handle = NULL;
+  struct libusb_device_descriptor descriptor;
 
   int ipac_idx = 4;
   int pos = 0;
@@ -677,6 +677,7 @@ bool updateBoardIPacUltimate(json_object* jobj)
   int idx = 0;
   int intensity = 0;
   int board = 0;
+  int interface = IPACULTIMATE_INTERFACE;
   uint16_t product = IPACULTIMATE_PRODUCT;
 
   unsigned char data[IPACULTIMATE_DATA_SIZE];
@@ -694,99 +695,127 @@ bool updateBoardIPacUltimate(json_object* jobj)
 
   if (pUltimate.boardIDUpdate == true)
   {
-	json_object_object_get_ex(jobj, "current board id", &tmp);
-	board = json_object_get_int(tmp);
-	product += (board - 1);
+    json_object_object_get_ex(jobj, "current board id", &tmp);
+    board = json_object_get_int(tmp);
+    product += (board - 1);
   }
   else
   {
-	json_object_object_get_ex(jobj, "board id", &tmp);
-	board = json_object_get_int(tmp);
-	product += (board - 1);
+    json_object_object_get_ex(jobj, "board id", &tmp);
+    board = json_object_get_int(tmp);
+    product += (board - 1);
   }
 
-  handle = openUSB(ctx, IPACULTIMATE_VENDOR, product, IPACULTIMATE_INTERFACE, 1);
+  handle = openUSB(ctx, IPACULTIMATE_VENDOR, product, -1, 1);
 
   if (!handle)
   {
-	result = false;
-	goto error;
+    result = false;
+    goto error;
+  }
+
+  debug ("Determine which interface to use...");
+  device = libusb_get_device(handle);
+
+  if (!device)
+  {
+    result = false;
+    goto error;
+  }
+
+  libusb_get_device_descriptor (device, &descriptor);
+  if ((descriptor.bcdDevice & 0x40) != 0)
+  {
+    log_info ("No Game Controller board");
+    interface = IPACULTIMATE_NGC_INTERFACE;
+  }
+  else
+  {
+    log_info ("Game Controller board");
+    interface = IPACULTIMATE_INTERFACE;
+  } 
+
+  debug ("Claiming interface...");
+  if (!claimInterface(handle, interface, true))
+  {
+    result = false;
+    goto error;
   }
 
   /* Intensity settings */
   if (pUltimate.ledMapIntensity == true)
   {
-	json_object_object_get_ex(jobj, "intensity", &leds);
-	for (idx = 0; idx < json_object_array_length(leds); ++ idx)
-	{
-	  led = json_object_array_get_idx(leds, idx);
-	  json_object_object_get_ex(led, "led", &tmp);
-	  map[1] = convertDecimalToHex(json_object_get_int(tmp));
+    json_object_object_get_ex(jobj, "intensity", &leds);
+    for (idx = 0; idx < json_object_array_length(leds); ++ idx)
+    {
+      led = json_object_array_get_idx(leds, idx);
+      json_object_object_get_ex(led, "led", &tmp);
+      map[1] = convertDecimalToHex(json_object_get_int(tmp));
 
-	  json_object_object_get_ex(led, "intensity", &tmp);
-	  map[2] = convertDecimalToHex (json_object_get_int(tmp));
+      json_object_object_get_ex(led, "intensity", &tmp);
+      map[2] = convertDecimalToHex (json_object_get_int(tmp));
 
-	  /* ship this data off to the USB device */
-	  libusb_control_transfer(handle,
-							  UM_REQUEST_TYPE,
-							  UM_REQUEST,
-							  IPACULTIMATE_VALUE,
-							  IPACULTIMATE_INTERFACE,
-							  map,
-							  IPACSERIES_MESG_LENGTH,
-							  UM_TIMEOUT);
-	}
+      /* ship this data off to the USB device */
+      libusb_control_transfer(handle,
+                              UM_REQUEST_TYPE,
+                              UM_REQUEST,
+                              IPACULTIMATE_VALUE,
+                              interface,
+                              map,
+                              IPACSERIES_MESG_LENGTH,
+                              UM_TIMEOUT);
+    }
   }
   else if (pUltimate.allIntensities == true)
   {
-	map[1] = 0x80; // 128 decimal
-	json_object_object_get_ex(jobj, "LED intensity all", &tmp);
-	map[2] = convertDecimalToHex (json_object_get_int(tmp));
+    map[1] = 0x80; // 128 decimal
+    json_object_object_get_ex(jobj, "LED intensity all", &tmp);
+    map[2] = convertDecimalToHex (json_object_get_int(tmp));
 
-	/* ship this data off to the USB device */
-	libusb_control_transfer(handle,
-							UM_REQUEST_TYPE,
-							UM_REQUEST,
-							IPACULTIMATE_VALUE,
-							IPACULTIMATE_INTERFACE,
-							map,
-							IPACSERIES_MESG_LENGTH,
-							UM_TIMEOUT);
+    /* ship this data off to the USB device */
+    libusb_control_transfer(handle,
+                            UM_REQUEST_TYPE,
+                            UM_REQUEST,
+                            IPACULTIMATE_VALUE,
+                            interface,
+                            map,
+                            IPACSERIES_MESG_LENGTH,
+                            UM_TIMEOUT);
   }
 
   /* Random states */
   if (pUltimate.random == true)
   {
-	map[1] = 0x89; // 137 decimal
-	map[2] = 0;
+    map[1] = 0x89; // 137 decimal
+    map[2] = 0;
 
-	/* ship this data off to the USB device */
-	libusb_control_transfer(handle,
-							UM_REQUEST_TYPE,
-							UM_REQUEST,
-							IPACULTIMATE_VALUE,
-							IPACULTIMATE_INTERFACE,
-							map,
-							IPACSERIES_MESG_LENGTH,
-							UM_TIMEOUT);
+    /* ship this data off to the USB device */
+    libusb_control_transfer(handle,
+                            UM_REQUEST_TYPE,
+                            UM_REQUEST,
+                            IPACULTIMATE_VALUE,
+                            interface,
+                            map,
+                            IPACSERIES_MESG_LENGTH,
+                            UM_TIMEOUT);
   }
 
   /* Fade rate */
   if (pUltimate.fadeRate == true)
   {
-	map[1] = 0xc0; // 192 decimal
-	json_object_object_get_ex(jobj, "fade rate", &tmp);
-	map[2] = convertDecimalToHex (json_object_get_int(tmp));
+    map[1] = 0xc0; // 192 decimal
+    json_object_object_get_ex(jobj, "fade rate", &tmp);
+    map[2] = convertDecimalToHex (json_object_get_int(tmp));
 
-	/* ship this data off to the USB device */
-	libusb_control_transfer(handle,
-							UM_REQUEST_TYPE,
-							UM_REQUEST,
-							IPACULTIMATE_VALUE,
-							IPACULTIMATE_INTERFACE,
-							map,
-							IPACSERIES_MESG_LENGTH,
-							UM_TIMEOUT);
+    /* ship this data off to the USB device */
+    libusb_control_transfer(handle,
+                            UM_REQUEST_TYPE,
+                            UM_REQUEST,
+                            IPACULTIMATE_VALUE,
+                            interface,
+                            map,
+                            IPACSERIES_MESG_LENGTH,
+                            UM_TIMEOUT);
   }
 
   if (pUltimate.pins == true)
@@ -830,7 +859,7 @@ bool updateBoardIPacUltimate(json_object* jobj)
                                      UM_REQUEST_TYPE,
                                      UM_REQUEST,
                                      IPACULTIMATE_VALUE,
-                                     IPACULTIMATE_INTERFACE,
+                                     interface,
                                      map,
                                      IPACSERIES_MESG_LENGTH,
                                      UM_TIMEOUT);
@@ -842,24 +871,24 @@ bool updateBoardIPacUltimate(json_object* jobj)
   {
     /* THIS IS NOT WORKING CORRECTLY */
     memcpy (&map[1], &header, sizeof(header));
-	json_object_object_get_ex(jobj, "new board id", &tmp);
-	map[1] = convertDecimalToHex((json_object_get_int(tmp) + 80));
+    json_object_object_get_ex(jobj, "new board id", &tmp);
+    map[1] = convertDecimalToHex((json_object_get_int(tmp) + 80));
 
-	/* ship this data off to the USB device */
-	ret = libusb_control_transfer(handle,
-							UM_REQUEST_TYPE,
-							UM_REQUEST,
-							IPACULTIMATE_VALUE,
-							IPACULTIMATE_INTERFACE,
-							map,
-							IPACSERIES_MESG_LENGTH,
-							UM_TIMEOUT);
+    /* ship this data off to the USB device */
+    ret = libusb_control_transfer(handle,
+                            UM_REQUEST_TYPE,
+                            UM_REQUEST,
+                            IPACULTIMATE_VALUE,
+                            interface,
+                            map,
+                            IPACSERIES_MESG_LENGTH,
+                            UM_TIMEOUT);
   }
 
 exit:
-	closeUSB(ctx, handle, IPACULTIMATE_INTERFACE);
-	return result;
+    closeUSB(ctx, handle, interface);
+    return result;
 
 error:
-	return result;
+    return result;
 }

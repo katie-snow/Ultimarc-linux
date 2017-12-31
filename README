@@ -7,6 +7,9 @@ If you need support for older Ultimarc boards, please look at the following util
 
 Required Libraries
 To build this tool the following libraries need to be install on your system.  
+autoreconf,
+automake,
+libudev-dev,
 json-c (0.11),
 libusb-dev (1.0.18)
 libtool
@@ -18,8 +21,8 @@ Building Utility:
 To build this project, at the base directory run the following commands
 ./configure
 make
-The executable will be in src/umtool directory and named umtool.out.
-./umtool.out ipac2.json
+The executable will be in src/umtool directory and named umtool.
+./umtool ipac2.json
 
 Configuration Files:
 There are example configuration files for each of the boards in the src/umtool directory.  The following is information about each configuration file.

@@ -26,14 +26,20 @@ typedef struct json_object json_object;
  * Will attempt to open the USB product and claim the interface specified.
  * If successful ctx variable will be populated and the return handle will be populated,
  * otherwise they will be NULL;
+ * interface = -1 the calling function will need to claim the interface this function will not
  * autoconnect = 1 the kernel driver will be attached after we are done with the device
- * Only needed when changing the ID of the ultistik board
  */
 struct libusb_device_handle* openUSB(libusb_context *ctx,
                                       uint16_t vendor,
                                       uint16_t product,
                                       int interface,
                                       int autoconnect);
+
+/**
+ * Attempt to claim the interface
+ * autoconnect = 1 the kernel driver will be attached after we are done with the device
+ */
+bool claimInterface(struct libusb_device_handle *handle, int interface, bool autoconnect);
 
 /**
  * Releases the interface, closes the context pointer and the handle pointer

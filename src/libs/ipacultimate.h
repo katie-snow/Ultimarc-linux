@@ -23,6 +23,7 @@ extern "C" {
 #define IPACULTIMATE_REPORT         0x03
 #define IPACULTIMATE_VALUE          0x0203
 #define IPACULTIMATE_INTERFACE      3
+#define IPACULTIMATE_NGC_INTERFACE  2
 #define IPACULTIMATE_DATA_SIZE      260
 
 typedef struct json_object json_object;

@@ -158,7 +158,7 @@ bool validateIPAC4Data (json_object* jobj, ulboard* board)
     log_err ("'3/4 shift key' is not defined in the configuration");
     valid = false;
   }
-
+ 
   /* Required */
   if (json_object_object_get_ex(jobj, "pins", &pins))
   {
@@ -312,7 +312,7 @@ bool updateBoardIPAC (json_object *jobj, ulboard *board)
   bool result = false;
   int bprod = 0;
   unsigned char* barray = NULL;
-
+ 
   switch (board->version)
   {
   case ulboard_version_pre2015:
@@ -397,8 +397,9 @@ bool updateBoardIPAC (json_object *jobj, ulboard *board)
 
       if (bprod != 0)
       {
+        /* Send -1 for interface value, function will figure out which interface to write to */
         result = writeIPACSeriesUSB(barray, IPACSERIES_SIZE, IPAC_VENDOR_2015,
-                                    bprod, IPACSERIES_INTERFACE, 1, true);
+                                    bprod, -1, 1, true);
       }
 
       free(barray);
@@ -621,3 +622,4 @@ void update2015JPACBoard (json_object *jobj, unsigned char* barray)
   json_object_object_get_ex(jobj, "macros", &macros);
   populateMacrosPosition(JPAC_BOARD, macros, &barray[3]);
 }
+

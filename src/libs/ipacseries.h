@@ -17,11 +17,12 @@
 extern "C" {
 #endif
 
-#define IPACSERIES_VERSION     2
-#define IPACSERIES_VALUE       0x0203
-#define IPACSERIES_MESG_LENGTH 5
-#define IPACSERIES_INTERFACE   3
-#define IPACSERIES_SIZE        260
+#define IPACSERIES_VERSION       2
+#define IPACSERIES_VALUE         0x0203
+#define IPACSERIES_MESG_LENGTH   5
+#define IPACSERIES_NGC_INTERFACE 2
+#define IPACSERIES_INTERFACE     3
+#define IPACSERIES_SIZE          260
 
 typedef struct json_object json_object;
 
