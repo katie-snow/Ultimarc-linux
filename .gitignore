@@ -1,3 +1,7 @@
+# Jetbrains directories
+.idea
+cmake-build-debug
+
 # Object files
 *.o
 *.ko
