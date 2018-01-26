@@ -5,50 +5,29 @@ This utility will configure the following Ultimarc boards; I-Pac 2, I-Pac 4, Min
 
 If you need support for older Ultimarc boards, please look at the following utility developed by Travis, Ipacutil or use the Windows WinIpac v1 from Ultimarc.
 
-Required Libraries
+Required Libraries:
 To build this tool the following libraries need to be install on your system.  
-autoreconf,
-automake,
-libudev-dev,
-json-c (0.11),
-libusb-dev (1.0.18)
-libtool
+  autoreconf,
+  automake,
+  libudev-dev,
+  json-c (0.11),
+  libusb-dev (1.0.18)
+  libtool
+
 
 UDEV Rule:
 This utility requires folder permission changes to the usb device directories before it can do the configuration changes to the boards.  The udev rule in the base directory named 21-ultimarc.rules needs to be placed in /etc/udev/rules.d directory.  Placing the file in that directory usually requires root permissions.
 
 Building Utility:
 To build this project, at the base directory run the following commands
-./configure
-make
+  ./configure
+  make
 The executable will be in src/umtool directory and named umtool.
-./umtool ipac2.json
-
-
-RPM Building:
-Install the following rpm packages.
-  autoconf automake libtool gcc libusb-devel json-c-devel rpmbuild
-
-Prepare the build directories.
-  mkdir -p ~/workspace/build/rpm/{BUILD,BUILDROOT,RPMS,SOURCES,SPECS,SRPMS}
-
-Compress the Ultimarc-linux directory.
-  tar -cJf ~/workspace/build/rpm/SOURCES/Ultimarc-linux.tar-xz Ultimarc-linux
-
-Copy the spec file to the SPEC directory
-  cp Ultimarc-linux/ultimarc-linux.spec ~/workspace/build/rpm/SPECS/
-
-Change directory SPEC directory
-  cd ~/workspace/build/rpm/SPECS/
-
-Build RPM
-  rpmbuild -ba ultimarc-linux.spec
-
-If everything was successful, there should be an RPM file located in ~/workspace/build/rpm/RPMS/x86_64/.
+  ./umtool ipac2.json
 
 
 Configuration Files:
-There are example configuration files for each of the boards in the src/umtool directory.  The following is information about each configuration file.
+There are example configuration files for each of the boards in the src/umtool or /usr/share/ultimarc/examples directory. The following is information about each configuration file.
 
 PAC boards:
 version: This should be set to 1(pre 2015 board) or 2(2015 and newer).  This is used for determining which version of the board to configure
@@ -58,6 +37,7 @@ product: This is either 'ipac2', 'ipac4', 'minipac', 'jpac',  depending on what 
 pins: List of all the pins(keys) that are on the board.  Please modify the example configuration files.
 macros: List of individual macros.  Each macro is an ordered list.  The pre2015 boards only support 4 macros with 4 entries each.  The 2015 boards support 30 macros with a limit of 85 entries for all macros.
  "m1" : ["", "", "", ""]
+
 
 UltiStik 360:
 version: This should be set to 1(pre 2015 board) or 2(2015 and newer).  This is used for determining which version of the board to configure
@@ -86,6 +66,7 @@ The following entries are available when changing the board ID
 current controller id: integer number 1-4 of what the controllers ID is currently
 new controller id: integer number 1-4 of what you want the controller id to become
 
+
 PacLED64:
 version: This should be set to 1 always.  This is used for version control of the configuration file in the future
 product: The pacLED64 product number in string format “1401”
@@ -100,11 +81,13 @@ LED states random:  true or false.  If true then all the LED states (on/off) are
 LED fade all: 0-3 are the valid integer options for this entry.  NOTE: This entry and the fade array entry are not allowed in the same configuration file.  The utility will not process the configuration file since it will consider it invalid.
 LED intensity all: 0-255 are the valid integer values for this entry.  NOTE: This entry and the intensity array entry are not allowed in the same configuration file.  The utility will not process the configuration file since it will consider it invalid.
 
+
 PACDrive:
 version: This should be set to 1 always.  This is used for version control of the configuration file in the future
 product: The PACDrive product number in string format “1500”
 board id: This number is 1-4.  This states which board this configuration is for
 led: an array that is variable size.  It states which leds will be turned on.  Valid values are 1 - 16
+
 
 IPAC Ultimate:
 version: This should be set to 1 always.  This is used for version control of the configuration file in the future
@@ -119,6 +102,7 @@ intensity: an array that is variable size each entry must have the following
   intensity: 0-255 are the valid integer values for this entry
 LED states random:  true or false.  If true then all the LED states (on/off) are set randomly by the board  
 LED intensity all: 0-255 are the valid integer values for this entry.  NOTE: This entry and the intensity array entry are not allowed in the same configuration file.  The utility will not process the configuration file since it will consider it invalid.
+
 
 ServoStik:
 version: This should be set to 1 always.  This is used for version control of the configuration file in the future
