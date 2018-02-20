@@ -2,11 +2,14 @@
 %global debug_package %{nil}
 
 %define name ultimarc
-%define version 1.1.0
+%define major 1
+%define minor 1
+%define release 14
+%define version %{major}.%{minor}
 
 Name: %{name}
 Version: %{version}
-Release: 12
+Release: %{release}
 Summary: Ultimarc-linux library and command line utility
 
 License: Copyright (C) 2014 - Robert Abram, Katie Snow
@@ -29,24 +32,17 @@ libtoolize
 aclocal
 ./autogen.sh
 
+./configure --prefix=/usr --libdir=%{_libdir}
+
 %build
 make clean
 make
 
 %install
-# static library
-install -d %{buildroot}/%{_libdir}/ultimarc
-install -p -m 644 ./src/libs/libultimarc.la %{buildroot}/%{_libdir}/ultimarc/
+rm -Rf %{buildroot}
+%make_install
 
-# header file
-install -d %{buildroot}/%{_includedir}/ultimarc
-install -p -m 644 ./src/libs/ultimarc.h %{buildroot}/%{_includedir}/ultimarc/
-
-# executable
-install -d %{buildroot}/%{_bindir}
-install -p -m 755 ./src/umtool/umtool %{buildroot}/%{_bindir}/
-
-# udev rule
+# udev rule - force /usr/lib/udev path because udev rules always lives there
 install -d %{buildroot}/usr/lib/udev/rules.d
 install -p 21-ultimarc.rules %{buildroot}/usr/lib/udev/rules.d/
 
@@ -60,6 +56,7 @@ rm -rf $RPM_BUILD_ROOT
 
 %files
 %{_bindir}/umtool
+%{_libdir}/libultimarc.*
 /usr/lib/udev/rules.d/21-ultimarc.rules
 %{_datarootdir}/ultimarc
 
@@ -69,11 +66,11 @@ udevadm control --reload
 
 %package devel
 Requires: ultimarc
-Summary: Ultimarc development header file and static library file
+Summary: Ultimarc development headers and library files
 
 %description devel
 Ultimarc development header file and static library file
 
 %files devel
-%{_libdir}/ultimarc
+%{_libdir}/pkgconfig/ultimarc-%{major}.%{minor}.pc
 %{_includedir}/ultimarc
