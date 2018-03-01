@@ -1,0 +1,22 @@
+
+RPM Building:
+
+Install the following rpm packages.
+  autoconf automake libtool gcc libusb-devel json-c-devel rpmbuild
+
+Prepare the build directories.
+  mkdir -p ~/workspace/build/rpm/{BUILD,BUILDROOT,RPMS,SOURCES,SPECS,SRPMS}
+
+Compress the Ultimarc-linux directory.
+  tar -cJf ~/workspace/build/rpm/SOURCES/Ultimarc-linux.tar.xz Ultimarc-linux
+
+Copy the spec file to the SPEC directory
+  cp Ultimarc-linux/ultimarc.spec ~/workspace/build/rpm/SPECS/
+
+Change directory SPEC directory
+  cd ~/workspace/build/rpm/SPECS/
+
+Build RPM
+  rpmbuild -ba ultimarc.spec
+
+If everything was successful, there should be two RPM files located in ~/workspace/build/rpm/RPMS/x86_64/.
