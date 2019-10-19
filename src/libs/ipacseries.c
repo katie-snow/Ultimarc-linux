@@ -1127,7 +1127,7 @@ bool writeIPACSeriesUSB (unsigned char* barray, int size, uint16_t vendor, uint1
     }
 
     libusb_get_device_descriptor (device, &descriptor);
-    if ((descriptor.bcdDevice & 0x40) != 0)
+    if (descriptor.bcdDevice == 0x31 || (descriptor.bcdDevice >= 0x40 && descriptor.bcdDevice < 0x50))
     {
       debug ("No Game Controller interface");
       interface = IPACSERIES_NGC_INTERFACE;
