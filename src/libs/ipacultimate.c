@@ -681,7 +681,7 @@ bool updateBoardIPacUltimate(json_object* jobj)
   uint16_t product = IPACULTIMATE_PRODUCT;
 
   unsigned char data[IPACULTIMATE_DATA_SIZE];
-  char header[4] = {0x50, 0xdd, 0x18, 0x00};
+  char header[4] = {0x50, 0xdd, 0x0f, 0x00};
   unsigned char map[IPACSERIES_MESG_LENGTH] = {0x03,0,0,0,0};
 
   bool result = true;
