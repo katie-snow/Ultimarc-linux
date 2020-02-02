@@ -416,184 +416,39 @@ bool populateIPACUltimateData(json_object* jobj, unsigned char* data)
     {
       data[0] = keyval; data[50] = shiftval; data[100] = swapval;
     }
-    if (!strcasecmp(key, "1up"))
+    if (!strcasecmp(key, "1sw4"))
     {
-      data[4] = keyval; data[54] = shiftval; data[104] = swapval;
-    }
-    if (!strcasecmp(key, "1sw1"))
-    {
-      data[7] = keyval; data[57] = shiftval; data[107] = swapval;
-    }
-    if (!strcasecmp(key, "1sw3"))
-    {
-      data[3] = keyval; data[53] = shiftval; data[103] = swapval;
+      data[1] = keyval; data[51] = shiftval; data[101] = swapval;
     }
     if (!strcasecmp(key, "1left"))
     {
       data[2] = keyval; data[52] = shiftval; data[102] = swapval;
     }
-    if (!strcasecmp(key, "1down"))
+    if (!strcasecmp(key, "1sw3"))
     {
-      data[6] = keyval; data[56] = shiftval; data[106] = swapval;
+      data[3] = keyval; data[53] = shiftval; data[103] = swapval;
+    }
+    if (!strcasecmp(key, "1up"))
+    {
+      data[4] = keyval; data[54] = shiftval; data[104] = swapval;
     }
     if (!strcasecmp(key, "1sw2"))
     {
       data[5] = keyval; data[55] = shiftval; data[105] = swapval;
     }
-    if (!strcasecmp(key, "1sw4"))
+    if (!strcasecmp(key, "1down"))
     {
-      data[1] = keyval; data[51] = shiftval; data[101] = swapval;
+      data[6] = keyval; data[56] = shiftval; data[106] = swapval;
     }
-    if (!strcasecmp(key, "1sw5"))
+    if (!strcasecmp(key, "1sw1"))
     {
-      data[23] = keyval; data[73] = shiftval; data[121] = swapval;
+      data[7] = keyval; data[57] = shiftval; data[107] = swapval;
     }
-    if (!strcasecmp(key, "1sw7"))
+    if (!strcasecmp(key, "4lf"))
     {
-      data[19] = keyval; data[69] = shiftval; data[117] = swapval;
-    }
-    if (!strcasecmp(key, "1start"))
-    {
-      data[39] = keyval; data[89] = shiftval; data[137] = swapval;
-    }
-    if (!strcasecmp(key, "1coin"))
-    {
-      data[35] = keyval; data[85] = shiftval; data[133] = swapval;
-    }
-    if (!strcasecmp(key, "1sw6"))
-    {
-      data[21] = keyval; data[71] = shiftval; data[119] = swapval;
-    }
-    if (!strcasecmp(key, "1sw8"))
-    {
-      data[17] = keyval; data[67] = shiftval; data[115] = swapval;
-    }
-    if (!strcasecmp(key, "2start"))
-    {
-      data[37] = keyval; data[87] = shiftval; data[135] = swapval;
-    }
-    if (!strcasecmp(key, "2coin"))
-    {
-      data[33] = keyval; data[88] = shiftval; data[131] = swapval;
-    }
-    if (!strcasecmp(key, "2right"))
-    {
-      data[31] = keyval; data[81] = shiftval; data[128] = swapval;
-    }
-    if (!strcasecmp(key, "2up"))
-    {
-      data[27] = keyval; data[77] = shiftval; data[125] = swapval;
-    }
-    if (!strcasecmp(key, "2sw1"))
-    {
-      data[47] = keyval; data[97] = shiftval; data[145] = swapval;
-    }
-    if (!strcasecmp(key, "2sw3"))
-    {
-      data[43] = keyval; data[93] = shiftval; data[141] = swapval;
-    }
-    if (!strcasecmp(key, "2left"))
-    {
-      data[29] = keyval; data[79] = shiftval; data[127] = swapval;
-    }
-    if (!strcasecmp(key, "2down"))
-    {
-      data[25] = keyval; data[75] = shiftval; data[123] = swapval;
-    }
-    if (!strcasecmp(key, "2sw2"))
-    {
-      data[45] = keyval; data[95] = shiftval; data[143] = swapval;
-    }
-    if (!strcasecmp(key, "2sw4"))
-    {
-      data[41] = keyval; data[91] = shiftval; data[138] = swapval;
-    }
-    if (!strcasecmp(key, "2sw5"))
-    {
-      data[11] = keyval; data[61] = shiftval; data[111] = swapval;
-    }
-    if (!strcasecmp(key, "2sw7"))
-    {
-      data[48] = keyval; data[98] = shiftval; data[146] = swapval;
-    }
-    if (!strcasecmp(key, "1a"))
-    {
-      data[12] = keyval; data[62] = shiftval; data[112] = swapval;
-    }
-    if (!strcasecmp(key, "2a"))
-    {
-      data[40] = keyval; data[90] = shiftval; data[138] = swapval;
-    }
-    if (!strcasecmp(key, "2sw6"))
-    {
-      data[49] = keyval; data[99] = shiftval; data[147] = swapval;
-    }
-    if (!strcasecmp(key, "2sw8"))
-    {
-      data[10] = keyval; data[60] = shiftval; data[110] = swapval;
-    }
-    if (!strcasecmp(key, "1b"))
-    {
-      data[14] = keyval; data[64] = shiftval; data[112] = swapval;
-    }
-    if (!strcasecmp(key, "2b"))
-    {
-      data[42] = keyval; data[92] = shiftval; data[140] = swapval;
-    }
-    if (!strcasecmp(key, "3rt"))
-    {
-      if (!quadAssignmentIPACUltimate(data, keyval, 22, 20, 118, 120))
+      if (!quadAssignmentIPACUltimate(data, keyval, 9, 8, 109, 108))
       {
-        data[22] = keyval; data[72] = shiftval; data[120] = swapval;
-      }
-    }
-    if (!strcasecmp(key, "3up"))
-    {
-      if (!quadAssignmentIPACUltimate(data, keyval, 16, 18, 114, 116))
-      {
-        data[16] = keyval; data[66] = shiftval; data[114] = swapval;
-      }
-    }
-    if (!strcasecmp(key, "3s1"))
-    {
-      if (!quadAssignmentIPACUltimate(data, keyval, 36, 38, 134, 136))
-      {
-        data[36] = keyval; data[86] = shiftval; data[134] = swapval;
-      }
-    }
-    if (!strcasecmp(key, "3s3"))
-    {
-      if (!quadAssignmentIPACUltimate(data, keyval, 32, 34, 130, 132))
-      {
-        data[32] = keyval; data[82] = shiftval; data[130] = swapval;
-      }
-    }
-    if (!strcasecmp(key, "3lf"))
-    {
-      if (!quadAssignmentIPACUltimate(data, keyval, 22, 20, 118, 120))
-      {
-        data[22] = keyval; data[72] = shiftval; data[120] = swapval;
-      }
-    }
-    if (!strcasecmp(key, "3dn"))
-    {
-      if (!quadAssignmentIPACUltimate(data, keyval, 16, 18, 114, 116))
-      {
-        data[18] = keyval; data[68] = shiftval; data[116] = swapval;
-      }
-    }
-    if (!strcasecmp(key, "3s2"))
-    {
-      if (!quadAssignmentIPACUltimate(data, keyval, 36, 38, 134, 136))
-      {
-        data[38] = keyval; data[88] = shiftval; data[136] = swapval;
-      }
-    }
-    if (!strcasecmp(key, "3s4"))
-    {
-      if (!quadAssignmentIPACUltimate(data, keyval, 32, 34, 130, 132))
-      {
-        data[34] = keyval; data[84] = shiftval; data[132] = swapval;
+        data[8] = keyval; data[58] = shiftval; data[108] = swapval;
       }
     }
     if (!strcasecmp(key, "4rt"))
@@ -603,36 +458,181 @@ bool populateIPACUltimateData(json_object* jobj, unsigned char* data)
         data[9] = keyval; data[59] = shiftval; data[109] = swapval;
       }
     }
-    if (!strcasecmp(key, "4up"))
+    if (!strcasecmp(key, "2sw8"))
     {
-      data[30] = keyval; data[80] = shiftval; data[128] = swapval;
+      data[10] = keyval; data[60] = shiftval; data[110] = swapval;
     }
-    if (!strcasecmp(key, "4s1"))
+    if (!strcasecmp(key, "2sw5"))
     {
-      data[26] = keyval; data[76] = shiftval; data[124] = swapval;
+      data[11] = keyval; data[61] = shiftval; data[111] = swapval;
     }
-    if (!strcasecmp(key, "4s3"))
+    if (!strcasecmp(key, "1a"))
     {
-      data[46] = keyval; data[96] = shiftval; data[144] = swapval;
+      data[12] = keyval; data[62] = shiftval; data[112] = swapval;
     }
-    if (!strcasecmp(key, "4lf"))
+    if (!strcasecmp(key, "1b"))
     {
-      if (!quadAssignmentIPACUltimate(data, keyval, 9, 8, 109, 108))
+      data[14] = keyval; data[64] = shiftval; data[112] = swapval;
+    }
+    if (!strcasecmp(key, "3up"))
+    {
+      if (!quadAssignmentIPACUltimate(data, keyval, 16, 18, 114, 116))
       {
-        data[8] = keyval; data[58] = shiftval; data[108] = swapval;
+        data[16] = keyval; data[66] = shiftval; data[114] = swapval;
       }
     }
-    if (!strcasecmp(key, "4dn"))
+    if (!strcasecmp(key, "1sw8"))
     {
-      data[28] = keyval; data[78] = shiftval; data[126] = swapval;
+      data[17] = keyval; data[67] = shiftval; data[115] = swapval;
+    }
+    if (!strcasecmp(key, "3dn"))
+    {
+      if (!quadAssignmentIPACUltimate(data, keyval, 16, 18, 114, 116))
+      {
+        data[18] = keyval; data[68] = shiftval; data[116] = swapval;
+      }
+    }
+    if (!strcasecmp(key, "1sw7"))
+    {
+      data[19] = keyval; data[69] = shiftval; data[117] = swapval;
+    }
+    if (!strcasecmp(key, "3lf"))
+    {
+      if (!quadAssignmentIPACUltimate(data, keyval, 22, 20, 118, 120))
+      {
+        data[20] = keyval; data[70] = shiftval; data[118] = swapval;
+      }
+    }
+    if (!strcasecmp(key, "1sw6"))
+    {
+      data[21] = keyval; data[71] = shiftval; data[119] = swapval;
+    }
+    if (!strcasecmp(key, "3rt"))
+    {
+      if (!quadAssignmentIPACUltimate(data, keyval, 22, 20, 118, 120))
+      {
+        data[22] = keyval; data[72] = shiftval; data[120] = swapval;
+      }
+    }
+    if (!strcasecmp(key, "1sw5"))
+    {
+      data[23] = keyval; data[73] = shiftval; data[121] = swapval;
     }
     if (!strcasecmp(key, "4s2"))
     {
       data[24] = keyval; data[74] = shiftval; data[122] = swapval;
     }
+    if (!strcasecmp(key, "2down"))
+    {
+      data[25] = keyval; data[75] = shiftval; data[123] = swapval;
+    }
+    if (!strcasecmp(key, "4s1"))
+    {
+      data[26] = keyval; data[76] = shiftval; data[124] = swapval;
+    }
+    if (!strcasecmp(key, "2up"))
+    {
+      data[27] = keyval; data[77] = shiftval; data[125] = swapval;
+    }
+    if (!strcasecmp(key, "4dn"))
+    {
+      data[28] = keyval; data[78] = shiftval; data[126] = swapval;
+    }
+    if (!strcasecmp(key, "2left"))
+    {
+      data[29] = keyval; data[79] = shiftval; data[127] = swapval;
+    }
+    if (!strcasecmp(key, "4up"))
+    {
+      data[30] = keyval; data[80] = shiftval; data[128] = swapval;
+    }
+    if (!strcasecmp(key, "2right"))
+    {
+      data[31] = keyval; data[81] = shiftval; data[128] = swapval;
+    }
+    if (!strcasecmp(key, "3s3"))
+    {
+      if (!quadAssignmentIPACUltimate(data, keyval, 32, 34, 130, 132))
+      {
+        data[32] = keyval; data[82] = shiftval; data[130] = swapval;
+      }
+    }
+    if (!strcasecmp(key, "2coin"))
+    {
+      data[33] = keyval; data[88] = shiftval; data[131] = swapval;
+    }
+    if (!strcasecmp(key, "3s4"))
+    {
+      if (!quadAssignmentIPACUltimate(data, keyval, 32, 34, 130, 132))
+      {
+        data[34] = keyval; data[84] = shiftval; data[132] = swapval;
+      }
+    }
+    if (!strcasecmp(key, "1coin"))
+    {
+      data[35] = keyval; data[85] = shiftval; data[133] = swapval;
+    }
+    if (!strcasecmp(key, "3s1"))
+    {
+      if (!quadAssignmentIPACUltimate(data, keyval, 36, 38, 134, 136))
+      {
+        data[36] = keyval; data[86] = shiftval; data[134] = swapval;
+      }
+    }
+    if (!strcasecmp(key, "2start"))
+    {
+      data[37] = keyval; data[87] = shiftval; data[135] = swapval;
+    }
+    if (!strcasecmp(key, "3s2"))
+    {
+      if (!quadAssignmentIPACUltimate(data, keyval, 36, 38, 134, 136))
+      {
+        data[38] = keyval; data[88] = shiftval; data[136] = swapval;
+      }
+    }
+    if (!strcasecmp(key, "1start"))
+    {
+      data[39] = keyval; data[89] = shiftval; data[137] = swapval;
+    }
+    if (!strcasecmp(key, "2a"))
+    {
+      data[40] = keyval; data[90] = shiftval; data[138] = swapval;
+    }
+    if (!strcasecmp(key, "2sw4"))
+    {
+      data[41] = keyval; data[91] = shiftval; data[138] = swapval;
+    }
+    if (!strcasecmp(key, "2b"))
+    {
+      data[42] = keyval; data[92] = shiftval; data[140] = swapval;
+    }
+    if (!strcasecmp(key, "2sw3"))
+    {
+      data[43] = keyval; data[93] = shiftval; data[141] = swapval;
+    }
     if (!strcasecmp(key, "4s4"))
     {
       data[44] = keyval; data[94] = shiftval; data[142] = swapval;
+    }
+    if (!strcasecmp(key, "2sw2"))
+    {
+      data[45] = keyval; data[95] = shiftval; data[143] = swapval;
+    }
+    if (!strcasecmp(key, "4s3"))
+    {
+      data[46] = keyval; data[96] = shiftval; data[144] = swapval;
+    }
+    if (!strcasecmp(key, "2sw1"))
+    {
+      data[47] = keyval; data[97] = shiftval; data[145] = swapval;
+    }
+    if (!strcasecmp(key, "2sw7"))
+    {
+      data[48] = keyval; data[98] = shiftval; data[146] = swapval;
+    }
+    if (!strcasecmp(key, "2sw6"))
+    {
+      data[49] = keyval; data[99] = shiftval; data[147] = swapval;
     }
   }
 
@@ -681,7 +681,7 @@ bool updateBoardIPacUltimate(json_object* jobj)
   uint16_t product = IPACULTIMATE_PRODUCT;
 
   unsigned char data[IPACULTIMATE_DATA_SIZE];
-  char header[4] = {0x50, 0xdd, 0x18, 0x00};
+  char header[4] = {0x50, 0xdd, 0x0f, 0x00};
   unsigned char map[IPACSERIES_MESG_LENGTH] = {0x03,0,0,0,0};
 
   bool result = true;
@@ -823,17 +823,17 @@ bool updateBoardIPacUltimate(json_object* jobj)
     /* Setup data to send to board */
      memset (&data, 0, sizeof(data));
      memcpy (&data, &header, sizeof(header));
-     data[13] = 0xff;
-     data[15] = 0xff;
-     data[63] = 0xff;
-     data[65] = 0xff;
+     data[17] = 0xff;
+     data[19] = 0xff;
+     data[67] = 0xff;
+     data[69] = 0xff;
 
      json_object_object_get_ex(jobj, "pins", &pins);
 
      for (idx = 0; idx < json_object_array_length(pins); ++ idx)
      {
        pin = json_object_array_get_idx(pins, idx);
-       populateIPACUltimateData(pin, data);
+       populateIPACUltimateData(pin, &data[4]);
        ++ipac_idx;
      }
 
