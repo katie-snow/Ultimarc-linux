@@ -472,167 +472,167 @@ bool populateIPACUltimateData(json_object* jobj, unsigned char* data)
     }
     if (!strcasecmp(key, "1b"))
     {
-      data[14] = keyval; data[64] = shiftval; data[112] = swapval;
+      data[14] = keyval; data[64] = shiftval; data[114] = swapval;
     }
     if (!strcasecmp(key, "3up"))
     {
-      if (!quadAssignmentIPACUltimate(data, keyval, 16, 18, 114, 116))
+      if (!quadAssignmentIPACUltimate(data, keyval, 16, 18, 116, 118))
       {
-        data[16] = keyval; data[66] = shiftval; data[114] = swapval;
+        data[16] = keyval; data[66] = shiftval; data[116] = swapval;
       }
     }
     if (!strcasecmp(key, "1sw8"))
     {
-      data[17] = keyval; data[67] = shiftval; data[115] = swapval;
+      data[17] = keyval; data[67] = shiftval; data[117] = swapval;
     }
     if (!strcasecmp(key, "3dn"))
     {
-      if (!quadAssignmentIPACUltimate(data, keyval, 16, 18, 114, 116))
+      if (!quadAssignmentIPACUltimate(data, keyval, 16, 18, 116, 118))
       {
-        data[18] = keyval; data[68] = shiftval; data[116] = swapval;
+        data[18] = keyval; data[68] = shiftval; data[118] = swapval;
       }
     }
     if (!strcasecmp(key, "1sw7"))
     {
-      data[19] = keyval; data[69] = shiftval; data[117] = swapval;
+      data[19] = keyval; data[69] = shiftval; data[119] = swapval;
     }
     if (!strcasecmp(key, "3lf"))
     {
-      if (!quadAssignmentIPACUltimate(data, keyval, 22, 20, 118, 120))
+      if (!quadAssignmentIPACUltimate(data, keyval, 22, 20, 120, 122))
       {
-        data[20] = keyval; data[70] = shiftval; data[118] = swapval;
+        data[20] = keyval; data[70] = shiftval; data[120] = swapval;
       }
     }
     if (!strcasecmp(key, "1sw6"))
     {
-      data[21] = keyval; data[71] = shiftval; data[119] = swapval;
+      data[21] = keyval; data[71] = shiftval; data[121] = swapval;
     }
     if (!strcasecmp(key, "3rt"))
     {
-      if (!quadAssignmentIPACUltimate(data, keyval, 22, 20, 118, 120))
+      if (!quadAssignmentIPACUltimate(data, keyval, 22, 20, 120, 122))
       {
-        data[22] = keyval; data[72] = shiftval; data[120] = swapval;
+        data[22] = keyval; data[72] = shiftval; data[122] = swapval;
       }
     }
     if (!strcasecmp(key, "1sw5"))
     {
-      data[23] = keyval; data[73] = shiftval; data[121] = swapval;
+      data[23] = keyval; data[73] = shiftval; data[123] = swapval;
     }
     if (!strcasecmp(key, "4s2"))
     {
-      data[24] = keyval; data[74] = shiftval; data[122] = swapval;
+      data[24] = keyval; data[74] = shiftval; data[124] = swapval;
     }
     if (!strcasecmp(key, "2down"))
     {
-      data[25] = keyval; data[75] = shiftval; data[123] = swapval;
+      data[25] = keyval; data[75] = shiftval; data[125] = swapval;
     }
     if (!strcasecmp(key, "4s1"))
     {
-      data[26] = keyval; data[76] = shiftval; data[124] = swapval;
+      data[26] = keyval; data[76] = shiftval; data[126] = swapval;
     }
     if (!strcasecmp(key, "2up"))
     {
-      data[27] = keyval; data[77] = shiftval; data[125] = swapval;
+      data[27] = keyval; data[77] = shiftval; data[127] = swapval;
     }
     if (!strcasecmp(key, "4dn"))
     {
-      data[28] = keyval; data[78] = shiftval; data[126] = swapval;
+      data[28] = keyval; data[78] = shiftval; data[128] = swapval;
     }
     if (!strcasecmp(key, "2left"))
     {
-      data[29] = keyval; data[79] = shiftval; data[127] = swapval;
+      data[29] = keyval; data[79] = shiftval; data[129] = swapval;
     }
     if (!strcasecmp(key, "4up"))
     {
-      data[30] = keyval; data[80] = shiftval; data[128] = swapval;
+      data[30] = keyval; data[80] = shiftval; data[130] = swapval;
     }
     if (!strcasecmp(key, "2right"))
     {
-      data[31] = keyval; data[81] = shiftval; data[128] = swapval;
+      data[31] = keyval; data[81] = shiftval; data[131] = swapval;
     }
     if (!strcasecmp(key, "3s3"))
     {
-      if (!quadAssignmentIPACUltimate(data, keyval, 32, 34, 130, 132))
+      if (!quadAssignmentIPACUltimate(data, keyval, 32, 34, 132, 134))
       {
-        data[32] = keyval; data[82] = shiftval; data[130] = swapval;
+        data[32] = keyval; data[82] = shiftval; data[132] = swapval;
       }
     }
     if (!strcasecmp(key, "2coin"))
     {
-      data[33] = keyval; data[88] = shiftval; data[131] = swapval;
+      data[33] = keyval; data[83] = shiftval; data[133] = swapval;
     }
     if (!strcasecmp(key, "3s4"))
     {
-      if (!quadAssignmentIPACUltimate(data, keyval, 32, 34, 130, 132))
+      if (!quadAssignmentIPACUltimate(data, keyval, 32, 34, 132, 134))
       {
-        data[34] = keyval; data[84] = shiftval; data[132] = swapval;
+        data[34] = keyval; data[84] = shiftval; data[134] = swapval;
       }
     }
     if (!strcasecmp(key, "1coin"))
     {
-      data[35] = keyval; data[85] = shiftval; data[133] = swapval;
+      data[35] = keyval; data[85] = shiftval; data[135] = swapval;
     }
     if (!strcasecmp(key, "3s1"))
     {
-      if (!quadAssignmentIPACUltimate(data, keyval, 36, 38, 134, 136))
+      if (!quadAssignmentIPACUltimate(data, keyval, 36, 38, 136, 138))
       {
-        data[36] = keyval; data[86] = shiftval; data[134] = swapval;
+        data[36] = keyval; data[86] = shiftval; data[136] = swapval;
       }
     }
     if (!strcasecmp(key, "2start"))
     {
-      data[37] = keyval; data[87] = shiftval; data[135] = swapval;
+      data[37] = keyval; data[87] = shiftval; data[137] = swapval;
     }
     if (!strcasecmp(key, "3s2"))
     {
-      if (!quadAssignmentIPACUltimate(data, keyval, 36, 38, 134, 136))
+      if (!quadAssignmentIPACUltimate(data, keyval, 36, 38, 136, 138))
       {
-        data[38] = keyval; data[88] = shiftval; data[136] = swapval;
+        data[38] = keyval; data[88] = shiftval; data[138] = swapval;
       }
     }
     if (!strcasecmp(key, "1start"))
     {
-      data[39] = keyval; data[89] = shiftval; data[137] = swapval;
+      data[39] = keyval; data[89] = shiftval; data[139] = swapval;
     }
     if (!strcasecmp(key, "2a"))
     {
-      data[40] = keyval; data[90] = shiftval; data[138] = swapval;
+      data[40] = keyval; data[90] = shiftval; data[140] = swapval;
     }
     if (!strcasecmp(key, "2sw4"))
     {
-      data[41] = keyval; data[91] = shiftval; data[138] = swapval;
+      data[41] = keyval; data[91] = shiftval; data[141] = swapval;
     }
     if (!strcasecmp(key, "2b"))
     {
-      data[42] = keyval; data[92] = shiftval; data[140] = swapval;
+      data[42] = keyval; data[92] = shiftval; data[142] = swapval;
     }
     if (!strcasecmp(key, "2sw3"))
     {
-      data[43] = keyval; data[93] = shiftval; data[141] = swapval;
+      data[43] = keyval; data[93] = shiftval; data[143] = swapval;
     }
     if (!strcasecmp(key, "4s4"))
     {
-      data[44] = keyval; data[94] = shiftval; data[142] = swapval;
+      data[44] = keyval; data[94] = shiftval; data[144] = swapval;
     }
     if (!strcasecmp(key, "2sw2"))
     {
-      data[45] = keyval; data[95] = shiftval; data[143] = swapval;
+      data[45] = keyval; data[95] = shiftval; data[145] = swapval;
     }
     if (!strcasecmp(key, "4s3"))
     {
-      data[46] = keyval; data[96] = shiftval; data[144] = swapval;
+      data[46] = keyval; data[96] = shiftval; data[146] = swapval;
     }
     if (!strcasecmp(key, "2sw1"))
     {
-      data[47] = keyval; data[97] = shiftval; data[145] = swapval;
+      data[47] = keyval; data[97] = shiftval; data[147] = swapval;
     }
     if (!strcasecmp(key, "2sw7"))
     {
-      data[48] = keyval; data[98] = shiftval; data[146] = swapval;
+      data[48] = keyval; data[98] = shiftval; data[148] = swapval;
     }
     if (!strcasecmp(key, "2sw6"))
     {
-      data[49] = keyval; data[99] = shiftval; data[147] = swapval;
+      data[49] = keyval; data[99] = shiftval; data[149] = swapval;
     }
   }
 
