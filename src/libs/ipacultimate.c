@@ -410,7 +410,7 @@ bool populateIPACUltimateData(json_object* jobj, unsigned char* data)
     /* Is a swap key */
     tmp = json_object_array_get_idx(pin, 2);
 
-    swapval = ((!strcasecmp(json_object_get_string(tmp), "true")) > 0 ? 0x41 : 0x01);
+    swapval = ((!strcasecmp(json_object_get_string(tmp), "true")) > 0 ? 0x40 : 0x01);
 
     if (!strcasecmp(key, "1right"))
     {
