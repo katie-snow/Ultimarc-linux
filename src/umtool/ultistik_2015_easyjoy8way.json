@@ -1,0 +1,25 @@
+{
+	"version" : 2,
+	"product" : "ultistik",
+	"controller id" : 1,
+	"map size" : 9,
+	"restrictor" : false,
+	"flash" : false,
+	"keep analog" : false,
+	"borders" : 
+	    [
+	        30, 58, 86, 114, 142, 170, 198, 226
+	    ],
+	"map" : 
+	    [
+	        "NW", "NW", "*",  "N",  "N", "N",  "*",  "NE", "NE",
+	        "NW", "NW", "NW", "N",  "N", "N",  "NE", "NE", "NE",
+	        "*",  "NW", "NW", "*",  "N", "*",  "NE", "NE", "*",
+	        "W",  "W",  "*",  "NW", "C", "NE", "*",  "E",  "E",
+	        "W",  "W",  "W",  "C",  "C", "C",  "E",  "E",  "E",
+	        "W",  "W",  "*",  "SW", "C", "SE", "*",  "E",  "E",
+	        "*",  "SW", "SW", "*",  "S", "*",  "SE", "SE", "*",
+	        "SW", "SW", "SW", "S",  "S", "S",  "SE", "SE", "SE",
+	        "SW", "SW", "*",  "S",  "S", "S",  "*",  "SE", "SE"
+	    ]
+}
