@@ -40,7 +40,7 @@ bool validateUHidMacros(json_object* jobj, bool curResult);
 bool validateUHidCalibration(json_object* jobj, bool curResult);
 bool validateUHidQuadratureButtonTime(json_object* jobj, bool curResult);
 
-bool updateUHid(json_object* bcfg, ulboard* board);
+bool updateBoardUHid(json_object* bcfg, ulboard* board);
 
 void populateUHidBoardArray(enum uhid_boards_t bid, json_object* jobj, unsigned char* barray);
 void populateUHidMacro(json_object* jobj, unsigned char* barray);

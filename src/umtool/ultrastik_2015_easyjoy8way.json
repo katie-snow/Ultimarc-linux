@@ -1,6 +1,6 @@
 {
 	"version" : 2,
-	"product" : "ultistik",
+	"product" : "ultrastik",
 	"controller id" : 1,
 	"map size" : 9,
 	"restrictor" : false,

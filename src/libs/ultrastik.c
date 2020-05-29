@@ -1,10 +1,10 @@
 /*
  ============================================================================
- Name        : ultistik.c
+ Name        : ultrastik.c
  Author      : Robert Abram, Katie Snow
  Version     :
  Copyright   : Copyright 2014 Robert Abram, Katie Snow
- Description : Ultimarc Ultistik configuration library
+ Description : Ultimarc UltraStik configuration library
  ============================================================================
  */
 
@@ -18,23 +18,23 @@
 
 /* Local */
 #include "common.h"
-#include "ultistik.h"
+#include "ultrastik.h"
 #include "dbg.h"
 #include "ulboard.h"
 
-bool isUltistikConfig (json_object* jobj, ulboard* board)
+bool isUltraStikConfig (json_object* jobj, ulboard* board)
 {
   bool isBoardCfg = false;
 
-  if (board->type == ulboard_type_ultistik)
+  if (board->type == ulboard_type_ultrastik)
   {
-    isBoardCfg = validateUltistikData(jobj, board);
+    isBoardCfg = validateUltraStikData(jobj, board);
   }
 
   return isBoardCfg;
 }
 
-bool validateUltistikData(json_object* jobj, ulboard* board)
+bool validateUltraStikData(json_object* jobj, ulboard* board)
 {
   int idx = 0;
   bool valid = false;
@@ -62,7 +62,7 @@ bool validateUltistikData(json_object* jobj, ulboard* board)
           for (idx = 0; idx < json_object_array_length(tmp); ++ idx)
           {
             key = json_object_array_get_idx(tmp, idx);
-            data = convertULTISTIK (key);
+            data = convertUltraStik (key);
             if (strcmp(&invalidKey, &data) == -1)
             {
               log_err ("Error at index %i in 'map' array, entry is '%s'", idx, json_object_get_string(key));
@@ -195,14 +195,14 @@ bool validateUltistikData(json_object* jobj, ulboard* board)
   }
   else
   {
-    log_err ("Ultistik configuration file is not configured correctly");
+    log_err ("UltraStik configuration file is not configured correctly");
   }
 
   return valid;
 }
 
 char
-convertULTISTIK (json_object *jobj)
+convertUltraStik (json_object *jobj)
 {
   char retval = 0xFF;
   const char* str = json_object_get_string(jobj);
@@ -236,7 +236,7 @@ convertULTISTIK (json_object *jobj)
     return retval;
 }
 
-bool updateBoardULTISTIK (json_object* jobj, ulboard* board)
+bool updateBoardUltraStik (json_object* jobj, ulboard* board)
 {
   int idx     = 0;
   int itemidx = 0;
@@ -306,7 +306,7 @@ bool updateBoardULTISTIK (json_object* jobj, ulboard* board)
     for (idx = 0; idx < json_object_array_length(innerobj); ++ idx)
     {
       item = json_object_array_get_idx(innerobj, idx);
-      data[itemidx] = convertULTISTIK(item);
+      data[itemidx] = convertUltraStik(item);
       ++itemidx;
     }
 
@@ -494,7 +494,7 @@ bool updateBoardULTISTIK (json_object* jobj, ulboard* board)
     break;
     }
 
-    log_info ("Ultistik #%i needs to be physically disconnected and reconnected before use.", controlNew);
+    log_info ("UltraStik #%i needs to be physically disconnected and reconnected before use.", controlNew);
   }
 
 /* I know these have the same statement currently, but leaving

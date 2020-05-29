@@ -713,7 +713,7 @@ int decipherUHidLookupKey (const char* key)
   return lkey;
 }
 
-bool updateUHid (json_object* bcfg, ulboard* board)
+bool updateBoardUHid (json_object* bcfg, ulboard* board)
 {
   unsigned char* barray = NULL;
 

@@ -82,7 +82,7 @@ bool validateServoStikData(json_object* jobj, ulboard* board)
   return result;
 }
 
-bool updateServoStik (json_object* bcfg, ulboard* board)
+bool updateBoardServoStik (json_object* bcfg, ulboard* board)
 {
   bool result = false;
 

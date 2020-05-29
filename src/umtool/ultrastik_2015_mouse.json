@@ -1,6 +1,6 @@
 {
 	"version" : 2,
-	"product" : "ultistik",
+	"product" : "ultrastik",
 	"controller id" : 1,
 	"map size" : 9,
 	"restrictor" : false,
@@ -12,14 +12,14 @@
 	    ],
 	"map" : 
 	    [
-	        "N", "N", "N", "N", "N", "N", "N", "N", "N",
-	        "N", "N", "N", "N", "N", "N", "N", "N", "N",
-	        "N", "N", "N", "N", "N", "N", "N", "N", "N",
+	        "C", "C", "C", "C", "C", "C", "C", "C", "-",
 	        "C", "C", "C", "C", "C", "C", "C", "C", "C",
 	        "C", "C", "C", "C", "C", "C", "C", "C", "C",
 	        "C", "C", "C", "C", "C", "C", "C", "C", "C",
-	        "S", "S", "S", "S", "S", "S", "S", "S", "S",
-	        "S", "S", "S", "S", "S", "S", "S", "S", "S",
-	        "S", "S", "S", "S", "S", "S", "S", "S", "S"
+	        "C", "C", "C", "C", "C", "C", "C", "C", "C",
+	        "C", "C", "C", "C", "C", "C", "C", "C", "C",
+	        "C", "C", "C", "C", "C", "C", "C", "C", "C",
+	        "C", "C", "C", "C", "C", "C", "C", "C", "C",
+	        "C", "C", "C", "C", "C", "C", "C", "C", "C"
 	    ]
 }

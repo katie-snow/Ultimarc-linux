@@ -39,15 +39,15 @@ macros: List of individual macros.  Each macro is an ordered list.  The pre2015 
  "m1" : ["", "", "", ""]
 
 
-UltiStik 360:
+UltraStik 360:
 version: This should be set to 1(pre 2015 board) or 2(2015 and newer).  This is used for determining which version of the board to configure
-Product: The UltiStik 360 product format “ultistik"
+Product: The UltraStik 360 product format “ultrastik"
 
 The following entries are available when configuring the joystick
 controller id: This number is 1-4.  This states which joystick this configuration is for.
 map size: Always set to 9
 restrictor: true or false.  If you have the restrictor plate installed then this should be true
-flash: true or false.  If you want to flash the RAM.  See the ultiStik 360 webpage for more information
+flash: true or false.  If you want to flash the RAM.  See the UltraStik 360 webpage for more information
 borders: array with the following numbers [30, 58, 86, 114, 142, 170, 198, 226]
 map: An array with 81 elements for each square of the joystick.  The following strings are valid entries; 
   “-”: empty
