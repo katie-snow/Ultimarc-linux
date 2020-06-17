@@ -30,7 +30,7 @@ typedef struct ulboard ulboard;
 bool isServoStikConfig(json_object *jobj, ulboard* board);
 bool validateServoStikData(json_object* jobj, ulboard* board);
 
-bool updateServoStik(json_object* bcfg, ulboard* board);
+bool updateBoardServoStik(json_object* bcfg, ulboard* board);
 
 bool writeServoStik(unsigned char* barray, int autoconnect, bool transfer);
 

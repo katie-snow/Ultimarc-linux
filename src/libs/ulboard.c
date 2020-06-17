@@ -15,7 +15,7 @@
 #define ULSIZE(a) (sizeof(a)/sizeof(a[0]))
 const char* ulBoardTypeName[] =
   { "null", "IPAC2", "IPAC4", "JPAC", "MINIPAC", "ULTIMATE",
-    "PACDRIVE", "PACLED64", "ULTISTIK", "USBBUTTON", "SERVOSTIK",
+    "PACDRIVE", "PACLED64", "ULTRASTIK", "USBBUTTON", "SERVOSTIK",
     "UHID", "UHID NANO"};
 
 const char* ulBoardVersionName[] =

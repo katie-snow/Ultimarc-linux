@@ -292,7 +292,7 @@ int usbKeyLookupTable[8][6] = {
 
 };
 
-bool updateUSBButton(json_object* bcfg, ulboard* board)
+bool updateBoardUSBButton(json_object* bcfg, ulboard* board)
 {
   bool result = false;
 
@@ -302,18 +302,18 @@ bool updateUSBButton(json_object* bcfg, ulboard* board)
   {
     if (json_object_object_get_ex(bcfg, "color", &tmp))
     {
-      result = updateUSBButtonColor(tmp, board);
+      result = updateBoardUSBButtonColor(tmp, board);
     }
     else
     {
-      result = updateUSBButtonData(bcfg, board);
+      result = updateBoardUSBButtonData(bcfg, board);
     }
   }
 
   return result;
 }
 
-bool updateUSBButtonColor(json_object* bcfg, ulboard* board)
+bool updateBoardUSBButtonColor(json_object* bcfg, ulboard* board)
 {
   bool result = false;
 
@@ -339,7 +339,7 @@ bool updateUSBButtonColor(json_object* bcfg, ulboard* board)
   return result;
 }
 
-bool updateUSBButtonData(json_object* bcfg, ulboard* board)
+bool updateBoardUSBButtonData(json_object* bcfg, ulboard* board)
 {
   bool result = false;
 

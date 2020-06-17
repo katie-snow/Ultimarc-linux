@@ -1,15 +1,15 @@
 /*
  ============================================================================
- Name        : ultistik.h
+ Name        : ultrastik.h
  Author      : Robert Abram, Katie Snow
  Version     :
  Copyright   : Copyright 2014 Robert Abram, Katie Snow
- Description : Ultimarc Ultistik configuration library
+ Description : Ultimarc UltraStik configuration library
  ============================================================================
  */
 
-#ifndef ULTISTIK_H_
-#define ULTISTIK_H_
+#ifndef ULTRASTIK_H_
+#define ULTRASTIK_H_
 
 #include <stdbool.h>
 
@@ -38,20 +38,20 @@ extern "C" {
 typedef struct json_object json_object;
 typedef struct ulboard ulboard;
 
-bool isUltistikConfig (json_object* jobj, ulboard* board);
+bool isUltraStikConfig (json_object* jobj, ulboard* board);
 
-bool validateUltistikData(json_object* jobj, ulboard* board);
+bool validateUltraStikData(json_object* jobj, ulboard* board);
 
 /*
- * Convert the JSON keys data into Ultistik data
+ * Convert the JSON keys data into UltraStik data
  * This is done one array element at a time
  */
-char convertULTISTIK (json_object* jobj);
+char convertUltraStik (json_object* jobj);
 
-bool updateBoardULTISTIK (json_object* jobj, ulboard* board);
+bool updateBoardUltraStik (json_object* jobj, ulboard* board);
 
 #ifdef __cplusplus
 }
 #endif
 
-#endif /* ULTISTIK_H_ */
+#endif /* ULTRASTIK_H_ */

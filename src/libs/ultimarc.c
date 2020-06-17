@@ -22,7 +22,7 @@
 #include "ulboard.h"
 #include "ipac.h"
 #include "pacLED.h"
-#include "ultistik.h"
+#include "ultrastik.h"
 #include "pacdrive.h"
 #include "ipacultimate.h"
 #include "usbbutton.h"
@@ -45,7 +45,7 @@ ulValidateConfig (json_object* bcfg, ulboard* ulcfg)
           || isIPACUltimateConfig (bcfg, ulcfg)
           || isPACDriveConfig (bcfg, ulcfg)
           || isPACLED64Config (bcfg, ulcfg)
-          || isUltistikConfig (bcfg, ulcfg)
+          || isUltraStikConfig (bcfg, ulcfg)
           || isUSBButtonConfig(bcfg, ulcfg)
           || isServoStikConfig(bcfg, ulcfg)
           || isUHidConfig (bcfg, ulcfg))
@@ -111,25 +111,26 @@ ulWriteToBoard (json_object* bcfg, ulboard* board)
       log_info("Updating PAC LED 64 board...");
       ret = updateBoardPacLED (bcfg);
     }
-    else if (board->type == ulboard_type_ultistik)
+    else if (board->type == ulboard_type_ultrastik)
     {
-      log_info("Updating Ultistik board...");
-      ret = updateBoardULTISTIK (bcfg, board);
+      log_info("Updating UltraStik board...");
+      ret = updateBoardUltraStik (bcfg, board);
     }
     else if (board->type == ulboard_type_usbbutton)
     {
-      log_info("Updating USBButton...");
-      ret = updateUSBButton (bcfg, board);
+      log_info("Updating USBButton board...");
+      ret = updateBoardUSBButton (bcfg, board);
     }
     else if (board->type == ulboard_type_servostik)
     {
-      log_info("Updating ServoStik...");
-      ret = updateServoStik (bcfg, board);
+      log_info("Updating ServoStik board...");
+      ret = updateBoardServoStik (bcfg, board);
     }
     else if (board->type == ulboard_type_uhid ||
              board->type == ulboard_type_uhidNano)
     {
-      ret = updateUHid (bcfg, board);
+      log_info("Updating UHid board...");
+      ret = updateBoardUHid (bcfg, board);
     }
 
     if (ret)

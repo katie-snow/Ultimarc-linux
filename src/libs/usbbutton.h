@@ -32,9 +32,9 @@ bool validateUSBButtonColor(json_object* jobj, bool curResult);
 bool validateUSBButtonData(json_object* jobj, ulboard* board);
 bool validateUSBButtonRowData(json_object* entries, const char* rowStr, bool curResult);
 
-bool updateUSBButton(json_object* bcfg, ulboard* board);
-bool updateUSBButtonColor(json_object* bcfg, ulboard* board);
-bool updateUSBButtonData(json_object* bcfg, ulboard* board);
+bool updateBoardUSBButton(json_object* bcfg, ulboard* board);
+bool updateBoardUSBButtonColor(json_object* bcfg, ulboard* board);
+bool updateBoardUSBButtonData(json_object* bcfg, ulboard* board);
 void populateUSBKeys(json_object* keys, int row, unsigned char* barray);
 
 bool writeUSBButton(unsigned char* barray, int autoconnect, bool transfer, unsigned int size);

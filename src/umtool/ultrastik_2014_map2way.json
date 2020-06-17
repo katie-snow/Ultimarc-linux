@@ -1,11 +1,10 @@
 {
-	"version" : 2,
-	"product" : "ultistik",
+	"version" : 1,
+	"product" : "ultrastik",
 	"controller id" : 1,
 	"map size" : 9,
 	"restrictor" : false,
 	"flash" : false,
-	"keep analog" : false,
 	"borders" : 
 	    [
 	        30, 58, 86, 114, 142, 170, 198, 226
