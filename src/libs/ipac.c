@@ -60,6 +60,11 @@ bool validateIPACData(json_object* jobj, int size, ulboard* board)
   char* key = NULL;
   char* tmpKey = NULL;
 
+  if (board->version == ulboard_version_2015)
+  {
+    valid = validateConfigData(jobj, valid);
+  }
+
   /* Required */
   if (json_object_object_get_ex(jobj, "1/2 shift key", &tmp))
   {
@@ -129,6 +134,11 @@ bool validateIPAC4Data (json_object* jobj, ulboard* board)
   int tmpCount = 0;
   char* key = NULL;
   char* tmpKey = NULL;
+
+  if (board->version == ulboard_version_2015)
+  {
+    valid = validateConfigData(jobj, valid);
+  }
 
   /* Required */
   if (json_object_object_get_ex(jobj, "1/2 shift key", &tmp))
@@ -498,7 +508,9 @@ void update2015IPAC2Board (json_object *jobj, unsigned char* barray)
 
   /* Header data */
   char header[4] = {0x50, 0xdd, 0x0f, 0x00};
+
   memcpy (barray, &header, sizeof(header));
+  populateConfigurationValue(barray);
 
   /* Setup data to send to board */
   memset (&barray[4], 0xff, 51);
@@ -528,7 +540,9 @@ void update2015MinIPACBoard (json_object *jobj, unsigned char* barray)
 
   /* Header data */
   char header[4] = {0x50, 0xdd, 0x0f, 0x00};
+
   memcpy (barray, &header, sizeof(header));
+  populateConfigurationValue(barray);
 
   /* Setup data to send to board */
   memset (&barray[4], 0xff, 32);
@@ -556,7 +570,9 @@ void update2015IPAC4Board (json_object *jobj, unsigned char* barray)
 
   /* Header data */
   char header[4] = {0x50, 0xdd, 0x0f, 0x00};
+
   memcpy (barray, &header, sizeof(header));
+  populateConfigurationValue(barray);
 
   /* Setup data to send to board */
   memset (&barray[132], 1, 24);
@@ -586,7 +602,9 @@ void update2015JPACBoard (json_object *jobj, unsigned char* barray)
 
   /* Header data */
   char header[4] = {0x50, 0xdd, 0x0f, 0x00};
+
   memcpy (barray, &header, sizeof(header));
+  populateConfigurationValue(barray);
 
   /* Setup data to send to board */
   memset (&barray[4], 0xff, 50);

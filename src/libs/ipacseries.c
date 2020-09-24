@@ -21,6 +21,8 @@
 #include "dbg.h"
 #include "ipacseries.h"
 
+union ipacconfig piconfig;
+
 unsigned char
 convertIPACKey (enum ipac_boards_t bid, json_object* jobj)
 {
@@ -1015,6 +1017,108 @@ int decipherLookupMacroKey (const char* key)
   return lkey;
 }
 
+/* Configuration options
+ * Enable high-current output on UIO board, NOT IMPLEMENTED
+ * Enable accelerometer on UIO board, NOT IMPLEMENTED
+ * Enable PacLink interface on I-Pac 2, NOT IMPLEMENTED
+ * Debounce value
+ */
+bool validateConfigData (json_object* jobj, bool oldValid)
+{
+  bool valid = oldValid;
+
+  json_object* config = NULL;
+
+  piconfig.config = 0;
+
+  if (json_object_object_get_ex(jobj, "config", &config))
+  {
+    if (json_object_is_type(config, json_type_object))
+    {
+      debug ("Configuration Settings:");
+
+      /* Debounce */
+      valid = validateConfigDebounce (config, valid);
+    }
+    else
+    {
+      log_err("config entry needs to be of type object");
+      valid = false;
+    }
+  }
+
+  return valid;
+}
+
+void populateConfigurationValue (unsigned char* barray)
+{
+  /* populate this here so that ipacconfig variable can be accessed. */
+  barray[3] = piconfig.config;
+}
+
+bool validateConfigDebounce (json_object* config, bool oldValid)
+{
+  bool valid = oldValid;
+  int  lvalue = -1;
+
+  json_object* debounce = NULL;
+  const char* debounceStr;
+
+  if (json_object_object_get_ex(config, "debounce", &debounce))
+  {
+    /*
+     * Debounce values; None, Standard, Long, Short
+     */
+    if (json_object_is_type(debounce, json_type_string))
+    {
+      debounceStr = json_object_get_string(debounce);
+      if (!strcasecmp(debounceStr, "none"))
+      {
+        piconfig.parts.debounce_enabled = 0;
+        piconfig.parts.debounce_pos_4 = 1;
+        piconfig.parts.debounce_pos_5 = 1;
+        lvalue = 0;
+      }
+      if (!strcasecmp(debounceStr, "standard"))
+      {
+        piconfig.parts.debounce_enabled = 1;
+        piconfig.parts.debounce_pos_4 = 0;
+        piconfig.parts.debounce_pos_5 = 1;
+        lvalue = 0;
+      }
+      if (!strcasecmp(debounceStr, "long"))
+      {
+        piconfig.parts.debounce_enabled = 1;
+        piconfig.parts.debounce_pos_4 = 1;
+        piconfig.parts.debounce_pos_5 = 0;
+        lvalue = 0;
+      }
+      if (!strcasecmp(debounceStr, "short"))
+      {
+        piconfig.parts.debounce_enabled = 1;
+        piconfig.parts.debounce_pos_4 = 0;
+        piconfig.parts.debounce_pos_5 = 0;
+        lvalue = 0;
+      }
+
+      debug ("    Debounce: %02x", piconfig.config);
+
+      if (lvalue == -1)
+      {
+        log_info("Unable to decipher debounce '%s'.", debounceStr);
+        valid = false;
+      }
+    }
+    else
+    {
+      log_err("Debounce config needs to be of type string");
+      valid = false;
+    }
+  }
+
+  return valid;
+}
+
 void populateShiftPosition (enum ipac_boards_t bid, json_object* key, unsigned char* barray)
 {
   int idx = -1;
@@ -1127,7 +1231,7 @@ bool writeIPACSeriesUSB (unsigned char* barray, int size, uint16_t vendor, uint1
     }
 
     libusb_get_device_descriptor (device, &descriptor);
-    if ((descriptor.idVendor == 0xd208 && descriptor.idProduct == 0x310) || (descriptor.bcdDevice >= 0x40 && descriptor.bcdDevice < 0x50))
+    if ((descriptor.idVendor == 0xd208 && descriptor.idProduct == 0x310) || (descriptor.bcdDevice >= 0x40 && descriptor.bcdDevice < 0x56))
     {
       debug ("No Game Controller interface");
       interface = IPACSERIES_NGC_INTERFACE;

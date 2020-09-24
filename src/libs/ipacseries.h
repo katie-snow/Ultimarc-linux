@@ -26,6 +26,25 @@ extern "C" {
 
 typedef struct json_object json_object;
 
+/* Order is important */
+union ipacconfig
+{
+  struct
+  {
+    int empty_2 : 1;
+    int empty_1 : 1;
+    int debounce_pos_5 : 1;
+    int debounce_pos_4 : 1;
+    int debounce_enabled : 1;
+    int paclink : 1;
+    int accelerometer_uio : 1;
+    int high_current_uio : 1;
+  } parts;
+  int config;
+};
+
+
+
 enum ipac_boards_t {NO_IPAC_BOARD = -1, PRE_IPAC2_BOARD = 0, PRE_IPAC4_BOARD,
                     IPAC2_BOARD, MINIPAC_BOARD, IPAC4_BOARD,
                     JPAC_BOARD, PRE_MINIPAC_BOARD};
@@ -59,6 +78,23 @@ int decipherLookupKey (const char* key);
  * Lookup the Macro Table key
  */
 int decipherLookupMacroKey (const char* key);
+
+/**
+ * Validate Configuration json entry
+ *
+ */
+bool validateConfigData (json_object* jobj, bool oldValid);
+
+/**
+ * Insert the configuration value into the array
+ *
+ */
+void populateConfigurationValue (unsigned char* barray);
+
+/**
+ * Debounce entry validation
+ */
+bool validateConfigDebounce (json_object* config, bool oldValid);
 
 void populateShiftPosition (enum ipac_boards_t bid, json_object* key, unsigned char* barray);
 

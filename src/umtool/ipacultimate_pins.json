@@ -2,6 +2,9 @@
   "version": 1,
   "product": "ultimate",
   "board id" : 1,
+  "config" : {
+    "debounce" : "standard"
+  },
   "intensity" : [
   {"led": 0, "intensity" : 10 },
   {"led": 4, "intensity" : 10 }

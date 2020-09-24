@@ -59,6 +59,9 @@ bool validateIPacUltimateData(json_object* jobj)
   if (checkBoardID(jobj, "board id"))
   {
     /* Figure out what items we have in this file */
+
+    valid = validateConfigData(jobj, valid);
+
     if (json_object_object_get_ex(jobj, "intensity", &leds))
     {
       if (json_object_get_type(leds) == json_type_array)
@@ -823,6 +826,9 @@ bool updateBoardIPacUltimate(json_object* jobj)
     /* Setup data to send to board */
      memset (&data, 0, sizeof(data));
      memcpy (&data, &header, sizeof(header));
+
+     populateConfigurationValue(data);
+
      data[17] = 0xff;
      data[19] = 0xff;
      data[67] = 0xff;

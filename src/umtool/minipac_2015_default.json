@@ -1,6 +1,9 @@
 {
   "version" : 2,
   "product" : "minipac",
+  "config" : {
+    "debounce" : "standard"
+  },
   "1/2 shift key" : "1start",
   "macros": {
   },
