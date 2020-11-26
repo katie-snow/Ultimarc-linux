@@ -11,8 +11,10 @@ python aimtrak_setup.py -s
 Reboot the machine.  Then with aimtrak guns plugged in;
 python aimtrak_setup.py -m <path to mame.ini>
 
-The first run will ask for super permissions to add udev and X11 files
+The first run will ask for super permissions to add udev and X11 files.
 The second run will ask for the Ultimarc id's if you have more than one AimTrak gun.  It will then place those in the mame.ini file.
+
+If your mame.ini file does not exist run mamedev without a rom listed, then 'Configure Options', last 'Save Configuration'.  Exit then run the script.  Using the command line option -createconfig adds in the lightgun indexes, this script does not account for those existing in the file.
 
 1.2 Udev rule -  65-aimtrak.rules
 
@@ -44,19 +46,16 @@ EndSection
 When editing the mame.ini file please remember if you save in UI it will most likely overwrite the configuration and remove the needed items for the aimtrak to work.  Also the UI can create machine(game) specific ini files located next the mame.ini file that will override the mame.ini file values when the game loads.  If the aimtrak stops working check for the machine specific ini file.  If want to keep the file then the following will need to be changed and added to that file too.
 
 Change these entries to the following:
+mouse                1
 lightgun             1  
 offscreen_reload     1
 lightgun_device      lightgun
-lightgunprovider     x11
 
 Add the following at the end of the file.
 #
 # SDL Lightgun indexes
 #
 lightgun_index1    “Ultimarc Ultimarc”
-lightgun_index2    auto
-lightgun_index3    auto
-lightgun_index4    auto
 
 1.4.2 Multiple AimTrak
 
@@ -77,6 +76,8 @@ The ouput will be something similar to this
     ↳ Power Button                            	id=6	[slave  keyboard (3)]
     ↳ Video Bus                               	id=7	[slave  keyboard (3)]
 ∼ Ultimarc Ultimarc                       	id=15	[floating slave]
+∼ Ultimarc Ultimarc                       	id=16	[floating slave]
+∼ Ultimarc Ultimarc                       	id=17	[floating slave]
 
 Change the following in the mame.ini or machine specific ini file.
 
@@ -85,7 +86,7 @@ Change the following in the mame.ini or machine specific ini file.
 #
 lightgun_index1    14
 lightgun_index2    15
-lightgun_index3    auto
-lightgun_index4    auto
+lightgun_index3    16
+lightgun_index4    17
 
 The numbers will be the id numbers from the output for the different Ultimarc Ultimarc devices
