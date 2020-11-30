@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 # Script to install udev rule and the X11 configuration file.
 # Update the specified mame.ini file for the aimtrak guns from Ultimarc
 # Author: Katie Snow
@@ -62,17 +64,20 @@ def mameConfig(file):
     with open(file, 'r') as mame:
       mameData = mame.readlines()
 
-    res = [i for i, s in enumerate(mameData) if 'lightgun ' in s]
-    if (res): mameData[res[0]] = 'lightgun                  1\n'
+    for (i, entry) in enumerate(mameData):
+      # Space after is important to get the correct lightgun entry
+      if 'lightgun ' in entry:
+        mameData[i] = 'lightgun                  1\n'
 
-    res = [i for i, s in enumerate(mameData) if 'offscreen_reload' in s]
-    if (res): mameData[res[0]] = 'offscreen_reload          1\n'
+      # Space's after are important to get the correct mouse entry
+      if 'mouse                   ' in entry:
+        mameData[i] = 'mouse                     1\n'
 
-    res = [i for i, s in enumerate(mameData) if 'lightgun_device' in s]
-    if (res): mameData[res[0]] = 'lightgun_device           lightgun\n'
+      if 'offscreen_reload' in entry:
+        mameData[i] = 'offscreen_reload          1\n'
 
-    res = [i for i, s in enumerate(mameData) if 'lightgunprovider' in s]
-    if (res): mameData[res[0]] = 'lightgundevice            x11\n'
+      if 'lightgun_device' in entry:
+        mameData[i] = 'lightgun_device           lightgun\n'
 
     mameData.append('\n#\n')
     mameData.append('# SDL lightgun indexes\n')
