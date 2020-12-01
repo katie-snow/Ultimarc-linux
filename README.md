@@ -32,3 +32,6 @@ If you need extra debug statements for the IPac boards then run the following
 
 The executable will be in src/umtool directory and named umtool.
 * ./umtool ipac2.json
+
+#### Donations:
+<a href='https://paypal.me/snowywhitewater?locale.x=en_US'>Click here to lend your support through PayPal!</a>
