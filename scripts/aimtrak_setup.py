@@ -11,43 +11,58 @@ import sys
 
 from os import path
 
+UDEV_RULES = """
+# Set mode & disable libinput handling to avoid X11 picking up the wrong interfaces/devices.
+SUBSYSTEMS=="usb", ATTRS{idVendor}=="d209", ATTRS{idProduct}=="160*", MODE="0666", ENV{ID_INPUT}="", ENV{LIBINPUT_IGNORE_DEVICE}="1"
+
+# For ID_USB_INTERFACE_NUM==2, enable libinput handling.
+SUBSYSTEMS=="usb", ATTRS{idVendor}=="d209", ATTRS{idProduct}=="160*", ENV{ID_USB_INTERFACE_NUM}=="02", ENV{ID_INPUT}="1", ENV{LIBINPUT_IGNORE_DEVICE}="0", SYMLINK+="input/mouse%n"
+"""
+
+X11_RULES = """
+Section "InputClass"
+    Identifier      "AimTrak Guns"
+    MatchDevicePath "/dev/input/event*"
+    MatchUSBID      "d209:160*"
+    Driver          "libinput"
+    Option          "Floating" "yes"
+    Option          "AutoServerLayout" "no"
+EndSection
+"""
+
+DESCRIPTION = """
+Setup rules and config files for Ultimarc Aimtrak guns.
+"""
+
+EPILOG = """
+First execute the "sys" argument to install the X11 and UDev rules. Afterwards, either
+reboot the machine or run "sudo udevadm control --reload-rules && sudo udevadm trigger"
+to reload the UDev rules. last execute the mame argument.'
+"""
+
 def udevRule():
   fileStr = '/etc/udev/rules.d/65-aimtrak.rules'
 
-  if (not (path.exists(fileStr))):
+  if not path.exists(fileStr):
     sudoPriv()
     print('Writing ' + fileStr)
-    with open (fileStr, 'w') as f:
-      f.write('# Set mode & disable libinput handling to avoid X11 picking up the wrong interfaces/devices.\n')
-      f.write('SUBSYSTEMS=="usb", ATTRS{idVendor}=="d209", ATTRS{idProduct}=="160*", MODE="0666", ENV{ID_INPUT}="", ENV{LIBINPUT_IGNORE_DEVICE}="1"\n')
-
-      f.write('\n# For ID_USB_INTERFACE_NUM==2, enable libinput handling.\n')
-      f.write('SUBSYSTEMS=="usb", ATTRS{idVendor}=="d209", ATTRS{idProduct}=="160*", ENV{ID_USB_INTERFACE_NUM}=="02", ENV{ID_INPUT}="1", ENV{LIBINPUT_IGNORE_DEVICE}="0"\n')
+    open(fileStr, 'w').write(UDEV_RULES)
   else:
-    print(fileStr + ' aready exists!  Not overwriting!')
+    print(f'{fileStr} already exists!  Not overwriting!')
 
 def x11Config():
   dirStr = '/etc/X11/xorg.conf.d/'
   dirStrAlt = '/etc/X11/Xsession.d/'
   fileStr = '60-aimtrak.conf'
 
-  if (not (path.exists(dirStr))):
-    dirStr = dirStrAlt
+  configStr = os.path.join(dirStr, fileStr) if os.path.exists(dirStr) else os.path.join(dirStrAlt, fileStr)
 
-  if (not (path.exists(dirStr + fileStr))):
+  if not path.exists(configStr):
     sudoPriv()
-    print('Writing ' + dirStr + fileStr)
-    with open (dirStr + fileStr, 'w') as f:
-      f.write('Section "InputClass"\n')
-      f.write('    Identifier      "AimTrak Guns"\n')
-      f.write('    MatchDevicePath "/dev/input/event*"\n')
-      f.write('    MatchUSBID      "d209:160*"\n')
-      f.write('    Driver          "libinput"\n')
-      f.write('    Option          "Floating" "yes"\n')
-      f.write('    Option          "AutoServerLayout" "no"\n')
-      f.write('EndSection\n')
+    print(f'Writing {configStr}')
+    open(configStr, 'w').write(X11_RULES)
   else:
-    print(dirStr + fileStr + ' aready exists!  Not overwriting!')
+    print(f'{configStr} already exists!  Not overwriting!')
 
 def sudoPriv():
   # Verify sudo privleges
@@ -55,70 +70,91 @@ def sudoPriv():
     os.execvp('sudo', ['sudo', 'python3'] + sys.argv)
 
 def mameConfig(file):
-  nums = None
+
+  mame_config = {
+    'mouse': '1',
+    'lightgun': '1',
+    'offscreen_reload': '1',
+    'lightgun_device': 'lightgun'
+  }
 
   # Edit mame file
   if (path.exists(file)):
-    print ('Found file: ' + file)
+    print('Found file: ' + file)
+    mameData = open(file, 'r').readlines()
 
-    with open(file, 'r') as mame:
-      mameData = mame.readlines()
+    config = list()
+    for line in mameData:
+      line = line.strip()
+      try:
+        key, val = [i for i in line.split(' ') if i]
+        if key in mame_config:
+          config.append(f'{key.ljust(26)}{mame_config[key]}')
+        elif key.startswith('lightgun_index'):  # Strip any lightgun_index lines.
+          pass
+        else:
+          config.append(line)
+      except ValueError:
+        config.append(line)
 
-    for (i, entry) in enumerate(mameData):
-      # Space after is important to get the correct lightgun entry
-      if 'lightgun ' in entry:
-        mameData[i] = 'lightgun                  1\n'
+    # Run command xinput and capture lightgun index ids.
+    lines = subprocess.run('xinput', capture_output=True).stdout.decode('utf-8').split('\n')
+    ids = [i.split('\t')[1].split('=')[1] for i in lines if i and "Ultimarc Ultimarc" in i]
 
-      # Space's after are important to get the correct mouse entry
-      if 'mouse                   ' in entry:
-        mameData[i] = 'mouse                     1\n'
+    for pos in range(len(ids)):
+      config.append(f'lightgun_index{pos+1:<12}{ids[pos]}')
 
-      if 'offscreen_reload' in entry:
-        mameData[i] = 'offscreen_reload          1\n'
-
-      if 'lightgun_device' in entry:
-        mameData[i] = 'lightgun_device           lightgun\n'
-
-    mameData.append('\n#\n')
-    mameData.append('# SDL lightgun indexes\n')
-    mameData.append('#\n')
-
-    multiple = input('Is there more than 1 AimTrak installed (y/n)?')
-    if (multiple == 'y'):
-      # Run command xinput
-      subprocess.run('xinput')
-   
-      # Have user enter Ultimarc id's
-      nums = input('Enter Ultimarc id numbers: ').split()
-
-      # Add the id numbers to the file
-      if (len(nums) > 0): mameData.append('lightgun_index1      "' + nums[0] + '"\n')
-      if (len(nums) > 1): mameData.append('lightgun_index2      "' + nums[1] + '"\n')
-      if (len(nums) > 2): mameData.append('lightgun_index3      "' + nums[2] + '"\n')
-      if (len(nums) > 3): mameData.append('lightgun_index4      "' + nums[3] + '"\n')
-    else:
-      # Add Ultimarc Ultimarc to the first index
-      mameData.append('lightgun_index1      "Ultimarc Ultimarc"\n')
-
-    with open(file, 'w') as mame:
-      mameData = "".join(mameData)
-      mame.write (mameData)
+    open(file, 'w').writelines([f'{i}\n' for i in config])
+    print(f'Updated Mame config in: {file}.')
   else:
-    print ('Unable to find file: ' + file)
+    print(f'Error: Unable to find file: {file}')
+
+def advMameConfig():
+  file = '/opt/retropie/configs/mame-advmame/advmame.rc'
+
+  if not os.path.exists(file):
+    print(f'Error: {file} not found.\n')
+    print(f'Please enter path to the AdvMame "advmame.rc" file or enter to abort: ')
+    file = input()
+
+    if not file:
+      print('\nAborting.\n')
+      exit(0)
+
+    if not os.path.exists(file):
+      print(f'\nError: {file} not found. Aborting.\n')
+
+  lines = open(file).readlines()
+
+  config = list()
+  for line in lines:
+    line = line.strip()
+    if line.startswith('device_mouse '):
+      config.append('device_mouse raw')
+    else:
+      config.append(line)
+
+  open(file, 'w').writelines([f'{i}\n' for i in config])
+  print('Updated AdvMame config.')
 
 def main(argv):
-  parser = argparse.ArgumentParser(description='Setup rules and config files for Aimtrak guns.', epilog='First execute the sys argument, then reboot the machine, last execute the mame argument.')
+
+  parser = argparse.ArgumentParser(description=DESCRIPTION, epilog=EPILOG)
 
   group = parser.add_mutually_exclusive_group(required=True)
-  group.add_argument('-s', '--sys', help='Add udev and x11 files', action='store_true')
+  group.add_argument('-s', '--sys', help='Add udev and x11 rules', action='store_true')
   group.add_argument('-m', '--mame', help='Change mame config file, PATH full path to the mame.ini file', metavar='PATH')
+  group.add_argument('--advmame', help='Update AdvMame config', action='store_true')
   args = parser.parse_args()
 
   if (args.mame):
     mameConfig(args.mame)
+  elif (args.advmame):
+    advMameConfig()
   elif (args.sys):
     udevRule()
     x11Config()
+    print('\nrun "sudo udevadm control --reload-rules && sudo udevadm trigger" or restart machine to apply changes.\n')
 
 if __name__ == "__main__":
   main(sys.argv[1:])
