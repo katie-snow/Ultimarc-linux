@@ -99,7 +99,6 @@ bool updateBoardPacDrive (json_object *jobj)
   int map2 = 0;
   int map3 = 0;
   int total = 0;
-  uint16_t product = PACDRIVE_PRODUCT;
 
   char map[PACDRIVE_DATA_SIZE] = {0,0,0,0};
 
@@ -111,9 +110,8 @@ bool updateBoardPacDrive (json_object *jobj)
 
   json_object_object_get_ex(jobj, "board id", &tmp);
   board = json_object_get_int(tmp);
-  product += (board - 1);
 
-  handle = openUSB(ctx, PACDRIVE_VENDOR, product, PACDRIVE_INTERFACE, 0);
+  handle = openUSBWithReleaseNumber(ctx, PACDRIVE_VENDOR, PACDRIVE_PRODUCT, board, PACDRIVE_INTERFACE, 0);
 
   if (!handle)
   {

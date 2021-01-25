@@ -61,6 +61,94 @@ openUSB(libusb_context *ctx, uint16_t vendor, uint16_t product, int interface, i
   return NULL;
 }
 
+struct libusb_device_handle*
+openUSBWithReleaseNumber(libusb_context *ctx, uint16_t vendor, uint16_t product,
+                         uint16_t releaseNumber, int interface, int autoconnect)
+{
+  int ret = 0;
+
+  struct libusb_device_handle *handle = NULL;
+
+  /* Open USB communication */
+  ret = libusb_init(&ctx);
+  if (ret < 0)
+  {
+    log_err("libusb_init failed: %i.", ret);
+    goto error;
+  }
+  libusb_set_debug(ctx, 3);
+
+  /* Get the list of devices */
+
+  libusb_device **list;
+  ssize_t cnt = libusb_get_device_list(NULL, &list);
+  ssize_t i = 0;
+  int err = 0;
+  if (cnt < 0) 
+  {
+    log_err("Unable to load device list");
+    goto error;
+  }
+
+  /* Loop through all the USB devices */
+
+  for (i = 0; i < cnt; i++) 
+  {
+    libusb_device *device = list[i];
+
+    /* Get the device descriptor to get the vendor, product, and device release number */
+
+    struct libusb_device_descriptor deviceDescriptor;
+
+    int r = libusb_get_device_descriptor(device, &deviceDescriptor);
+    if (r < 0)
+    {
+      continue;
+    }
+
+    if (deviceDescriptor.idVendor == vendor && 
+        deviceDescriptor.idProduct == product &&
+	deviceDescriptor.bcdDevice == releaseNumber)
+    {
+      struct libusb_device_handle *deviceHandle = NULL;
+
+      err = libusb_open(device, &deviceHandle);
+      if(err == 0)
+      {
+        handle = deviceHandle;
+        break;
+      }
+    }
+  }
+ 
+  /* free the device list */
+
+  libusb_free_device_list(list, 1);
+
+  /* Verify we found a device */
+
+  if (handle == NULL) 
+  {
+    log_err("Unable to open device.");
+    goto error;
+  }
+
+  if (interface != -1)
+  {
+    if (!claimInterface(handle, interface, autoconnect))
+    {
+      goto error;
+    }
+  }
+
+  exit:
+  return handle;
+
+  error:
+  closeUSB(ctx, handle, interface);
+  return NULL;
+}
+
 bool
 claimInterface(struct libusb_device_handle *handle, int interface, bool autoconnect)
 {
