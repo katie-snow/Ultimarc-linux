@@ -36,6 +36,22 @@ struct libusb_device_handle* openUSB(libusb_context *ctx,
                                       int autoconnect);
 
 /**
+ * Will attempt to open the USB product and claim the interface specified.
+ * Finds the device by combination of vendor, product, and device release number.
+ * releaseNumber is in binary-coded decimal.
+ * If successful ctx variable will be populated and the return handle will be populated,
+ * otherwise they will be NULL;
+ * interface = -1 the calling function will need to claim the interface this function will not
+ * autoconnect = 1 the kernel driver will be attached after we are done with the device
+ */
+struct libusb_device_handle* openUSBWithReleaseNumber(libusb_context *ctx,
+                                                      uint16_t vendor,
+                                                      uint16_t product,
+                                                      uint16_t releaseNumber,
+                                                      int interface,
+                                                      int autoconnect);
+
+/**
  * Attempt to claim the interface
  * autoconnect = 1 the kernel driver will be attached after we are done with the device
  */
