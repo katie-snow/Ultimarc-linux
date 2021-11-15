@@ -518,7 +518,7 @@ void update2015IPAC2Board (json_object *jobj, unsigned char* barray)
   memset (&barray[120], 1, 14);
   memset (&barray[135], 1, 13);
   memset (&barray[150], 1, 1);
-  memset (&barray[151], 0x41, 1);
+  /* memset (&barray[151], 0x41, 1); */
   memset (&barray[159], 0x7f, 8);
 
   json_object_object_get_ex(jobj, "1/2 shift key", &shiftKey);

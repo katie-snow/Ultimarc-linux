@@ -1127,7 +1127,10 @@ void populateShiftPosition (enum ipac_boards_t bid, json_object* key, unsigned c
   lkey = decipherLookupKey(json_object_get_string(key));
 
   if (lkey == -1)
-    return;
+  {
+   log_info("No shifter pin defined");
+   return;
+  }
 
   // access table with lkey and bid to get the location to place data in barray
   idx = keyLookupTable[bid][lkey];
