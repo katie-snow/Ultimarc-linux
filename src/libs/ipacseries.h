@@ -92,10 +92,11 @@ bool validateConfigData (json_object* jobj, bool oldValid);
 void populateConfigurationValue (unsigned char* barray);
 
 /**
- * Debounce entry validation
+ * Debounce & Paclink entry validation
  */
 bool validateConfigDebounce (json_object* config, bool oldValid);
-
+bool validateConfigPaclink (json_object* config, bool oldValid);
+ 
 void populateShiftPosition (enum ipac_boards_t bid, json_object* key, unsigned char* barray);
 
 /**
