@@ -991,7 +991,7 @@ int decipherLookupKey (const char* key)
 
   if (lkey == -1)
   {
-    log_info("Unable to decipher pin '%s'.", key);
+    log_info("Unable to decipher pin '%s'", key);
   }
 
   return lkey;
@@ -1012,7 +1012,7 @@ int decipherLookupMacroKey (const char* key)
 
   if (lkey == -1)
   {
-    log_info("Unable to decipher macro '%s'.", key);
+    log_info("Unable to decipher macro '%s'", key);
   }
   return lkey;
 }
@@ -1074,38 +1074,34 @@ bool validateConfigDebounce (json_object* config, bool oldValid)
       debounceStr = json_object_get_string(debounce);
       if (!strcasecmp(debounceStr, "none"))
       {
-        piconfig.parts.debounce_enabled = 0;
-        piconfig.parts.debounce_pos_4 = 1;
-        piconfig.parts.debounce_pos_5 = 1;
+        piconfig.parts.debounce_1 = 1;
+        piconfig.parts.debounce_2 = 0;
         lvalue = 0;
       }
       if (!strcasecmp(debounceStr, "standard"))
       {
-        piconfig.parts.debounce_enabled = 1;
-        piconfig.parts.debounce_pos_4 = 0;
-        piconfig.parts.debounce_pos_5 = 1;
+        piconfig.parts.debounce_1 = 0;
+        piconfig.parts.debounce_2 = 0;
         lvalue = 0;
       }
       if (!strcasecmp(debounceStr, "long"))
       {
-        piconfig.parts.debounce_enabled = 1;
-        piconfig.parts.debounce_pos_4 = 1;
-        piconfig.parts.debounce_pos_5 = 0;
+        piconfig.parts.debounce_1 = 1;
+        piconfig.parts.debounce_2 = 1;
         lvalue = 0;
       }
       if (!strcasecmp(debounceStr, "short"))
       {
-        piconfig.parts.debounce_enabled = 1;
-        piconfig.parts.debounce_pos_4 = 0;
-        piconfig.parts.debounce_pos_5 = 0;
+        piconfig.parts.debounce_1 = 0;
+        piconfig.parts.debounce_2 = 1;
         lvalue = 0;
       }
 
-      debug ("    Debounce: %02x", piconfig.config);
+      debug ("    Debounce: 0x%02x", piconfig.config);
 
       if (lvalue == -1)
       {
-        log_info("Unable to decipher debounce '%s'.", debounceStr);
+        log_info("Unable to decipher debounce '%s'", debounceStr);
         valid = false;
       }
     }
