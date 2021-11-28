@@ -31,14 +31,14 @@ union ipacconfig
 {
   struct
   {
-    int empty_2 : 1;
-    int empty_1 : 1;
-    int debounce_pos_5 : 1;
-    int debounce_pos_4 : 1;
-    int debounce_enabled : 1;
-    int paclink : 1;
-    int accelerometer_uio : 1;
-    int high_current_uio : 1;
+    int high_current_uio : 1;  //Bit0
+    int accelerometer_uio : 1; //Bit1
+    int paclink : 1;           //Bit2
+    int debounce_1 : 1;        //Bit3
+    int debounce_2 : 1;        //Bit4
+    int empty : 1;             //Bit5
+    int empty : 1;             //Bit6
+    int empty : 1;             //Bit7
   } parts;
   int config;
 };
