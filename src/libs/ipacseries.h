@@ -36,9 +36,9 @@ union ipacconfig
     int paclink : 1;           //Bit2
     int debounce_1 : 1;        //Bit3
     int debounce_2 : 1;        //Bit4
-    int empty : 1;             //Bit5
-    int empty : 1;             //Bit6
-    int empty : 1;             //Bit7
+    int empty_1 : 1;           //Bit5
+    int empty_2 : 1;           //Bit6
+    int empty_3 : 1;           //Bit7
   } parts;
   int config;
 };
