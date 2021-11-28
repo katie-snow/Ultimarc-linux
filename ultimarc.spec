@@ -48,7 +48,7 @@ install -p 21-ultimarc.rules %{buildroot}/usr/lib/udev/rules.d/
 
 #example json files
 install -d %{buildroot}/%{_datarootdir}/ultimarc/examples
-install -p -m 644 ./README %{buildroot}/%{_datarootdir}/ultimarc/
+install -p -m 644 ./README.* %{buildroot}/%{_datarootdir}/ultimarc/
 install -p -m 644 ./src/umtool/*.json %{buildroot}/%{_datarootdir}/ultimarc/examples/
 
 %clean
