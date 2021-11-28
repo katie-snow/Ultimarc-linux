@@ -1020,7 +1020,7 @@ int decipherLookupMacroKey (const char* key)
 /* Configuration options
  * Enable high-current output on UIO board, NOT IMPLEMENTED
  * Enable accelerometer on UIO board, NOT IMPLEMENTED
- * Enable PacLink interface on I-Pac 2, NOT IMPLEMENTED
+ * Enable PacLink interface on I-Pac 2
  * Debounce value
  */
 bool validateConfigData (json_object* jobj, bool oldValid)
@@ -1037,8 +1037,8 @@ bool validateConfigData (json_object* jobj, bool oldValid)
     {
       debug ("Configuration Settings:");
 
-      /* Debounce */
-      valid = validateConfigDebounce (config, valid);
+      /* Debounce & Paclink */
+      valid = validateConfigDebounce (config, valid) & validateConfigPaclink (config, valid);
     }
     else
     {
@@ -1054,6 +1054,51 @@ void populateConfigurationValue (unsigned char* barray)
 {
   /* populate this here so that ipacconfig variable can be accessed. */
   barray[3] = piconfig.config;
+}
+
+bool validateConfigPaclink (json_object* config, bool oldValid)
+{
+  bool valid = oldValid;
+  int  lvalue = -1;
+
+  json_object* paclink = NULL;
+  const char* paclinkStr;
+
+  if (json_object_object_get_ex(config, "paclink", &paclink))
+  {
+    /*
+     * Paclink values; Enabled, Disabled
+     */
+    if (json_object_is_type(paclink, json_type_string))
+    {
+      paclinkStr = json_object_get_string(paclink);
+      if (!strcasecmp(paclinkStr, "enabled"))
+      {
+        piconfig.parts.paclink = 1;
+        lvalue = 0;
+      }
+      if (!strcasecmp(paclinkStr, "disabled"))
+      {
+        piconfig.parts.paclink = 0;
+        lvalue = 0;
+      }
+
+      debug ("    Paclink: 0x%02x", piconfig.config);
+
+      if (lvalue == -1)
+      {
+        log_info("Unable to decipher paclink '%s'", paclinkStr);
+        valid = false;
+      }
+    }
+    else
+    {
+      log_err("Paclink config needs to be of type string");
+      valid = false;
+    }
+  }
+
+  return valid;
 }
 
 bool validateConfigDebounce (json_object* config, bool oldValid)
