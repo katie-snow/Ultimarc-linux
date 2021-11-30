@@ -707,7 +707,7 @@ int decipherUHidLookupKey (const char* key)
 
   if (lkey == -1)
   {
-    log_info("Unable to decipher pin '%s'.", key);
+    log_info("Unable to decipher pin '%s'", key);
   }
 
   return lkey;

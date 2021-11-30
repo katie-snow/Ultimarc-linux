@@ -1,4 +1,4 @@
-# SUBDIRS=src/libs src/umtool
+README: README.md
 
 SUBDIRS=src/libs src/umtool
 
