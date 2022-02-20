@@ -23,11 +23,15 @@ This utility requires folder permission changes to the usb device directories be
 #### Building Utility:
 To build this project, at the base directory run the following commands
 * ./autogen.sh
-* ./configure
+* ./configure --disable-shared
 * make
 
 If you need extra debug statements for the IPac boards then run the following
 * ./configure CFLAGS='-DDEBUG'
+* make
+
+If you need libraries for your own programs then configure with shared enabled
+* ./configure --enable-shared
 * make
 
 The executable will be in src/umtool directory and named umtool.
