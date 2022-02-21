@@ -1,7 +1,7 @@
 dnl Process this file with autoconf to produce a configure script.
 
 AC_PREREQ(2.59)
-AC_INIT(Ultimarc-linux, 1.1)
+AC_INIT(Ultimarc-linux, 1.2)
 
 AC_CANONICAL_HOST
 AM_INIT_AUTOMAKE()
@@ -39,7 +39,7 @@ CPPFLAGS="-I$KERNEL_HEADERS_DIR/include"
 AX_PKG_CHECK_MODULES([JSON], [], [json-c >= 0.11])
 AX_PKG_CHECK_MODULES([LIBUSB], [], [libusb-1.0 >= 1.0.18])
 
-AC_SUBST([ULTIMARC_LIB_VERSION], [1.1])
+AC_SUBST([ULTIMARC_LIB_VERSION], [1.2])
 
 AC_CONFIG_FILES([Makefile
 		 src/libs/Makefile
