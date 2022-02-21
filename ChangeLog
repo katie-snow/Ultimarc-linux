@@ -4,5 +4,65 @@ NEXT.VERSION
   * Added type, range and almost all data validation for the supported boards
   * Added IPAC Ultimate and PAC Drive board support
 
-0.1
-  * initial release
+
+V1.2.0 <DATE>
+-------------
+1.2.0 Release
+
+Add paclink configuration, Correct 2015 ipac2 config byte, Fix disable shift function
+Support multiple Pac-Drive devices, Updated Aimtrak script: added AdvMame support
+Added ultistik 360 configs, Add functionality for USBButtonConfigureColor SDK function.
+And other various fixes.
+
+
+V1.1.0 20 Jan 2017
+------------------
+U-HID Support
+
+This release adds U-HID and U-HID Nano board support to the Ultimarc-linux tools.
+This release also adds Macro support to the Ultimate I/O board.
+Also does some clean up of unused code in the ipacseries.c file.
+
+
+
+V1.0.0 04 Nov 2016
+------------------
+Additional Board support and API change
+
+This release will include support for the USB Button.
+
+The library API is changed for this release.
+The name of the umtool excutable will be changed, dropping the .out extension.
+
+
+V0.2.0 22 Apr 2016
+------------------
+0.2.0 Release
+
+In this release the following boards are supported;
+PACDrive, IPAC Ultimate, I-Pac 2, I-Pac 4, Mini-Pac, JPAC, UltraStik 360 and PacLED64
+
+There is support for pre2015 PAC boards and the current 2015 boards listed above.
+
+
+V0.1.0 18 Apr 2014
+------------------
+Inital release
+
+This is the initial release of the Ultimarc command line utility.
+
+The initial functionality allows for configuring the following devices from Ultimarc
+I-Pac 2
+I-Pac 4
+Mini-Pac
+UltraStik 360
+PacLED64
+
+This release also includes the ability to change the device ID for the UltraStik 360.
+
+Examples of how to configure each device is in the src/umtool directory.
+
+Not included in this release
+Ability to change the device ID for the PacLED64
+Robust file validation and boundary checking
+Robust debugging capability
