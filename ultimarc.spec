@@ -3,7 +3,7 @@
 
 %define name ultimarc
 %define major 1
-%define minor 1
+%define minor 2
 %define release 14
 %define version %{major}.%{minor}
 

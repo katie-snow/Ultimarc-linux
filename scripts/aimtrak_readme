@@ -4,7 +4,7 @@ Emulators
 1 Mame by MameDev.org
 1.1 Using python script
 
-A script has been created to setup the files required to have AimTrak run.  This is a python3 script and follows the actions stated in the sections below.
+A script has been created to setup the files required to have AimTrak run.  This is a python 3.6 script and follows the actions stated in the sections below.
 To excute the file do the following;
 python aimtrak_setup.py -s
 

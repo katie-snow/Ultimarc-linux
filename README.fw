@@ -1,0 +1,60 @@
+Post 2015 IPAC2 Firmware features
+---------------------------------
+
+Single firmware
+    V1.22 - V1.33 Keyboard only support (Single Mode)
+Split firmwares
+    V1.34 - V1.39 Keyboard WITH Gamepad (Mixed Mode)
+    V1.44 - V1.49 Keyboard WITHOUT Gamepad (Single Mode)
+Split firmwares
+    V1.34 - V1.39 Keyboard WITH Gamepad (Mixed Mode)
+    V1.50 - V1.55 Keyboard SWITCH Gamepad (Multi Mode)
+
+Currently there are 2 WinIPAC2 programs to use depending on firmware.
+    Multi mode firmware requires the current version of WinIPAC2 v1.36.00
+    Mixed mode firmware requires the special version of WinIPAC2 v1.08.12
+    Single mode firmware should work with WinIPAC2 v1.08.12
+    
+History
+-------
+1.22 Cures intermittent failure to send keycodes on some hosts.
+1.23 Correct stuck shift on I-PAC 4.
+	Extend Start1 pulse time.
+	Following customer feedback this version reverts the self-test LED function to that of pre-2015 boards.
+	The LED is ON when no error detected.
+1.30 Correct false self-test failures (flashing LED at power on).
+1.31 Correct various PacLink issues
+1.32 Improved performance, reduce debounce timer value.
+1.33 Remove scan of unused connections
+1.34 Split version of game controller/no game controller support.
+1.35 (UIO only) shift key pulse too long when LEDs active.
+1.36 Gamepad-enabled firmware now appears as TWO gamepads.
+1.37 (UIO only) Lockup during LED animations
+1.38 Add variable de-bounce delay, selectable with 4 values in WinIPAC
+1.39 Harmonize all versions, no functional changes.
+
+Firmware with/without the Game Controller device
+------------------------------------------------
+Starting with version 34 there are separate firmware versions which have the game controller device present/not present.
+
+ Versions without game controller (ie with keyboard and mouse support) have the first version digit as "4" eg 1.44.
+ Versions with game controller (ie with gamepad button, keyboard and mouse support) have the first version digit as "3" eg 1.34.
+
+When changing versions it is necessary after the firmware change to locate the "composite device" under the USB Controllers
+entry in Device Manager and "Uninstall" this so that Windows can re-detect the new version correctly.
+
+Firmware (MultiMode)
+--------------------
+New boards are shipped with this version.
+Latest firmware files (ver 1.55) for all 2015-onwards I-PAC, Mini-PAC and J-PAC boards plus all Ultimate I/O boards regardless of date.
+
+All firmware except J-PAC now supports the Multi-Mode operation which enables switching to dual game controller mode or dual X-Input mode. Check the Multi-Mode tab on the product pages for more info.
+Before upgrading ensure you have the I-PAC shift functionality enabled otherwise mode switching will not work. The default is Start1 being the shift control.
+Also before upgrading to multi-mode firmware ensure the latest WinIPAC version is installed from the download page.
+If the board comes up in Xinput mode after upgrading, this can be reset to standard keyboard by holding P1SW1 while connecting USB cable. See the Multi-Mode product tab on the I-PAC pages for full details.
+
+Alternative Firmware (Mixed Mode)
+---------------------------------
+This is an alternative firmware version which enables the board to appear as a keyboard and dual standard game controller AT THE SAME TIME (both also with mouse). Note Retropie does not work with this configuration. The standard multiMode version (above) enables one device type at a time on the host (plus mouse) and this is required for Retropie. IMPORTANT: This version also requires a different version of WinIPAC for configuration.
+This version does not support Xinput.
+Unlike the Multi-Mode, this version automatically allocates each of the 2 game controllers on the respective side of the board so WinIPAC does not refer to player numbers, these are defined by the board markings. I-PAC 4 only supports 2 game controllers.
