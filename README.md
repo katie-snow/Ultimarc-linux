@@ -37,5 +37,11 @@ If you need libraries for your own programs then configure with shared enabled
 The executable will be in src/umtool directory and named umtool.
 * ./umtool ipac2.json
 
+UMTool may also be installed system wide (Tested on Debian 11 Bullseye)
+* sudo make install
+
+Update your shared libraries if using --enable-shared when compiling
+* sudo /sbin/ldconfig -v
+
 #### Donations:
 <a href='https://paypal.me/snowywhitewater?locale.x=en_US'>Click here to lend your support through PayPal!</a>
