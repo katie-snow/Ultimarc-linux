@@ -1,0 +1,25 @@
+#!/usr/bin/make -f
+# You must remove unused comment lines for the released package.
+#export DH_VERBOSE = 1
+#export DEB_BUILD_MAINT_OPTIONS = hardening=+all
+#export DEB_CFLAGS_MAINT_APPEND  = -Wall -pedantic
+#export DEB_LDFLAGS_MAINT_APPEND = -Wl,--as-needed
+# Rules for building standalone umtool (No libraries).
+
+%:
+	dh $@ --with autoreconf
+
+override_dh_autoreconf:
+	dh_autoreconf -- ./autogen.sh
+override_dh_auto_configure:
+	dh_auto_configure -- --disable-shared
+
+override_dh_auto_install:
+	@echo "*** Just compile and install files listed in debian/install & debian/docs"
+
+override_dh_usrlocal:
+	@echo "*** Native package (Local admin install), Allow install to /usr/local/bin"
+
+#override_dh_install:
+#	dh_install --list-missing -X.la -X.pyc -X.pyo
+
