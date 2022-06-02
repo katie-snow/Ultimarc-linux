@@ -1,0 +1,21 @@
+Source: ultimarc-linux
+Section: misc
+Priority: optional
+Maintainer: Oz Falcon <ozfalcon@bden.org>
+Build-Depends: debhelper-compat (= 12), dh-autoreconf, pkg-config,
+ autoconf, automake, libudev-dev, libjson-c-dev, libusb-1.0-0-dev, libtool
+Standards-Version: 4.5.0
+Homepage: https://github.com/katie-snow/Ultimarc-linux
+
+Package: ultimarc-linux
+Architecture: any
+Multi-Arch: foreign
+Depends: ${misc:Depends}, ${shlibs:Depends}
+Description: Command line utility to configure various Ultimarc boards.
+ This utility will configure the following Ultimarc boards; ServoStik, PACDrive,
+ IPAC Ultimate, I-Pac 2, I-Pac 4, Mini-Pac, JPAC, UltraStik 360, PacLED64, U-HID
+ and U-HID Nano. There is support for the PAC 2015 boards, UltraStik 2015 board
+ and the previous generation of the PAC boards.
+ It uses json configuration files to configure the different boards.
+ It supports the ability to change the device ID of the UltraStik 360 boards.
+ Allowing for the configuring of four different boards at once.
