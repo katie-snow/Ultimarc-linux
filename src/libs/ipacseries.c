@@ -11,6 +11,7 @@
 /* C */
 #include <stdio.h>
 #include <string.h>
+#include <unistd.h>
 
 /* Unix */
 #include <json.h>
@@ -1310,6 +1311,10 @@ bool writeIPACSeriesUSB (unsigned char* barray, int size, uint16_t vendor, uint1
                                     IPACSERIES_MESG_LENGTH,
                                     UM_TIMEOUT);
       debug ("Write result: %i", ret);
+
+      /* Pre-2015 boards drop data when packets arrive back to back. Issue #25 */
+      if (vendor == 0xd208)
+        usleep(20000);
     }
     pos+=4;
   }
