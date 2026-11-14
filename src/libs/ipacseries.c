@@ -809,6 +809,9 @@ void populateBoardArray (int bid, json_object* jobj, unsigned char* barray)
 
   json_object *tmp = NULL;
 
+  if (jobj == NULL)
+    return;
+
   json_object_object_foreach(jobj, key, pin)
   {
     lkey = decipherLookupKey(key);
@@ -1186,6 +1189,10 @@ void populateMacrosPosition (enum ipac_boards_t bid, json_object* macros, unsign
   int idx2015 = 168;
 
   json_object *tmp = NULL;
+
+  /* "macros" is optional in the configuration */
+  if (macros == NULL)
+    return;
 
   json_object_object_foreach(macros, key, macro)
   {
